@@ -1,0 +1,3 @@
+start:27/6/2015
+end:16/10/2015
+desc:Resuming more sporadic play on the famous "Tour Server".

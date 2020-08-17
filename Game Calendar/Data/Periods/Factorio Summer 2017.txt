@@ -1,0 +1,3 @@
+start:24/6/2017
+end:27/8/2017
+desc:Two techtree playthroughs, the second a MP with lossycrypt, the first the creation of NauvisDay

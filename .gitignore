@@ -15,9 +15,19 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+.settings/*
+.metadata/*
+bin/*
+.classpath
+.project
+libs/*
+
 # Windows shortcuts
 *.lnk
 
 # =========================
 # Operating System Files
 # =========================
+Game Calendar/.settings/*
+Game Calendar/bin
+Game Calendar/libs

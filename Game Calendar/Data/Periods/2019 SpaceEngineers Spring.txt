@@ -1,0 +1,3 @@
+start:9/3/2019
+end:2/6/2019
+desc:Escape Mars Scenario, Moon-start "Never Surrender", Ship design sessions, massive mobile base design
