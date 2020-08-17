@@ -1,3 +1,0 @@
-start:10/2/2015
-end:4/5/2015
-desc:The main play session on the famous "Tour Server".

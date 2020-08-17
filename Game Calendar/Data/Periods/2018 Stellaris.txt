@@ -1,3 +1,0 @@
-start:18/10/2018
-end:28/11/2018
-desc:Introduction, creation of Aleran Commonwealth
