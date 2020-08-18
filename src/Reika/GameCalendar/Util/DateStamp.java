@@ -30,11 +30,11 @@ public class DateStamp implements Comparable<DateStamp> {
 		int dy = calendar.get(Calendar.DAY_OF_YEAR);
 		return dy/(isLeapYear() ? 366 : 365);
 		 */
-		double mf = day/(double)month.length(this.isLeapYear());
+		double mf = day/(double)month.length(this.isLeapYear(year));
 		return (month.ordinal()+mf)/12D*360D;
 	}
 
-	private boolean isLeapYear() {
+	public static boolean isLeapYear(int year) {
 		return year%4 == 0 && (year%100 != 0 || year%400 == 0);
 	}
 

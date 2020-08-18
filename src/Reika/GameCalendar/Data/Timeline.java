@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import Reika.GameCalendar.GUI.Section;
 import Reika.GameCalendar.Util.DateStamp;
 
 public class Timeline {

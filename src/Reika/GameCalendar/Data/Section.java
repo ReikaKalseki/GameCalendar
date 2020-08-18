@@ -1,9 +1,8 @@
-package Reika.GameCalendar.GUI;
+package Reika.GameCalendar.Data;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Util.DateStamp;
 
 public class Section implements Comparable<Section> {
@@ -39,6 +38,10 @@ public class Section implements Comparable<Section> {
 
 	public DateStamp getEnd() {
 		return endTime;
+	}
+
+	public boolean isEmpty() {
+		return activeSpans.isEmpty();
 	}
 
 }

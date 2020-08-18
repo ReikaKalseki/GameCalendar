@@ -80,8 +80,8 @@ public class Window {
 	}
 
 	private void drawGUI() {
-
-		Main.getGUI().draw();
+		Main.getGUI().draw(frame.getSize());
+		Main.getGUI().handleMouse(frame.getSize());
 	}
 
 	private class MyWindowListener implements WindowListener {
