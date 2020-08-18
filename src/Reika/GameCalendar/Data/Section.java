@@ -33,7 +33,7 @@ public class Section implements Comparable<Section> {
 
 	@Override
 	public String toString() {
-		return startTime+": "+nameSet;
+		return startTime+"-"+endTime+": "+nameSet;
 	}
 
 	public DateStamp getEnd() {

@@ -1,15 +1,21 @@
 package Reika.GameCalendar.GUI;
 
+import java.awt.Polygon;
+
 import Reika.GameCalendar.Data.Section;
-import Reika.GameCalendar.Util.DoublePolygon;
 
 class GuiSection {
 
 	public final Section section;
-	public DoublePolygon polygon;
+	public Polygon polygon;
 
 	GuiSection(Section s) {
 		section = s;
+	}
+
+	@Override
+	public String toString() {
+		return section.toString();
 	}
 
 }

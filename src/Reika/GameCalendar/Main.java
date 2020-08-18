@@ -2,6 +2,7 @@ package Reika.GameCalendar;
 
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Calendar;
 
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiSystem;
@@ -24,6 +25,8 @@ public class Main {
 	private static Window window;
 	private static Timeline timeline;
 	private static GuiSystem gui;
+
+	private static final Calendar calendar = Calendar.getInstance();
 
 	public static void main(String[] args) {
 		Thread.setDefaultUncaughtExceptionHandler(defaultErrorHandler);
@@ -57,6 +60,10 @@ public class Main {
 
 	public static GuiSystem getGUI() {
 		return gui;
+	}
+
+	public static Calendar getCalendar() {
+		return calendar;
 	}
 
 }

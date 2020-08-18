@@ -2,6 +2,7 @@ package Reika.GameCalendar.GUI;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Polygon;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +12,8 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.Timeline;
+import Reika.GameCalendar.Rendering.Window;
+import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
 
 public class GuiSystem {
@@ -75,11 +78,28 @@ public class GuiSystem {
 			GL11.glEnd();
 		}
 
-		GL11.glLineWidth(4);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex2d(0, 0);
-		GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+ty*tf);
-		GL11.glEnd();
+		{
+			GL11.glLineWidth(4);
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex2d(0, 0);
+			GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+ty*tf);
+			GL11.glEnd();
+			GL11.glLineWidth(3);
+			GL11.glBegin(GL11.GL_LINES);
+			double lang = DateStamp.launch.getAngle();
+			double dayang = this.getGuiAngle(lang);
+			double r1 = INNER_RADIUS;
+			double r2 = r1+ty;
+			double ri = (r1+(r2-r1)*(lang/360D))-ty*tf+0.002;
+			double ro = ri+ty*years.size()-ty*tf+0.005;//ri+ty*tf*2;
+			double dx1 = ri*Math.cos(dayang);
+			double dy1 = ri*Math.sin(dayang);
+			double dx2 = ro*Math.cos(dayang);
+			double dy2 = ro*Math.sin(dayang);
+			GL11.glVertex2d(dx1, dy1);
+			GL11.glVertex2d(dx2, dy2);
+			GL11.glEnd();
+		}
 
 		GL11.glLineWidth(2);
 		double wf = 0.8;
@@ -94,17 +114,22 @@ public class GuiSystem {
 
 			double a1 = s.section.startTime.getAngle();
 			double a2 = s.section.getEnd().getAngle();
-			if (a1 > a2) { //across the new year
-				a2 += 360;
-			}
 			int i1 = years.indexOf(s.section.startTime.year);
 			int i2 = years.indexOf(s.section.getEnd().year);
-			double r1 = INNER_RADIUS+i1*ty;
-			double r2 = INNER_RADIUS+(i2+1)*ty;
+			double r1a = INNER_RADIUS+i1*ty;
+			double r1b = INNER_RADIUS+(i1+1)*ty;
+			double r2a = INNER_RADIUS+i2*ty;
+			double r2b = INNER_RADIUS+(i2+1)*ty;
+			if (a1 > a2) { //across the new year
+				a2 += 360;
+				r2b -= ty;
+			}
 			ArrayList<DoublePoint> pointsInner = new ArrayList();
 			ArrayList<DoublePoint> pointsOuter = new ArrayList();
 			for (double a = a1; a < a2; a += 1) {
 				double ang = this.getGuiAngle(a);
+				double r1 = r1a;
+				double r2 = r2b;
 				double ra = r1+(r2-r1)*(a/360D)-ty*tf*wf;
 				double rb = r1+(r2-r1)*(a/360D)+ty*tf*wf;
 				double xa = ra*Math.cos(ang);
@@ -125,14 +150,12 @@ public class GuiSystem {
 			GL11.glBegin(GL11.GL_LINE_STRIP);
 			for (DoublePoint p : points) {
 				GL11.glVertex2d(p.x, p.y);
+				int lx = (int)(p.x*size.width/2D+size.width/2D);
+				int ly = (int)(p.y*size.height/2D+size.height/2D);
+				s.polygon.addPoint(lx, ly);
 			}
 			GL11.glVertex2d(points.get(0).x, points.get(0).y);
 			GL11.glEnd();
-			Collections.reverse(points);
-			for (DoublePoint p : points) {
-				s.polygon.addPoint(p.x, p.y);
-			}
-
 		}
 	}
 
@@ -141,12 +164,56 @@ public class GuiSystem {
 	}
 
 	public void handleMouse(Dimension size) {
-		double mx = (Mouse.getX()-size.width/2D)/size.width;
-		double my = (Mouse.getY()-size.height/2D)/size.height;
+		int mx = Mouse.getX()+Window.BORDER_X/2;
+		int my = Mouse.getY()+Window.BORDER_Y/2;
+		/*
+		ArrayList<DoublePoint> points = new ArrayList();
+		points.add(new DoublePoint(-0.25, -0.25));
+		points.add(new DoublePoint(-0.35, 0.15));
+		points.add(new DoublePoint(0.05, 0.25));
+		points.add(new DoublePoint(-0.1, -0.3));
+		Polygon poly = new Polygon();
+		Collections.reverse(points);
+		GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+		GL11.glColor4f(0, 0, 1, 1);
+		for (DoublePoint p : points) {
+			GL11.glVertex2d(p.x, p.y);
+			int lx = (int)((p.x*size.width+size.width)/2D);
+			int ly = (int)((p.y*size.height+size.height)/2D);
+			poly.addPoint(lx, ly);
+		}
+		GL11.glEnd();
+		int d = 2;
+		GL11.glPointSize(1F);
+		GL11.glBegin(GL11.GL_POINTS);
+		for (int i = 0; i < size.width; i += d) {
+			for (int k = 0; k < size.height; k += d) {
+				double px = ((i/(double)size.width)-0.5)*2;
+				double py = ((k/(double)size.height)-0.5)*2;
+				if (poly.contains(i, k)) {
+					GL11.glColor4f(0, 1, 0, 1);
+				}
+				else {
+					GL11.glColor4f(1, 0, 0, 1);
+				}
+				GL11.glVertex2d(px, py);
+			}
+		}
+		GL11.glEnd();
+		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+			System.out.println(mx+","+my);
+		if (poly.contains(mx, my)) {
+			GL11.glColor4f(0, 0, 0, 1);
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex2d(0, 0);
+			GL11.glVertex2d(1, 1);
+			GL11.glEnd();
+		}
+		 */
 		for (GuiSection s : sections) {
 			if (s.polygon != null && s.polygon.npoints > 0)	{
 				if (s.polygon.contains(mx, my)) {
-					System.out.println(mx+","+my+" > "+s.section);
+					//System.out.println(mx+","+my+" > "+s.section);
 				}
 			}
 		}

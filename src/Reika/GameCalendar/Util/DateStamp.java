@@ -4,18 +4,30 @@ import java.time.Month;
 import java.util.Calendar;
 import java.util.Date;
 
+import Reika.GameCalendar.Main;
+
 public class DateStamp implements Comparable<DateStamp> {
 
 	public final int year;
 	public final Month month;
 	public final int day;
 
-	private static final Calendar calendar = Calendar.getInstance();
+	private static final Calendar calendar = Main.getCalendar();
+
+	public static final DateStamp launch = DateStamp.now();
 
 	public DateStamp(int y, Month m, int d) {
 		year = y;
 		month = m;
 		day = d;
+	}
+
+	private static DateStamp now() {
+		calendar.setTime(new Date(System.currentTimeMillis()));
+		int year = calendar.get(Calendar.YEAR);
+		Month month = Month.of(calendar.get(Calendar.MONTH)+1);
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		return new DateStamp(year, month, day);
 	}
 
 	public Date getDate() {

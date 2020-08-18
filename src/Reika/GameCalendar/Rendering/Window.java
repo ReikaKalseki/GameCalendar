@@ -20,6 +20,9 @@ public class Window {
 	public static final int MAX_FPS = 60;
 	private static final int MILLIS_PER_FRAME = 1000/MAX_FPS;
 
+	public static final int BORDER_X = 17; //windows border thickness
+	public static final int BORDER_Y = 39;
+
 	private final Frame frame;
 	private final Canvas canvas;
 
@@ -31,8 +34,8 @@ public class Window {
 		canvas = new Canvas();
 		frame.add(canvas, BorderLayout.CENTER);
 
-		frame.setPreferredSize(new Dimension(800, 800));
-		frame.setMinimumSize(new Dimension(400, 400));
+		frame.setPreferredSize(new Dimension(800+BORDER_X, 800+BORDER_Y));
+		frame.setMinimumSize(new Dimension(400+BORDER_X, 400+BORDER_Y));
 		frame.pack();
 		frame.setVisible(true);
 
