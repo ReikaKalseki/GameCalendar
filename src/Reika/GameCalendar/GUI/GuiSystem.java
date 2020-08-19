@@ -1,16 +1,17 @@
 package Reika.GameCalendar.GUI;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Polygon;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.Section;
+import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.Rendering.Window;
 import Reika.GameCalendar.Util.DateStamp;
@@ -106,11 +107,6 @@ public class GuiSystem {
 		for (GuiSection s : sections) {
 			if (s.section.isEmpty())
 				continue;
-			int clr = Color.HSBtoRGB(s.hashCode()/(float)Integer.MAX_VALUE, 1, 1);
-			int bu = (clr & 0xFF);
-			int gn = (clr >> 8 & 0xFF);
-			int rd = (clr >> 16 & 0xFF);
-			GL11.glColor4f(rd/255F, gn/255F, bu/255F, 1);
 
 			double a1 = s.section.startTime.getAngle();
 			double a2 = s.section.getEnd().getAngle();
@@ -149,14 +145,27 @@ public class GuiSystem {
 				points.add(pointsOuter.get(i));
 			}
 			GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+			int clr = 0xffffff;
+			int i = 0;
 			for (DoublePoint p : points) {
+				clr = this.getSectionColorAtIndex(s.section, i);
 				GL11.glVertex2d(p.x, p.y);
 				int lx = (int)(p.x*size.width/2D+size.width/2D);
 				int ly = (int)(p.y*size.height/2D+size.height/2D);
 				s.polygon.addPoint(lx, ly);
+				i++;
 			}
 			GL11.glEnd();
 		}
+	}
+
+	private int getSectionColorAtIndex(Section s, int i) {
+		List<TimeSpan> li = s.getActiveSpans();
+		if (li.isEmpty())
+			return 0x000000;
+		int n = i%li.size();
+		TimeSpan sp = li.get(n);
+		return sp.getColor();
 	}
 
 	private double getGuiAngle(double a) {

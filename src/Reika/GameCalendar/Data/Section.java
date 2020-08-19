@@ -1,9 +1,10 @@
 package Reika.GameCalendar.Data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import Reika.GameCalendar.Util.DateStamp;
 
@@ -11,12 +12,13 @@ public class Section implements Comparable<Section> {
 
 	public final DateStamp startTime;
 	private DateStamp endTime;
-	private final HashSet<TimeSpan> activeSpans;
+	private final ArrayList<TimeSpan> activeSpans;
 	private final HashSet<String> nameSet = new HashSet();
 
 	public Section(DateStamp start, Collection<TimeSpan> active) {
 		startTime = start;
-		activeSpans = new HashSet(active);
+		activeSpans = new ArrayList(active);
+		Collections.sort(activeSpans);
 		for (TimeSpan t : active) {
 			nameSet.add(t.name);
 		}
@@ -46,8 +48,8 @@ public class Section implements Comparable<Section> {
 		return activeSpans.isEmpty();
 	}
 
-	public Set<TimeSpan> getActiveSpans() {
-		return Collections.unmodifiableSet(activeSpans);
+	public List<TimeSpan> getActiveSpans() {
+		return Collections.unmodifiableList(activeSpans);
 	}
 
 }

@@ -7,7 +7,12 @@ public abstract class CalendarEvent {
 	public final String name;
 	public final String description;
 
-	public CalendarEvent(String n, String desc) {
+	public final ActivityCategory category;
+
+	public CalendarEvent(ActivityCategory a, String n, String desc) {
+		if (a == null)
+			throw new IllegalArgumentException("Null category for '"+n+"'!");
+		category = a;
 		name = n;
 		description = desc;
 	}
@@ -18,5 +23,7 @@ public abstract class CalendarEvent {
 	}
 
 	protected abstract DateStamp getDescriptiveDate();
+
+	public abstract int getColor();
 
 }

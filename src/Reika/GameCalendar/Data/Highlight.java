@@ -6,8 +6,8 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 
 	public final DateStamp time;
 
-	public Highlight(DateStamp t, String n, String desc) {
-		super(n, desc);
+	public Highlight(ActivityCategory a, DateStamp t, String n, String desc) {
+		super(a, n, desc);
 		time = t;
 	}
 
@@ -19,6 +19,11 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 	@Override
 	protected DateStamp getDescriptiveDate() {
 		return time;
+	}
+
+	@Override
+	public int getColor() {
+		return 0x000000;
 	}
 
 }

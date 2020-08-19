@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
 
+import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiSystem;
 import Reika.GameCalendar.Rendering.Window;
@@ -30,9 +31,10 @@ public class Main {
 
 	public static void main(String[] args) {
 		Thread.setDefaultUncaughtExceptionHandler(defaultErrorHandler);
-		File f = new File(".");
+		File f = new File("Data");
 		try {
-			timeline = DataLoader.loadTimeline("Data");
+			timeline = DataLoader.loadTimeline(f);
+			ActivityCategory.loadCategories(new File(f, "Categories"));
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Could not load data files!", e);

@@ -13,8 +13,8 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 
 	public boolean isContinuous = true;
 
-	public TimeSpan(DateStamp s, DateStamp e, String n, String desc) {
-		super(n, desc);
+	public TimeSpan(ActivityCategory a, DateStamp s, DateStamp e, String n, String desc) {
+		super(a, n, desc);
 		start = s;
 		end = e;
 		if (start.compareTo(end) >= 0) {
@@ -36,6 +36,11 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 	@Override
 	protected DateStamp getDescriptiveDate() {
 		return start;
+	}
+
+	@Override
+	public int getColor() {
+		return category.color;
 	}
 
 }
