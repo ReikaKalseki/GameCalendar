@@ -1,7 +1,9 @@
 package Reika.GameCalendar.Data;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 import Reika.GameCalendar.Util.DateStamp;
 
@@ -42,6 +44,10 @@ public class Section implements Comparable<Section> {
 
 	public boolean isEmpty() {
 		return activeSpans.isEmpty();
+	}
+
+	public Set<TimeSpan> getActiveSpans() {
+		return Collections.unmodifiableSet(activeSpans);
 	}
 
 }

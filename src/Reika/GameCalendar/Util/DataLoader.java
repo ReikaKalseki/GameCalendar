@@ -30,7 +30,12 @@ public class DataLoader {
 				System.out.println("File '"+f.getName()+"' is empty!");
 				continue;
 			}
-			ret.addEvent(parseEvent(f));
+			try {
+				ret.addEvent(parseEvent(f));
+			}
+			catch (Exception e) {
+				throw new IllegalArgumentException("File '"+f.getName()+"' is invalid.", e);
+			}
 		}
 
 		File ranges = new File(folder, "Periods");
@@ -39,7 +44,12 @@ public class DataLoader {
 				System.out.println("File '"+f.getName()+"' is empty!");
 				continue;
 			}
-			ret.addPeriod(parsePeriod(f));
+			try {
+				ret.addPeriod(parsePeriod(f));
+			}
+			catch (Exception e) {
+				throw new IllegalArgumentException("File '"+f.getName()+"' is invalid.", e);
+			}
 		}
 
 		return ret;

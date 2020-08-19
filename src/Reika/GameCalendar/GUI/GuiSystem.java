@@ -144,17 +144,17 @@ public class GuiSystem {
 			}
 			s.polygon = new Polygon();
 			ArrayList<DoublePoint> points = new ArrayList();
-			points.addAll(pointsInner);
-			Collections.reverse(pointsOuter);
-			points.addAll(pointsOuter);
-			GL11.glBegin(GL11.GL_LINE_STRIP);
+			for (int i = 0; i < pointsInner.size(); i++) {
+				points.add(pointsInner.get(i));
+				points.add(pointsOuter.get(i));
+			}
+			GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
 			for (DoublePoint p : points) {
 				GL11.glVertex2d(p.x, p.y);
 				int lx = (int)(p.x*size.width/2D+size.width/2D);
 				int ly = (int)(p.y*size.height/2D+size.height/2D);
 				s.polygon.addPoint(lx, ly);
 			}
-			GL11.glVertex2d(points.get(0).x, points.get(0).y);
 			GL11.glEnd();
 		}
 	}
