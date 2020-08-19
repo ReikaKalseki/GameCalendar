@@ -123,7 +123,7 @@ public class GuiSystem {
 			}
 			ArrayList<DoublePoint> pointsInner = new ArrayList();
 			ArrayList<DoublePoint> pointsOuter = new ArrayList();
-			for (double a = a1; a < a2; a += 1) {
+			for (double a = a1; a < a2; a += 0.5) {
 				double ang = this.getGuiAngle(a);
 				double r1 = r1a;
 				double r2 = r2b;
@@ -149,7 +149,7 @@ public class GuiSystem {
 			int clr = 0xffffff;
 			int i = 0;
 			for (DoublePoint p : points) {
-				clr = this.getSectionColorAtIndex(s.section, i);
+				clr = this.getSectionColorAtIndex(s.section, i/4);
 				float r = Colors.HextoColorMultiplier(clr, 0);
 				float g = Colors.HextoColorMultiplier(clr, 1);
 				float b = Colors.HextoColorMultiplier(clr, 2);
