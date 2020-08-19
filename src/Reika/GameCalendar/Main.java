@@ -8,7 +8,6 @@ import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiSystem;
 import Reika.GameCalendar.Rendering.Window;
-import Reika.GameCalendar.Util.DataLoader;
 
 public class Main {
 
@@ -31,13 +30,17 @@ public class Main {
 
 	public static void main(String[] args) {
 		Thread.setDefaultUncaughtExceptionHandler(defaultErrorHandler);
+		timeline = new Timeline();
 		File f = new File("Data");
-		try {
-			timeline = DataLoader.loadTimeline(f);
-			ActivityCategory.loadCategories(new File(f, "Categories"));
-		}
-		catch (Exception e) {
-			throw new RuntimeException("Could not load data files!", e);
+		for (File in : f.listFiles()) {
+			if (in.isDirectory()) {
+				try {
+					ActivityCategory.loadCategory(in, timeline);
+				}
+				catch (Exception e) {
+					throw new RuntimeException("Could not load data folder '"+in.getName()+"'!", e);
+				}
+			}
 		}
 		timeline.prepare();
 		window = new Window();

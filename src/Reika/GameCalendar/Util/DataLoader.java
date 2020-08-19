@@ -22,58 +22,60 @@ public class DataLoader {
 		2014 EVERYTHING
 		CIV PLAYTHROUGHS (NOT SHAREX)*/
 
-	public static Timeline loadTimeline(File folder) throws IOException {
-		Timeline ret = new Timeline();
-		File events = new File(folder, "Events");
+	public static void loadTimeline(Timeline ret, ActivityCategory cat) throws IOException {
+		File events = new File(cat.folder, "Events");
 		for (File f : events.listFiles()) {
 			if (f.length() == 0) {
 				System.out.println("Event File '"+f.getName()+"' is empty!");
 				continue;
 			}
 			try {
-				ret.addEvent(parseEvent(f));
+				ret.addEvent(parseEvent(cat, f));
 			}
 			catch (Exception e) {
 				throw new IllegalArgumentException("File '"+f.getName()+"' is invalid.", e);
 			}
 		}
 
-		File ranges = new File(folder, "Periods");
+		File ranges = new File(cat.folder, "Periods");
 		for (File f : ranges.listFiles()) {
 			if (f.length() == 0) {
 				System.out.println("Period File '"+f.getName()+"' is empty!");
 				continue;
 			}
 			try {
-				ret.addPeriod(parsePeriod(f));
+				ret.addPeriod(parsePeriod(cat, f));
 			}
 			catch (Exception e) {
 				throw new IllegalArgumentException("File '"+f.getName()+"' is invalid.", e);
 			}
 		}
-
-		return ret;
 	}
 
-	private static Highlight parseEvent(File f) throws IOException {
+	private static Highlight parseEvent(ActivityCategory a, File f) throws IOException {
 		HashMap<String, String> map = getFileData(f);
-		return new Highlight(ActivityCategory.getByName(map.get("category")), DateStamp.parse(map.get("date")), map.get("name"), map.get("desc"));
+		return new Highlight(a, DateStamp.parse(map.get("date")), map.get("name"), map.get("desc"));
 	}
 
-	private static TimeSpan parsePeriod(File f) throws IOException {
+	private static TimeSpan parsePeriod(ActivityCategory a, File f) throws IOException {
 		HashMap<String, String> map = getFileData(f);
-		return new TimeSpan(ActivityCategory.getByName(map.get("category")), DateStamp.parse(map.get("start")), DateStamp.parse(map.get("end")), map.get("name"), map.get("desc"));
+		return new TimeSpan(a, DateStamp.parse(map.get("start")), DateStamp.parse(map.get("end")), map.get("name"), map.get("desc"));
 	}
 
 	public static HashMap<String, String> getFileData(File f) throws IOException {
 		HashMap<String, String> ret = new HashMap();
 		ArrayList<String> li = FileIO.getFileAsLines(f);
 		for (String s : li) {
-			String[] parts = s.split(":");
-			if (parts.length == 2)
-				ret.put(parts[0], parts[1]);
-			else
-				System.out.println("File '"+f.getName()+"' has valueless keys!");
+			int idx = s.indexOf(':');
+			if (idx < 0) {
+				System.out.println("File '"+f.getName()+"' has invalid line '"+s+"'!");
+			}
+			else {
+				if (idx > 0 && idx < s.length()-1)
+					ret.put(s.substring(0, idx), s.substring(idx+1));
+				else
+					System.out.println("File '"+f.getName()+"' has valueless line '"+s+"'!");
+			}
 		}
 		String n = f.getName().substring(0, f.getName().length()-4);
 		ret.put("name", n);

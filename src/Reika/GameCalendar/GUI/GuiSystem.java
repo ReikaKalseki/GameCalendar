@@ -14,6 +14,7 @@ import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.Rendering.Window;
+import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
 
@@ -149,6 +150,11 @@ public class GuiSystem {
 			int i = 0;
 			for (DoublePoint p : points) {
 				clr = this.getSectionColorAtIndex(s.section, i);
+				float r = Colors.HextoColorMultiplier(clr, 0);
+				float g = Colors.HextoColorMultiplier(clr, 1);
+				float b = Colors.HextoColorMultiplier(clr, 2);
+				GL11.glColor4f(r, g, b, 1);
+
 				GL11.glVertex2d(p.x, p.y);
 				int lx = (int)(p.x*size.width/2D+size.width/2D);
 				int ly = (int)(p.y*size.height/2D+size.height/2D);
