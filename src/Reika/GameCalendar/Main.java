@@ -10,6 +10,26 @@ import Reika.GameCalendar.GUI.GuiSystem;
 import Reika.GameCalendar.Rendering.Window;
 
 public class Main {
+	/*
+	DO NOT FORGET:
+		KSP (NOT IN SHAREX FILES due to copy-upload)
+		ELITE SESSIONS
+		FACTORIO SESSIONS
+		PORTAL MAPS & PETI PLAYTHROUGHS
+		PSMEL
+		SPACE ENGINEERS (CHECK STEAM AND DEDICATED SCREENSHOTS)
+		2014 EVERYTHING
+		CIV PLAYTHROUGHS (NOT SHAREX)*/
+
+	//TODO:
+	//checkboxes to show:
+	//"bookmark" holidays like christmas and halloween
+	//the "christmas break"
+	//the "summer break" (uni bounds)
+	//current date
+	//events
+	//each category
+	//ongoing sections
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 

@@ -27,7 +27,7 @@ public class ActivityCategory {
 	}
 
 	public static void loadCategory(File in, Timeline t) throws Exception {
-		HashMap<String, String> data = DataLoader.getFileData(new File(in, "info.txt"));
+		HashMap<String, String> data = DataLoader.getFileData(in.getName(), new File(in, "info.txt"));
 		ActivityCategory a = new ActivityCategory(in, in.getName(), data.get("desc"), Integer.parseInt(data.get("color"), 16));
 		a.loadFiles(t);
 		categories.put(a.name, a);

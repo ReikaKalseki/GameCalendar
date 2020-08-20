@@ -123,6 +123,7 @@ public class GuiSystem {
 			}
 			ArrayList<DoublePoint> pointsInner = new ArrayList();
 			ArrayList<DoublePoint> pointsOuter = new ArrayList();
+			int colorstep = 2;//Math.max(4, 6-i2/2);
 			for (double a = a1; a < a2; a += 0.5) {
 				double ang = this.getGuiAngle(a);
 				double r1 = r1a;
@@ -149,7 +150,7 @@ public class GuiSystem {
 			int clr = 0xffffff;
 			int i = 0;
 			for (DoublePoint p : points) {
-				clr = this.getSectionColorAtIndex(s.section, i/4);
+				clr = this.getSectionColorAtIndex(s.section, i/colorstep);
 				float r = Colors.HextoColorMultiplier(clr, 0);
 				float g = Colors.HextoColorMultiplier(clr, 1);
 				float b = Colors.HextoColorMultiplier(clr, 2);
@@ -169,6 +170,17 @@ public class GuiSystem {
 		List<TimeSpan> li = s.getActiveSpans();
 		if (li.isEmpty())
 			return 0x000000;
+		/*
+		double t = (System.currentTimeMillis()/200D+i/24D);
+		int n1 = (int)(t%li.size());
+		int n2 = (n1+1)%li.size();
+		double f = t-(long)t;
+		TimeSpan sp1 = li.get(n1);
+		TimeSpan sp2 = li.get(n2);
+		int c1 = sp1.getColor();
+		int c2 = sp2.getColor();
+		return Colors.mixColors(c1, c2, 1-(float)f);
+		 */
 		int n = i%li.size();
 		TimeSpan sp = li.get(n);
 		return sp.getColor();
