@@ -29,7 +29,7 @@ public class Window {
 	private boolean shouldClose = false;
 
 	public Window() {
-		frame = new Frame("Game Calendar");
+		frame = new Frame("Program Window");
 		frame.setLayout(new BorderLayout());
 		canvas = new Canvas();
 		frame.add(canvas, BorderLayout.CENTER);

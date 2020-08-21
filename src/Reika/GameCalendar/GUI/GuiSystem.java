@@ -10,6 +10,7 @@ import java.util.List;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
@@ -25,6 +26,7 @@ public class GuiSystem {
 
 	private final Timeline data;
 	private final ArrayList<GuiSection> sections = new ArrayList();
+	private final ArrayList<Highlight> events = new ArrayList();
 	private final ArrayList<Integer> years;
 
 	private GuiSection selectedSection = null;
@@ -34,6 +36,7 @@ public class GuiSystem {
 		for (Section s : t.getSections()) {
 			sections.add(new GuiSection(s));
 		}
+		events.addAll(t.getEvents());
 		years = new ArrayList(t.getYears());
 		Collections.sort(years);
 	}
@@ -178,6 +181,22 @@ public class GuiSystem {
 			if (s == selectedSection)
 				GL11.glEnd();
 		}
+
+		GL11.glPointSize(8);
+		GL11.glColor4f(0, 0, 0, 1);
+		GL11.glBegin(GL11.GL_POINTS);
+		for (Highlight h : events) {
+			double a = h.time.getAngle();
+			int i = years.indexOf(h.time.year);
+			double r1 = INNER_RADIUS+i*ty;
+			double r2 = INNER_RADIUS+(i+1)*ty;
+			double r = r1+(r2-r1)*(a/360D);
+			double ang = this.getGuiAngle(a);
+			double x = r*Math.cos(ang);
+			double y = r*Math.sin(ang);
+			GL11.glVertex2d(x, y);
+		}
+		GL11.glEnd();
 	}
 
 	private int getSectionColorAtIndex(Section s, int i) {

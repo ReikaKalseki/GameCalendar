@@ -95,6 +95,10 @@ public class Timeline {
 		return Collections.unmodifiableList(sections);
 	}
 
+	public List<Highlight> getEvents() {
+		return Collections.unmodifiableList(events);
+	}
+
 	public Set<Integer> getYears() {
 		return Collections.unmodifiableSet(years);
 	}
