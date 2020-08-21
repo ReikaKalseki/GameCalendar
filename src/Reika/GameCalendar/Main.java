@@ -64,7 +64,7 @@ public class Main {
 		timeline.prepare();
 		gui = new CalendarRenderer(timeline);
 		Window.create();
-		System.out.print("Run complete");
+		System.out.println("Main method complete");
 		System.exit(0);
 	}
 	/*

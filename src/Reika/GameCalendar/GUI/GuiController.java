@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.eclipse.fx.drift.DriftFXSurface;
+
 import Reika.GameCalendar.Data.ActivityCategory;
 
 import javafx.beans.value.ChangeListener;
@@ -28,18 +30,22 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 
 public class GuiController implements EventHandler<ActionEvent>, ChangeListener {
 
 	@FXML
-	public SplitPane root;
+	public GridPane root;
 
 	@FXML
 	public ListView<String> catList;
 
 	@FXML
 	public Label status;
+
+	@FXML
+	public Object renderer;
 
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<Character, NodeWrapper> optionNodes = new HashMap();
@@ -73,6 +79,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	}
 
 	public void postInit() {
+		renderer = new DriftFXSurface();
 		this.dynamicizeTextBoxes(root);
 	}
 

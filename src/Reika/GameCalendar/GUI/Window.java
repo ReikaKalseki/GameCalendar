@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.fx.drift.DriftFXSurface;
+
 import Reika.GameCalendar.Main;
 
 import javafx.application.Application;
@@ -65,7 +67,7 @@ public class Window extends Application implements EventHandler<javafx.event.Eve
 		double midX = window.getWidth()/2;
 		double midY = window.getHeight()/2;
 
-		this.setStatus("The status line works.");
+		this.setStatus("The status line works in 2020.");
 		for (TitledPane p : controller.getCollapsibleSections()) {
 			p.setExpanded(false);
 		}
@@ -85,6 +87,10 @@ public class Window extends Application implements EventHandler<javafx.event.Eve
 
 	public static Window getGUI() {
 		return gui;
+	}
+
+	public static DriftFXSurface getRenderPane() {
+		return (DriftFXSurface)gui.controller.renderer;
 	}
 
 	@Override
