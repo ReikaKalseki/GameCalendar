@@ -8,7 +8,8 @@ import org.eclipse.fx.drift.StandardTransferTypes;
 import org.eclipse.fx.drift.Swapchain;
 import org.eclipse.fx.drift.SwapchainConfig;
 import org.eclipse.fx.drift.Vec2i;
-import org.lwjgl.opengl.Display;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.base.Throwables;
@@ -20,6 +21,8 @@ public class DriftFXRenderer implements Runnable {
 
 	//private Pbuffer pbuffer;
 	//private static Drawable drawable;
+
+	private long windowID;
 
 	private Renderer renderer;
 	private Swapchain swapchain;
@@ -37,12 +40,13 @@ public class DriftFXRenderer implements Runnable {
 	public void run() {
 		this.create();
 
-		while (!shouldClose && !Display.isCloseRequested()) {
+		while (!shouldClose && GLFW.glfwWindowShouldClose(windowID)) {
 			try {
 				this.renderLoop();
 			}
 			catch (Exception e) {
 				shouldClose = true;
+				GLFW.glfwDestroyWindow(windowID);
 				e.printStackTrace();
 			}
 		}
@@ -56,11 +60,19 @@ public class DriftFXRenderer implements Runnable {
 
 		// first you create your own opengl context & make it current
 		try {
+			GLFW.glfwInit();
+			//GLFW.glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
+			windowID = GLFW.glfwCreateWindow(600, 600, "", 0, 0);
+			GLFW.glfwMakeContextCurrent(windowID);
+			GL.createCapabilities();
+			GLFW.glfwShowWindow(windowID);
+			/*
 			Display.setFullscreen(false);
 			//Display.setParent(??);
 			Display.setResizable(true);
 			Display.create();
 			Display.setVSyncEnabled(true);
+			 */
 			/*
 			pbuffer = new Pbuffer(1, 1, new PixelFormat(), null, null, new ContextAttribs().withDebug(true));
 			pbuffer.makeCurrent();
@@ -98,12 +110,8 @@ public class DriftFXRenderer implements Runnable {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		calendar.draw(size.x, size.y);
-		Display.update();
-		if (Display.wasResized()) {
-			GL11.glViewport(0, 0, size.x, size.y);
-		}
+		GLFW.glfwSwapBuffers(windowID);
 		GL11.glFlush();
-		Display.sync(60);
 
 		// once you are finished with the frame you call present on the swapchain
 		swapchain.present(target);

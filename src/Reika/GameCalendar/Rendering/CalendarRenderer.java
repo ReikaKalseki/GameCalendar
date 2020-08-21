@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.Highlight;
@@ -222,7 +221,7 @@ public class CalendarRenderer {
 		return Math.toRadians(-a+90);
 	}
 
-	public void handleMouse(int sx, int sy) {
+	public void handleMouse(int sx, int sy) {/*
 		int mx = Mouse.getX();
 		int my = Mouse.getY();
 		/*
@@ -268,7 +267,7 @@ public class CalendarRenderer {
 			GL11.glVertex2d(1, 1);
 			GL11.glEnd();
 		}
-		 */
+	 *//*
 		if (Mouse.isButtonDown(0)) {
 			selectedSection = null;
 			//System.out.println(mx+","+my);
@@ -282,6 +281,6 @@ public class CalendarRenderer {
 					}
 				}
 			}
-		}
+		}*/
 	}
 }

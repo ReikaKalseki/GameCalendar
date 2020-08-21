@@ -4,6 +4,8 @@ import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
 
+import org.lwjgl.glfw.GLFW;
+
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.Window;
@@ -64,6 +66,7 @@ public class Main {
 		timeline.prepare();
 		gui = new CalendarRenderer(timeline);
 		Window.create();
+		GLFW.glfwTerminate();
 		System.out.println("Main method complete");
 		System.exit(0);
 	}
