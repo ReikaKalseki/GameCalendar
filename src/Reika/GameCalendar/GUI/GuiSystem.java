@@ -27,6 +27,8 @@ public class GuiSystem {
 	private final ArrayList<GuiSection> sections = new ArrayList();
 	private final ArrayList<Integer> years;
 
+	private GuiSection selectedSection = null;
+
 	public GuiSystem(Timeline t) {
 		data = t;
 		for (Section s : t.getSections()) {
@@ -108,7 +110,6 @@ public class GuiSystem {
 		for (GuiSection s : sections) {
 			if (s.section.isEmpty())
 				continue;
-
 			double a1 = s.section.startTime.getAngle();
 			double a2 = s.section.getEnd().getAngle();
 			int i1 = years.indexOf(s.section.startTime.year);
@@ -155,14 +156,27 @@ public class GuiSystem {
 				float g = Colors.HextoColorMultiplier(clr, 1);
 				float b = Colors.HextoColorMultiplier(clr, 2);
 				GL11.glColor4f(r, g, b, 1);
-
 				GL11.glVertex2d(p.x, p.y);
-				int lx = (int)(p.x*size.width/2D+size.width/2D);
-				int ly = (int)(p.y*size.height/2D+size.height/2D);
-				s.polygon.addPoint(lx, ly);
 				i++;
 			}
 			GL11.glEnd();
+			points.clear();
+			points.addAll(pointsInner);
+			Collections.reverse(pointsOuter);
+			points.addAll(pointsOuter);
+			if (s == selectedSection) {
+				GL11.glColor4f(0, 0, 0, 1);
+				GL11.glBegin(GL11.GL_LINE_LOOP);
+			}
+			for (DoublePoint p : points) {
+				if (s == selectedSection)
+					GL11.glVertex2d(p.x, p.y);
+				int lx = (int)(p.x*size.width/2D+size.width/2D);
+				int ly = (int)(p.y*size.height/2D+size.height/2D);
+				s.polygon.addPoint(lx-Window.BORDER_X, ly-Window.BORDER_Y*3/4);
+			}
+			if (s == selectedSection)
+				GL11.glEnd();
 		}
 	}
 
@@ -191,8 +205,8 @@ public class GuiSystem {
 	}
 
 	public void handleMouse(Dimension size) {
-		int mx = Mouse.getX()+Window.BORDER_X/2;
-		int my = Mouse.getY()+Window.BORDER_Y/2;
+		int mx = Mouse.getX();
+		int my = Mouse.getY();
 		/*
 		ArrayList<DoublePoint> points = new ArrayList();
 		points.add(new DoublePoint(-0.25, -0.25));
@@ -237,10 +251,17 @@ public class GuiSystem {
 			GL11.glEnd();
 		}
 		 */
+		if (Mouse.isButtonDown(0)) {
+			selectedSection = null;
+			//System.out.println(mx+","+my);
+		}
 		for (GuiSection s : sections) {
 			if (s.polygon != null && s.polygon.npoints > 0)	{
 				if (s.polygon.contains(mx, my)) {
 					//System.out.println(mx+","+my+" > "+s.section);
+					if (Mouse.isButtonDown(0)) {
+						selectedSection = s;
+					}
 				}
 			}
 		}
