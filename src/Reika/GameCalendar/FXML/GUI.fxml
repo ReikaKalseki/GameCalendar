@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane prefHeight="700.0" prefWidth="1350.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GuiController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <TitledPane alignment="TOP_CENTER" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Calendar" GridPane.valignment="TOP">
+         <content>
+            <Pane fx:id="renderer" />
+         </content>
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </TitledPane>
+      <VBox GridPane.columnIndex="1">
+         <children>
+            <TitledPane animated="false" collapsible="false" text="Categories">
+               <content>
+                  <ListView fx:id="catList" prefHeight="165.0" prefWidth="282.0" />
+               </content>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </TitledPane>
+            <TitledPane animated="false" collapsible="false" text="Display Options">
+               <content>
+                  <VBox alignment="CENTER_LEFT" spacing="12.0">
+                     <children>
+                        <CheckBox fx:id="importantDates" mnemonicParsing="false" text="Show Important Dates" />
+                        <CheckBox fx:id="highlights" mnemonicParsing="false" text="Show Highlights" />
+                        <CheckBox fx:id="currentDate" mnemonicParsing="false" text="Show Current Date" />
+                        <CheckBox mnemonicParsing="false" text="Show Christmas Break" fx:id="xmasBreak" />
+                        <CheckBox fx:id="summerBreak" mnemonicParsing="false" text="Show Summer Break" />
+                     </children>
+                     <padding>
+                        <Insets bottom="6.0" left="8.0" right="6.0" top="6.0" />
+                     </padding>
+                  </VBox>
+               </content>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </TitledPane>
+         </children>
+      </VBox>
+   </children>
+</GridPane>

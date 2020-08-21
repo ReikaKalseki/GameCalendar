@@ -1,7 +1,9 @@
 package Reika.GameCalendar.Data;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 import Reika.GameCalendar.Util.DataLoader;
 
@@ -35,6 +37,10 @@ public class ActivityCategory {
 
 	private void loadFiles(Timeline t) throws Exception {
 		DataLoader.loadTimeline(t, this);
+	}
+
+	public static Set<String> getNameList() {
+		return Collections.unmodifiableSet(categories.keySet());
 	}
 
 }

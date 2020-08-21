@@ -4,12 +4,12 @@ import java.awt.Polygon;
 
 import Reika.GameCalendar.Data.Section;
 
-class GuiSection {
+public class GuiSection {
 
 	public final Section section;
 	public Polygon polygon;
 
-	GuiSection(Section s) {
+	public GuiSection(Section s) {
 		section = s;
 	}
 
