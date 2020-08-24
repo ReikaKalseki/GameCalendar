@@ -1,13 +1,11 @@
 package Reika.GameCalendar.GUI;
 
-import java.awt.Dimension;
 import java.awt.Polygon;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.Highlight;
@@ -41,7 +39,7 @@ public class GuiSystem {
 		Collections.sort(years);
 	}
 
-	public void draw(Dimension size) {
+	public void draw(int sw, int sh) {
 		double tf = 0.35;
 		double ty = MAX_THICKNESS/years.size();
 		GL11.glLineWidth(2);
@@ -174,8 +172,8 @@ public class GuiSystem {
 			for (DoublePoint p : points) {
 				if (s == selectedSection)
 					GL11.glVertex2d(p.x, p.y);
-				int lx = (int)(p.x*size.width/2D+size.width/2D);
-				int ly = (int)(p.y*size.height/2D+size.height/2D);
+				int lx = (int)(p.x*sw/2D+sw/2D);
+				int ly = (int)(p.y*sh/2D+sh/2D);
 				s.polygon.addPoint(lx-Window.BORDER_X, ly-Window.BORDER_Y*3/4);
 			}
 			if (s == selectedSection)
@@ -223,9 +221,9 @@ public class GuiSystem {
 		return Math.toRadians(-a+90);
 	}
 
-	public void handleMouse(Dimension size) {
-		int mx = Mouse.getX();
-		int my = Mouse.getY();
+	public void handleMouse(int w, int h) {
+		//int mx = Mouse.getX();
+		//int my = Mouse.getY();
 		/*
 		ArrayList<DoublePoint> points = new ArrayList();
 		points.add(new DoublePoint(-0.25, -0.25));
@@ -270,6 +268,7 @@ public class GuiSystem {
 			GL11.glEnd();
 		}
 		 */
+		/*
 		if (Mouse.isButtonDown(0)) {
 			selectedSection = null;
 			//System.out.println(mx+","+my);
@@ -283,6 +282,6 @@ public class GuiSystem {
 					}
 				}
 			}
-		}
+		}*/
 	}
 }

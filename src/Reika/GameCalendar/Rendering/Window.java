@@ -1,14 +1,8 @@
 package Reika.GameCalendar.Rendering;
 
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
-import org.lwjgl.opengl.Display;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.base.Throwables;
@@ -23,12 +17,17 @@ public class Window {
 	public static final int BORDER_X = 17; //windows border thickness
 	public static final int BORDER_Y = 39;
 
-	private final Frame frame;
-	private final Canvas canvas;
+	private long windowID;
 
 	private boolean shouldClose = false;
 
+	private int screenSizeX = 800;
+	private int screenSizeY = 800;
+
+	private GLFWFramebufferSizeCallback resizeCall;
+
 	public Window() {
+		/*
 		frame = new Frame("Program Window");
 		frame.setLayout(new BorderLayout());
 		canvas = new Canvas();
@@ -43,24 +42,55 @@ public class Window {
 		frame.setLocation((screenSize.width-frame.getWidth())/2, (screenSize.height-frame.getHeight())/2);
 
 		frame.addWindowListener(new MyWindowListener());
+		 */
+		GLFW.glfwInit();
 	}
 
 	public void create() {
 		try {
+			/*
 			Display.setFullscreen(false);
 			Display.setParent(canvas);
 			Display.setResizable(true);
 			Display.create();
 			Display.setVSyncEnabled(true);
+			 */
+			GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_TRUE);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
+			windowID = GLFW.glfwCreateWindow(screenSizeX, screenSizeY, "Game Calendar", 0, 0);
+			if (windowID == 0) {
+				throw new RuntimeException("Failed to create window");
+			}
+			GLFW.glfwMakeContextCurrent(windowID);
+			GL.createCapabilities();
+			GLFW.glfwShowWindow(windowID);
+
+			resizeCall = new ReSizeCallback();
+
+			GLFW.glfwSetFramebufferSizeCallback(windowID, resizeCall);
 		}
 		catch (Exception e) {
 			Throwables.propagate(e);
 		}
 	}
 
+	private class ReSizeCallback extends GLFWFramebufferSizeCallback {
+
+		@Override
+		public void invoke(long window, int width, int height) {
+			if (window == windowID) {
+				screenSizeX = width;
+				screenSizeY = height;
+			}
+		}
+
+	}
+
 	public void close() {
-		Display.destroy();
-		frame.dispose();
+		GLFW.glfwDestroyWindow(windowID);
+		GLFW.glfwTerminate();
 	}
 
 	public boolean run() throws InterruptedException {
@@ -68,25 +98,23 @@ public class Window {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		this.drawGUI();
-		Display.update();
-		if (Display.wasResized()) {
-			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-			frame.repaint();
-			frame.revalidate();
-		}
+		GLFW.glfwPollEvents();
+		GLFW.glfwSwapBuffers(windowID);
+
+		GL11.glViewport(0, 0, screenSizeX, screenSizeY);
 		long post = System.currentTimeMillis();
 		long sleep = MILLIS_PER_FRAME-(post-pre);
 		if (sleep > 0) {
 			Thread.sleep(sleep);
 		}
-		return !shouldClose && !Display.isCloseRequested();
+		return !shouldClose && !GLFW.glfwWindowShouldClose(windowID);
 	}
 
 	private void drawGUI() {
-		Main.getGUI().draw(frame.getSize());
-		Main.getGUI().handleMouse(frame.getSize());
+		Main.getGUI().draw(screenSizeX, screenSizeY);
+		Main.getGUI().handleMouse(screenSizeX, screenSizeY);
 	}
-
+	/*
 	private class MyWindowListener implements WindowListener {
 
 		public void windowClosing(WindowEvent arg0) {
@@ -100,6 +128,6 @@ public class Window {
 		public void windowActivated(WindowEvent arg0) {}
 		public void windowDeactivated(WindowEvent arg0) {}
 
-	}
+	}*/
 
 }
