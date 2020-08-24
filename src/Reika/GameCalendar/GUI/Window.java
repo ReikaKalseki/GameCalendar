@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+@Deprecated
 public class Window extends Application implements EventHandler<javafx.event.Event> {
 
 	private static Window gui;

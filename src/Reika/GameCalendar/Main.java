@@ -4,12 +4,10 @@ import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
 
-import org.lwjgl.glfw.GLFW;
-
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Timeline;
-import Reika.GameCalendar.GUI.Window;
-import Reika.GameCalendar.Rendering.CalendarRenderer;
+import Reika.GameCalendar.GUI.GuiSystem;
+import Reika.GameCalendar.Rendering.Window;
 
 public class Main {
 	/*
@@ -44,8 +42,9 @@ public class Main {
 
 	};
 
+	private static Window window;
 	private static Timeline timeline;
-	private static CalendarRenderer gui;
+	private static GuiSystem gui;
 
 	private static final Calendar calendar = Calendar.getInstance();
 
@@ -64,10 +63,19 @@ public class Main {
 			}
 		}
 		timeline.prepare();
-		gui = new CalendarRenderer(timeline);
-		Window.create();
-		GLFW.glfwTerminate();
-		System.out.println("Main method complete");
+		window = new Window();
+		window.create();
+		gui = new GuiSystem(timeline);
+		try {
+			while (window.run()) {
+
+			}
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		window.close();
+		System.out.print("Run complete");
 		System.exit(0);
 	}
 	/*
@@ -75,7 +83,7 @@ public class Main {
 		return timeline;
 	}*/
 
-	public static CalendarRenderer getGUI() {
+	public static GuiSystem getGUI() {
 		return gui;
 	}
 
