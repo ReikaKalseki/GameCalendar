@@ -174,7 +174,7 @@ public class CalendarRenderer {
 					GL11.glVertex2d(p.x, p.y);
 				int lx = (int)(p.x*sw/2D+sw/2D);
 				int ly = (int)(p.y*sh/2D+sh/2D);
-				s.polygon.addPoint(lx/*-Window.BORDER_X*/, ly/*-Window.BORDER_Y*3/4*/);
+				s.polygon.addPoint(lx-Window.BORDER_X, ly-Window.BORDER_Y*3/4);
 			}
 			if (s == selectedSection)
 				GL11.glEnd();
@@ -221,9 +221,9 @@ public class CalendarRenderer {
 		return Math.toRadians(-a+90);
 	}
 
-	public void handleMouse(int sx, int sy) {/*
-		int mx = Mouse.getX();
-		int my = Mouse.getY();
+	public void handleMouse(int w, int h) {
+		//int mx = Mouse.getX();
+		//int my = Mouse.getY();
 		/*
 		ArrayList<DoublePoint> points = new ArrayList();
 		points.add(new DoublePoint(-0.25, -0.25));
@@ -267,7 +267,8 @@ public class CalendarRenderer {
 			GL11.glVertex2d(1, 1);
 			GL11.glEnd();
 		}
-	 *//*
+		 */
+		/*
 		if (Mouse.isButtonDown(0)) {
 			selectedSection = null;
 			//System.out.println(mx+","+my);

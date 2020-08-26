@@ -21,8 +21,10 @@ import Reika.GameCalendar.Main;
 
 public class Window implements Runnable {
 
+	public static final String PROGRAM_TITLE = "Game Calendar";
+
 	public static final int MAX_FPS = 60;
-	private static final int MILLIS_PER_FRAME = 1000/MAX_FPS;
+	public static final int MILLIS_PER_FRAME = 1000/MAX_FPS;
 
 	public static final int BORDER_X = 17; //windows border thickness
 	public static final int BORDER_Y = 39;
@@ -45,7 +47,7 @@ public class Window implements Runnable {
 		canvas = new Canvas();
 		frame.add(canvas, BorderLayout.CENTER);
 		 */
-		JFrame frame = new JFrame("AWT test");
+		JFrame frame = new JFrame(PROGRAM_TITLE);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		GLData data = new GLData();
@@ -146,11 +148,14 @@ public class Window implements Runnable {
 	 */
 	public void close() {
 		//GLFW.glfwDestroyWindow(windowID);
+		canvas.disposeCanvas();
 		GLFW.glfwTerminate();
 	}
 
 	public void run() {
 		long pre = System.currentTimeMillis();
+		screenSizeX = canvas.getWidth();
+		screenSizeY = canvas.getHeight();
 		canvas.render();
 		long post = System.currentTimeMillis();
 		long sleep = MILLIS_PER_FRAME-(post-pre);
