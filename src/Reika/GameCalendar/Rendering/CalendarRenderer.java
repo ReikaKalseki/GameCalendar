@@ -174,7 +174,7 @@ public class CalendarRenderer {
 					GL11.glVertex2d(p.x, p.y);
 				int lx = (int)(p.x*sw/2D+sw/2D);
 				int ly = (int)(p.y*sh/2D+sh/2D);
-				s.polygon.addPoint(lx-Window.BORDER_X, ly-Window.BORDER_Y*3/4);
+				s.polygon.addPoint(lx-AWTPanel.BORDER_X, ly-AWTPanel.BORDER_Y*3/4);
 			}
 			if (s == selectedSection)
 				GL11.glEnd();

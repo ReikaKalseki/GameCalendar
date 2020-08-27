@@ -6,13 +6,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
-import org.eclipse.fx.drift.DriftFXSurface;
-
 import Reika.GameCalendar.Data.ActivityCategory;
+import Reika.GameCalendar.Rendering.AWTPanel;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -45,7 +45,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	public Label status;
 
 	@FXML
-	public Object renderer;
+	public SwingNode renderBox;
+
+	AWTPanel renderer;
 
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<Character, NodeWrapper> optionNodes = new HashMap();
@@ -79,7 +81,8 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	}
 
 	public void postInit() {
-		renderer = new DriftFXSurface();
+		renderer = new AWTPanel();
+		renderBox.setContent(renderer);
 		this.dynamicizeTextBoxes(root);
 	}
 

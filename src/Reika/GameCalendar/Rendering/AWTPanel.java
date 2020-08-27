@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import org.lwjgl.glfw.GLFW;
@@ -15,11 +16,9 @@ import org.lwjgl.opengl.awt.AWTGLCanvas;
 import org.lwjgl.opengl.awt.GLData;
 import org.lwjgl.opengl.awt.GLData.Profile;
 
-import com.google.common.base.Throwables;
-
 import Reika.GameCalendar.Main;
 
-public class Window implements Runnable {
+public class AWTPanel extends JComponent implements Runnable {
 
 	public static final String PROGRAM_TITLE = "Game Calendar";
 
@@ -36,18 +35,19 @@ public class Window implements Runnable {
 	private int screenSizeX = 800;
 	private int screenSizeY = 800;
 
+	private final JFrame frame;
 	private final AWTGLCanvas canvas;
 
 	//private GLFWFramebufferSizeCallback resizeCall;
 
-	public Window() {
+	public AWTPanel() {
 		/*
 		frame = new Frame("Program Window");
 		frame.setLayout(new BorderLayout());
 		canvas = new Canvas();
 		frame.add(canvas, BorderLayout.CENTER);
 		 */
-		JFrame frame = new JFrame(PROGRAM_TITLE);
+		frame = new JFrame(PROGRAM_TITLE);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		GLData data = new GLData();
@@ -70,22 +70,6 @@ public class Window implements Runnable {
 		frame.transferFocus();
 
 		GLFW.glfwInit();
-	}
-
-	public void create() {
-		try {
-			/*
-			Display.setFullscreen(false);
-			Display.setParent(canvas);
-			Display.setResizable(true);
-			Display.create();
-			Display.setVSyncEnabled(true);
-			 */
-			this.setupGL();
-		}
-		catch (Exception e) {
-			Throwables.propagate(e);
-		}
 	}
 
 	private void setupGL() {
@@ -117,14 +101,14 @@ public class Window implements Runnable {
 
 		@Override
 		public void initGL() {
-			Window.this.setupGL();
+			AWTPanel.this.setupGL();
 			//GLFW.glfwHideWindow(windowID);
 		}
 
 		@Override
 		public void paintGL() {
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			Window.this.drawGUI();
+			AWTPanel.this.drawGUI();
 			//GLFW.glfwPollEvents();
 			//GLFW.glfwSwapBuffers(windowID);
 			this.swapBuffers();
@@ -177,6 +161,12 @@ public class Window implements Runnable {
 	private void drawGUI() {
 		Main.getGUI().draw(screenSizeX, screenSizeY);
 		Main.getGUI().handleMouse(screenSizeX, screenSizeY);
+	}
+
+	@Override
+	public void repaint(long tm, int x, int y, int width, int height) {
+		super.repaint(tm, x, y, width, height);
+		canvas.render();
 	}
 
 	private class MyWindowListener implements WindowListener {

@@ -4,12 +4,10 @@ import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
 
-import javax.swing.SwingUtilities;
-
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Timeline;
+import Reika.GameCalendar.GUI.Window;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
-import Reika.GameCalendar.Rendering.Window;
 
 public class Main {
 	/*
@@ -44,7 +42,6 @@ public class Main {
 
 	};
 
-	private static Window window;
 	private static Timeline timeline;
 	private static CalendarRenderer gui;
 
@@ -65,19 +62,18 @@ public class Main {
 			}
 		}
 		timeline.prepare();
-		window = new Window();
-		//window.create();
+		Window.create();
 		gui = new CalendarRenderer(timeline);
+		/*
 		while (!window.shouldClose()) {
 			SwingUtilities.invokeLater(window);
 			try {
-				Thread.sleep(Window.MILLIS_PER_FRAME);
+				Thread.sleep(AWTPanel.MILLIS_PER_FRAME);
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
-		window.close();
+		}*/
 		System.out.print("Run complete");
 		System.exit(0);
 	}

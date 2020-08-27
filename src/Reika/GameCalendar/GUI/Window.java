@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.fx.drift.DriftFXSurface;
-
 import Reika.GameCalendar.Main;
+import Reika.GameCalendar.Rendering.AWTPanel;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -23,7 +22,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-@Deprecated
 public class Window extends Application implements EventHandler<javafx.event.Event> {
 
 	private static Window gui;
@@ -90,8 +88,8 @@ public class Window extends Application implements EventHandler<javafx.event.Eve
 		return gui;
 	}
 
-	public static DriftFXSurface getRenderPane() {
-		return (DriftFXSurface)gui.controller.renderer;
+	public static AWTPanel getRenderPane() {
+		return (AWTPanel)gui.controller.renderer;
 	}
 
 	@Override
