@@ -6,8 +6,8 @@ import java.util.Calendar;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Timeline;
-import Reika.GameCalendar.GUI.Window;
-import Reika.GameCalendar.Rendering.CalendarRenderer;
+import Reika.GameCalendar.GUI.GuiSystem;
+import Reika.GameCalendar.Rendering.Window;
 
 public class Main {
 	/*
@@ -42,8 +42,9 @@ public class Main {
 
 	};
 
+	private static Window window;
 	private static Timeline timeline;
-	private static CalendarRenderer gui;
+	private static GuiSystem gui;
 
 	private static final Calendar calendar = Calendar.getInstance();
 
@@ -62,18 +63,18 @@ public class Main {
 			}
 		}
 		timeline.prepare();
-		Window.create();
-		gui = new CalendarRenderer(timeline);
-		/*
-		while (!window.shouldClose()) {
-			SwingUtilities.invokeLater(window);
-			try {
-				Thread.sleep(AWTPanel.MILLIS_PER_FRAME);
+		window = new Window();
+		window.create();
+		gui = new GuiSystem(timeline);
+		try {
+			while (window.run()) {
+
 			}
-			catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}*/
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		window.close();
 		System.out.print("Run complete");
 		System.exit(0);
 	}
@@ -82,7 +83,7 @@ public class Main {
 		return timeline;
 	}*/
 
-	public static CalendarRenderer getGUI() {
+	public static GuiSystem getGUI() {
 		return gui;
 	}
 

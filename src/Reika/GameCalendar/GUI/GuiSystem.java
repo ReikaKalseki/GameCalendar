@@ -1,4 +1,4 @@
-package Reika.GameCalendar.Rendering;
+package Reika.GameCalendar.GUI;
 
 import java.awt.Polygon;
 import java.time.Month;
@@ -12,12 +12,12 @@ import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
-import Reika.GameCalendar.GUI.GuiSection;
+import Reika.GameCalendar.Rendering.Window;
 import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
 
-public class CalendarRenderer {
+public class GuiSystem {
 
 	private static final double INNER_RADIUS = 0.2;
 	private static final double MAX_THICKNESS = 0.6;
@@ -29,7 +29,7 @@ public class CalendarRenderer {
 
 	private GuiSection selectedSection = null;
 
-	public CalendarRenderer(Timeline t) {
+	public GuiSystem(Timeline t) {
 		data = t;
 		for (Section s : t.getSections()) {
 			sections.add(new GuiSection(s));
@@ -174,7 +174,7 @@ public class CalendarRenderer {
 					GL11.glVertex2d(p.x, p.y);
 				int lx = (int)(p.x*sw/2D+sw/2D);
 				int ly = (int)(p.y*sh/2D+sh/2D);
-				s.polygon.addPoint(lx/*-Window.BORDER_X*/, ly/*-Window.BORDER_Y*3/4*/);
+				s.polygon.addPoint(lx-Window.BORDER_X, ly-Window.BORDER_Y*3/4);
 			}
 			if (s == selectedSection)
 				GL11.glEnd();
@@ -221,9 +221,9 @@ public class CalendarRenderer {
 		return Math.toRadians(-a+90);
 	}
 
-	public void handleMouse(int sx, int sy) {/*
-		int mx = Mouse.getX();
-		int my = Mouse.getY();
+	public void handleMouse(int w, int h) {
+		//int mx = Mouse.getX();
+		//int my = Mouse.getY();
 		/*
 		ArrayList<DoublePoint> points = new ArrayList();
 		points.add(new DoublePoint(-0.25, -0.25));
@@ -267,7 +267,8 @@ public class CalendarRenderer {
 			GL11.glVertex2d(1, 1);
 			GL11.glEnd();
 		}
-	 *//*
+		 */
+		/*
 		if (Mouse.isButtonDown(0)) {
 			selectedSection = null;
 			//System.out.println(mx+","+my);
