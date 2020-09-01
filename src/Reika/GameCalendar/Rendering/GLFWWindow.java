@@ -9,10 +9,12 @@ import com.google.common.base.Throwables;
 
 import Reika.GameCalendar.Main;
 
-public class Window {
+public class GLFWWindow {
+
+	public static final String PROGRAM_TITLE = "Game Calendar";
 
 	public static final int MAX_FPS = 60;
-	private static final int MILLIS_PER_FRAME = 1000/MAX_FPS;
+	public static final int MILLIS_PER_FRAME = 1000/MAX_FPS;
 
 	public static final int BORDER_X = 17; //windows border thickness
 	public static final int BORDER_Y = 39;
@@ -26,7 +28,7 @@ public class Window {
 
 	private GLFWFramebufferSizeCallback resizeCall;
 
-	public Window() {
+	public GLFWWindow() {
 		/*
 		frame = new Frame("Program Window");
 		frame.setLayout(new BorderLayout());
@@ -59,7 +61,9 @@ public class Window {
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
-			windowID = GLFW.glfwCreateWindow(screenSizeX, screenSizeY, "Game Calendar", 0, 0);
+			GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
+			GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
+			windowID = GLFW.glfwCreateWindow(screenSizeX, screenSizeY, PROGRAM_TITLE, 0, 0);
 			if (windowID == 0) {
 				throw new RuntimeException("Failed to create window");
 			}
@@ -111,8 +115,8 @@ public class Window {
 	}
 
 	private void drawGUI() {
-		Main.getGUI().draw(screenSizeX, screenSizeY);
-		Main.getGUI().handleMouse(screenSizeX, screenSizeY);
+		Main.getCalendarRenderer().draw(screenSizeX, screenSizeY);
+		Main.getCalendarRenderer().handleMouse(screenSizeX, screenSizeY);
 	}
 	/*
 	private class MyWindowListener implements WindowListener {
