@@ -107,6 +107,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	}
 
 	public void postInit() {
+		System.out.println("Post-initializing GUI.");
 		renderer = new DriftFXSurface();
 		renderField.setCenter(renderer);
 		renderField.setPadding(new Insets(0));

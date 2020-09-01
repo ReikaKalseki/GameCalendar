@@ -29,6 +29,8 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	private static JFXWindow gui;
 
+	private static boolean isLoaded = false;
+
 	private Stage window;
 	private Scene display;
 	private Parent root;
@@ -44,6 +46,7 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 	}
 
 	private void init(Stage primary) throws IOException {
+		System.out.println("Initializing GUI.");
 		window = primary;
 		window.getIcons().add(new Image(Main.class.getResourceAsStream("icon.png")));
 
@@ -73,6 +76,8 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		for (TitledPane p : controller.getCollapsibleSections()) {
 			p.setExpanded(false);
 		}
+
+		isLoaded = true;
 	}
 
 	public void updateActiveSections() {
@@ -89,6 +94,10 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	public static JFXWindow getGUI() {
 		return gui;
+	}
+
+	public static boolean isLoaded() {
+		return isLoaded;
 	}
 
 	public static DriftFXSurface getRenderPane() {
