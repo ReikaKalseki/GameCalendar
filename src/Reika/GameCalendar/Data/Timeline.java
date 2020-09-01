@@ -103,4 +103,12 @@ public class Timeline {
 		return Collections.unmodifiableSet(years);
 	}
 
+	public DateStamp getStart() {
+		return earliest;
+	}
+
+	public DateStamp getEnd() {
+		return latest;
+	}
+
 }

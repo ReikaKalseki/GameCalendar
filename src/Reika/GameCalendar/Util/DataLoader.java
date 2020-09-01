@@ -12,7 +12,8 @@ import Reika.GameCalendar.Data.Timeline;
 
 public class DataLoader {
 
-	public static void loadTimeline(Timeline ret, ActivityCategory cat) throws IOException {
+	public static DateStamp loadTimeline(Timeline ret, ActivityCategory cat) throws IOException {
+		DateStamp first = null;
 		File events = new File(cat.folder, "Events");
 		for (File f : events.listFiles()) {
 			if (f.length() == 0) {
@@ -20,7 +21,10 @@ public class DataLoader {
 				continue;
 			}
 			try {
-				ret.addEvent(parseEvent(cat, f));
+				Highlight h = parseEvent(cat, f);
+				ret.addEvent(h);
+				if (first == null || h.time.compareTo(first) < 0)
+					first = h.time;
 			}
 			catch (Exception e) {
 				throw new IllegalArgumentException("File '"+cat.folder.getName()+"/"+f.getName()+"' is invalid.", e);
@@ -34,12 +38,18 @@ public class DataLoader {
 				continue;
 			}
 			try {
-				ret.addPeriod(parsePeriod(cat, f));
+				TimeSpan ts = parsePeriod(cat, f);
+				ret.addPeriod(ts);
+				if (first == null || ts.start.compareTo(first) < 0)
+					first = ts.start;
 			}
 			catch (Exception e) {
 				throw new IllegalArgumentException("File '"+cat.folder.getName()+"/"+f.getName()+"' is invalid.", e);
 			}
 		}
+		if (first == null)
+			first = ret.getEnd();
+		return first;
 	}
 
 	private static Highlight parseEvent(ActivityCategory a, File f) throws IOException {

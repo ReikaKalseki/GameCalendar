@@ -4,6 +4,7 @@ import java.awt.Polygon;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -13,6 +14,7 @@ import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiSection;
+import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
@@ -83,12 +85,12 @@ public class CalendarRenderer {
 			GL11.glEnd();
 		}
 
-		{
-			GL11.glLineWidth(4);
-			GL11.glBegin(GL11.GL_LINES);
-			GL11.glVertex2d(0, 0);
-			GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+ty*tf);
-			GL11.glEnd();
+		GL11.glLineWidth(4);
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glVertex2d(0, 0);
+		GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+ty*tf);
+		GL11.glEnd();
+		if (JFXWindow.getGUI().getCheckbox("currentDate")) {
 			GL11.glLineWidth(3);
 			GL11.glBegin(GL11.GL_LINES);
 			double lang = DateStamp.launch.getAngle();
@@ -110,6 +112,8 @@ public class CalendarRenderer {
 		double wf = 0.8;
 		for (GuiSection s : sections) {
 			if (s.section.isEmpty())
+				continue;
+			if (!this.shouldRenderSection(s))
 				continue;
 			double a1 = s.section.startTime.getAngle();
 			double a2 = s.section.getEnd().getAngle();
@@ -180,25 +184,44 @@ public class CalendarRenderer {
 				GL11.glEnd();
 		}
 
-		GL11.glPointSize(8);
-		GL11.glColor4f(0, 0, 0, 1);
-		GL11.glBegin(GL11.GL_POINTS);
-		for (Highlight h : events) {
-			double a = h.time.getAngle();
-			int i = years.indexOf(h.time.year);
-			double r1 = INNER_RADIUS+i*ty;
-			double r2 = INNER_RADIUS+(i+1)*ty;
-			double r = r1+(r2-r1)*(a/360D);
-			double ang = this.getGuiAngle(a);
-			double x = r*Math.cos(ang);
-			double y = r*Math.sin(ang);
-			GL11.glVertex2d(x, y);
+		if (JFXWindow.getGUI().getCheckbox("highlights")) {
+			GL11.glPointSize(8);
+			GL11.glColor4f(0, 0, 0, 1);
+			GL11.glBegin(GL11.GL_POINTS);
+			for (Highlight h : events) {
+				if (!JFXWindow.getGUI().isListEntrySelected("catList", h.category.name))
+					continue;
+				double a = h.time.getAngle();
+				int i = years.indexOf(h.time.year);
+				double r1 = INNER_RADIUS+i*ty;
+				double r2 = INNER_RADIUS+(i+1)*ty;
+				double r = r1+(r2-r1)*(a/360D);
+				double ang = this.getGuiAngle(a);
+				double x = r*Math.cos(ang);
+				double y = r*Math.sin(ang);
+				GL11.glVertex2d(x, y);
+			}
+			GL11.glEnd();
 		}
-		GL11.glEnd();
+	}
+
+	private boolean shouldRenderSection(GuiSection s) {
+		for (TimeSpan ts : s.section.getActiveSpans()) {
+			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private int getSectionColorAtIndex(Section s, int i) {
-		List<TimeSpan> li = s.getActiveSpans();
+		List<TimeSpan> li = new ArrayList(s.getActiveSpans());
+		Iterator<TimeSpan> it = li.iterator();
+		while (it.hasNext()) {
+			TimeSpan ts = it.next();
+			if (!JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name))
+				it.remove();
+		}
 		if (li.isEmpty())
 			return 0x000000;
 		/*

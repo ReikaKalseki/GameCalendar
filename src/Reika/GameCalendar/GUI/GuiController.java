@@ -18,13 +18,16 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -32,6 +35,7 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -55,14 +59,30 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 
 	DriftFXSurface renderer;
 
+	@FXML
+	public CheckBox importantDates;
+
+	@FXML
+	public CheckBox highlights;
+
+	@FXML
+	public CheckBox currentDate;
+
+	@FXML
+	public CheckBox xmasBreak;
+
+	@FXML
+	public CheckBox summerBreak;
+
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
-	private final HashMap<Character, NodeWrapper> optionNodes = new HashMap();
+	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
+	private final HashMap<String, NodeWrapper> listSelects = new HashMap();
 
 	@FXML
 	public void initialize() {
 		this.addWrapperHooks(this.getAllNodes());
 		catList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		catList.getSelectionModel().selectedItemProperty().addListener(this);
+		sortList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
 		for (Node n : JFXWindow.getRecursiveChildren(root)) {
 			if (n instanceof SplitPane) {
@@ -89,9 +109,35 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	public void postInit() {
 		renderer = new DriftFXSurface();
 		renderField.setCenter(renderer);
+		renderField.setPadding(new Insets(0));
 
 		this.dynamicizeTextBoxes(root);
-		catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.TIME)));
+		sortList.setItems(FXCollections.observableList(SortingMode.list()));
+		sortList.getSelectionModel().clearAndSelect(SortingMode.TIME.ordinal());
+		catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
+		catList.getSelectionModel().selectAll();
+		catList.setCellFactory(lv -> {
+			ListCell<String> cell = new ListCell<>();
+			cell.textProperty().bind(cell.itemProperty());
+			cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+				catList.requestFocus();
+				if (!cell.isEmpty()) {
+					int index = cell.getIndex();
+					if (catList.getSelectionModel().getSelectedIndices().contains(index))
+						catList.getSelectionModel().clearSelection(index);
+					else
+						catList.getSelectionModel().select(index);
+					event.consume();
+				}
+			});
+			return cell ;
+		});
+
+		for (NodeWrapper n : optionNodes.values()) {
+			((CheckBox)n.object).selectedProperty().set(true);
+		}
+
+		//this.update();
 	}
 
 	private void dynamicizeTextBoxes(Parent p) {
@@ -109,34 +155,32 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		}
 	}
 
-	public void load() {
-		catList.setItems(FXCollections.observableArrayList(ActivityCategory.getNameList()));
-	}
-
 	private void addWrapperHooks(Collection<NodeWrapper> li) {
 		for (NodeWrapper n2 : li) {
-			this.addHook(n2.object);
-		}
-	}
-
-	private void addHooks(Collection<Node> li) {
-		for (Node n2 : li) {
 			this.addHook(n2);
 		}
 	}
 
-	private void addHook(Node n2) {
-		if (n2 instanceof ButtonBase) {
-			((ButtonBase)n2).setOnAction(this);
+	private void addHook(NodeWrapper n2) {
+		if (n2.object instanceof ButtonBase) {
+			((ButtonBase)n2.object).setOnAction(this);
+			optionNodes.put(n2.fxID, n2);
 		}
-		else if (n2 instanceof ChoiceBox) {
-			((ChoiceBox)n2).setOnAction(this);
+		else if (n2.object instanceof ChoiceBox) {
+			((ChoiceBox)n2.object).setOnAction(this);
+			optionNodes.put(n2.fxID, n2);
 		}
-		else if (n2 instanceof ComboBox) {
-			((ComboBox)n2).setOnAction(this);
+		else if (n2.object instanceof ComboBox) {
+			((ComboBox)n2.object).setOnAction(this);
+			optionNodes.put(n2.fxID, n2);
 		}
-		else if (n2 instanceof TextInputControl) {
-			((TextInputControl)n2).textProperty().addListener(this);
+		else if (n2.object instanceof TextInputControl) {
+			((TextInputControl)n2.object).textProperty().addListener(this);
+			optionNodes.put(n2.fxID, n2);
+		}
+		else if (n2.object instanceof ListView) {
+			((ListView)n2.object).getSelectionModel().selectedItemProperty().addListener(this);
+			listSelects.put(n2.fxID, n2);
 		}
 	}
 
@@ -146,9 +190,12 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		for (Field f : fd) {
 			if (f.getAnnotation(Deprecated.class) != null)
 				continue;
+			if (f.getAnnotation(FXML.class) == null)
+				continue;
 			Object o = f.get(this);
 			if (o instanceof Node) {
-				allNodes.put(o, new NodeWrapper(f.getName(), (Node)o));
+				NodeWrapper nw = new NodeWrapper(f.getName(), (Node)o);
+				allNodes.put(o, nw);
 			}
 		}
 	}
@@ -181,6 +228,14 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 				ret.add((Parent)n.object);
 		}
 		return ret;
+	}
+
+	public Node getOption(String id) {
+		return optionNodes.get(id).object;
+	}
+
+	public ListView getListView(String id) {
+		return (ListView)listSelects.get(id).object;
 	}
 
 	public Collection<TitledPane> getCollapsibleSections() {
@@ -220,7 +275,6 @@ if (o instanceof ChoiceBox) {
 		switch(fxID) {
 
 		}
-		this.load();
 	}
 
 	@Override
@@ -234,10 +288,11 @@ if (o instanceof ChoiceBox) {
 
 	void update() {
 		List<String> e = catList.getSelectionModel().getSelectedItems();
+		//catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
+		//catList.getSelectionModel().clearSelection();
 		if (e != null && !e.isEmpty()) {
 
 		}
-
 		JFXWindow.getGUI().updateActiveSections();
 	}
 

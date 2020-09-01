@@ -12,6 +12,7 @@ import org.eclipse.fx.drift.Swapchain;
 import org.eclipse.fx.drift.SwapchainConfig;
 import org.eclipse.fx.drift.TransferType;
 import org.eclipse.fx.drift.Vec2i;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL32;
@@ -42,9 +43,25 @@ public class RenderLoop extends Thread {
 	private void load() {
 		if (this.loadFrom(JFXWindow.getRenderPane())) {
 			//ctx = org.eclipse.fx.drift.internal.GL.createContext(0, 1, 0);
+			/*
 			contextID = org.eclipse.fx.drift.internal.GL.createSharedCompatContext(0);
 			org.eclipse.fx.drift.internal.GL.makeContextCurrent(contextID);
 			glCaps = GL.createCapabilities();
+			 */
+			GLFW.glfwInit();
+			GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
+			GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
+			GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
+			contextID = GLFW.glfwCreateWindow(800, 800, GLFWWindow.PROGRAM_TITLE, 0, 0);
+			if (contextID == 0) {
+				throw new RuntimeException("Failed to create window");
+			}
+			GLFW.glfwMakeContextCurrent(contextID);
+			glCaps = GL.createCapabilities();
+			GLFW.glfwShowWindow(contextID);
 		}
 	}
 
@@ -133,6 +150,8 @@ public class RenderLoop extends Thread {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glViewport(0, 0, x, y);
+		GLFW.glfwSwapBuffers(contextID);
+		GLFW.glfwPollEvents();
 		Main.getCalendarRenderer().draw(x, y);
 		long post = System.currentTimeMillis();
 		long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);
@@ -144,6 +163,8 @@ public class RenderLoop extends Thread {
 	public void close() {
 		chain.dispose();
 		chain = null;
+		GLFW.glfwDestroyWindow(contextID);
+		GLFW.glfwTerminate();
 	}
 
 }

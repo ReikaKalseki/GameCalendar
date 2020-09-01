@@ -16,6 +16,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
@@ -91,6 +93,24 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	public static DriftFXSurface getRenderPane() {
 		return gui != null && gui.controller != null ? gui.controller.renderer : null;
+	}
+
+	public boolean getCheckbox(String id) {
+		Node n = this.getOption(id);
+		return n != null && ((CheckBox)n).selectedProperty().get();
+	}
+
+	public boolean isListEntrySelected(String node, String s) {
+		ListView n = this.getListView(node);
+		return n != null && n.getSelectionModel().isSelected(n.getItems().indexOf(s));
+	}
+
+	private Node getOption(String id) {
+		return gui != null && gui.controller != null ? gui.controller.getOption(id) : null;
+	}
+
+	private ListView getListView(String id) {
+		return gui != null && gui.controller != null ? gui.controller.getListView(id) : null;
 	}
 
 	@Override
