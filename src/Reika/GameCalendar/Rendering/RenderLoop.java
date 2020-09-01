@@ -36,6 +36,9 @@ public class RenderLoop extends Thread {
 
 	private boolean shouldClose = false;
 
+	private int depthTex;
+	private int dfxFramebuffer;
+
 	public RenderLoop() {
 
 	}
@@ -110,8 +113,19 @@ public class RenderLoop extends Thread {
 
 		RenderTarget target = chain.acquire();
 
+		this.bindToDFX(target);
+
+		this.render(width, height);
+
+		this.unbindDFX();
+
+		chain.present(target);
+		//Thread.sleep(16);
+	}
+
+	private void bindToDFX(RenderTarget target) {
 		int tex = GLRenderer.getGLTextureId(target);
-		int depthTex = GL11.glGenTextures();
+		depthTex = GL11.glGenTextures();
 		GL32.glBindTexture(GL11.GL_TEXTURE_2D, depthTex);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
@@ -120,9 +134,9 @@ public class RenderLoop extends Thread {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL32.GL_DEPTH_COMPONENT32F, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer)null);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
-		int fb = GL32.glGenFramebuffers();
+		dfxFramebuffer = GL32.glGenFramebuffers();
 
-		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fb);
+		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, dfxFramebuffer);
 		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, tex, 0);
 		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, depthTex, 0);
 
@@ -134,15 +148,12 @@ public class RenderLoop extends Thread {
 				System.err.println("INCOMPLETE_ATTACHMENT!");
 				break;
 		}
+	}
 
-		this.render(width, height);
-
+	private void unbindDFX() {
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
-		GL32.glDeleteFramebuffers(fb);
+		GL32.glDeleteFramebuffers(dfxFramebuffer);
 		GL11.glDeleteTextures(depthTex);
-
-		chain.present(target);
-		//Thread.sleep(16);
 	}
 
 	private void render(int x, int y) throws InterruptedException {
