@@ -203,6 +203,18 @@ public class CalendarRenderer {
 			}
 			GL11.glEnd();
 		}
+
+		/*
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		String text = "testString";
+		ByteBuffer charBuffer = BufferUtils.createByteBuffer(text.length() * 270);
+		GL32.glEnableClientState(GL32.GL_VERTEX_ARRAY);
+		GL32.glVertexPointer(2, GL11.GL_FLOAT, 16, charBuffer);
+		GL11.glPushMatrix();
+		int quads = STBEasyFont.stb_easy_font_print(0, 0, text, null, charBuffer);
+		GL32.glDrawArrays(GL11.GL_QUADS, 0, quads * 4);
+		GL11.glPopMatrix();
+		GL32.glDisableClientState(GL32.GL_VERTEX_ARRAY);*/
 	}
 
 	private boolean shouldRenderSection(GuiSection s) {
