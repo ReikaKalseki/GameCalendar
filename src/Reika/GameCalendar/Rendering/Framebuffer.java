@@ -1,11 +1,19 @@
 package Reika.GameCalendar.Rendering;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
+import javax.imageio.ImageIO;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
-import Reika.GameCalendar.Util.OpenGlHelper;
+import Reika.GameCalendar.Util.GLFunctions;
 
 public class Framebuffer {
 
@@ -22,15 +30,15 @@ public class Framebuffer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		this.createFramebuffer(w, h);
 		this.checkFramebufferComplete();
-		OpenGlHelper.bindFramebuffer(0);
+		GLFunctions.bindFramebuffer(0);
 	}
 
 	public void deleteFramebuffer() {
+		this.unbindTexture();
 		this.unbind();
-		this.unbindFramebuffer();
 
 		if (depthBuffer > -1) {
-			OpenGlHelper.deleteRenderbuffer(depthBuffer);
+			GLFunctions.deleteRenderbuffer(depthBuffer);
 			depthBuffer = -1;
 		}
 
@@ -40,29 +48,29 @@ public class Framebuffer {
 		}
 
 		if (bufferID > -1) {
-			OpenGlHelper.bindFramebuffer(0);
-			OpenGlHelper.deleteFramebuffer(bufferID);
+			GLFunctions.bindFramebuffer(0);
+			GLFunctions.deleteFramebuffer(bufferID);
 			bufferID = -1;
 		}
 	}
 
 	private void createFramebuffer(int w, int h) {
-		bufferID = OpenGlHelper.createFramebuffer();
+		bufferID = GLFunctions.createFramebuffer();
 		textureID = GL11.glGenTextures();
-		depthBuffer = OpenGlHelper.createRenderBuffer();
+		depthBuffer = GLFunctions.createRenderBuffer();
 
 		this.setFilterType(GL11.GL_NEAREST);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, w, h, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
-		OpenGlHelper.bindFramebuffer(bufferID);
-		OpenGlHelper.setupFramebuffer(textureID);
+		GLFunctions.bindFramebuffer(bufferID);
+		GLFunctions.setupFramebuffer(textureID);
 
-		OpenGlHelper.bindRenderbuffer(depthBuffer);
-		OpenGlHelper.setupRenderbuffer(w, h);
-		OpenGlHelper.func_153190_b(depthBuffer);
+		GLFunctions.bindRenderbuffer(depthBuffer);
+		GLFunctions.setupRenderbuffer(w, h);
+		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, depthBuffer);
 
 		this.clear();
-		this.unbind();
+		this.unbindTexture();
 	}
 
 	public void setFilterType(int type) {
@@ -75,7 +83,7 @@ public class Framebuffer {
 	}
 
 	public void checkFramebufferComplete() {
-		int code = OpenGlHelper.verifyActiveFramebuffer();
+		int code = GLFunctions.verifyActiveFramebuffer();
 
 		switch(code) {
 			case GL32.GL_FRAMEBUFFER_COMPLETE:
@@ -93,23 +101,23 @@ public class Framebuffer {
 		}
 	}
 
-	public void bind() {
+	private void bindTexture() {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
 	}
 
-	public void unbind() {
+	private void unbindTexture() {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 	}
 
-	public void bindFramebuffer(boolean redoView) {
-		OpenGlHelper.bindFramebuffer(bufferID);
+	public void bind(boolean redoView) {
+		GLFunctions.bindFramebuffer(bufferID);
 
 		if (redoView)
 			GL11.glViewport(0, 0, width, height);
 	}
 
-	public void unbindFramebuffer() {
-		OpenGlHelper.bindFramebuffer(0);
+	public void unbind() {
+		GLFunctions.bindFramebuffer(0);
 	}
 
 	public void draw() {
@@ -130,18 +138,18 @@ public class Framebuffer {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		this.bind();
+		this.bindTexture();
 		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(0, 1);
-		GL11.glVertex2d(-1, -1);
 		GL11.glTexCoord2f(0, 0);
+		GL11.glVertex2d(-1, -1);
+		GL11.glTexCoord2f(0, 1);
 		GL11.glVertex2d(-1, 1);
-		GL11.glTexCoord2f(1, 0);
-		GL11.glVertex2d(1, 1);
 		GL11.glTexCoord2f(1, 1);
+		GL11.glVertex2d(1, 1);
+		GL11.glTexCoord2f(1, 0);
 		GL11.glVertex2d(1, -1);
 		GL11.glEnd();
-		this.unbind();
+		this.unbindTexture();
 		GL11.glPopAttrib();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPopMatrix();
@@ -150,10 +158,49 @@ public class Framebuffer {
 	}
 
 	public void clear() {
-		this.bindFramebuffer(true);
+		this.bind(true);
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClearDepth(1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		this.unbindFramebuffer();
+		this.unbind();
+	}
+
+	public void sendTo(int otherBuffer) {
+
+	}
+
+	public String saveAsFile(File f) {
+		try {
+			int k = width * height;
+
+			IntBuffer pixelBuffer = BufferUtils.createIntBuffer(k);
+			int[] pixelValues = new int[k];
+
+			GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
+			GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+			GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixelBuffer);
+
+			pixelBuffer.get(pixelValues);
+			GLFunctions.flipPixelArray(pixelValues, width, height);
+			BufferedImage bufferedimage = null;
+
+			bufferedimage = new BufferedImage(width, height, 1);
+
+			for (int i1 = 0; i1 < height; ++i1) {
+				for (int j1 = 0; j1 < width; ++j1) {
+					bufferedimage.setRGB(j1, i1, pixelValues[i1 * width + j1]);
+				}
+			}
+
+			f.getParentFile().mkdirs();
+			ImageIO.write(bufferedimage, "png", f);
+			return f.getAbsolutePath();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

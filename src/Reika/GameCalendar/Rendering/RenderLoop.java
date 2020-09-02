@@ -12,7 +12,6 @@ import org.eclipse.fx.drift.Vec2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
 
 import Reika.GameCalendar.Main;
@@ -28,12 +27,11 @@ public class RenderLoop extends Thread {
 	private int height;
 
 	private TransferType transfer = StandardTransferTypes.NVDXInterop;
-	private long contextID;
+	private long contextID = -1;
 	private GLCapabilities glCaps;
 
-	private int msaaBuffer = -1;
-	private int msaaColorBuffer;
-	private int msaaRBO;
+	private Framebuffer msaaBuffer;
+	private Framebuffer intermediate;
 
 	private boolean shouldClose = false;
 
@@ -50,19 +48,7 @@ public class RenderLoop extends Thread {
 			glCaps = GL.createCapabilities();
 			 */
 			GLFW.glfwInit();
-			GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
-			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
-			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
-			GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
-			GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
-			contextID = GLFW.glfwCreateWindow(800, 800, GLFWWindow.PROGRAM_TITLE, 0, 0);
-			if (contextID == 0) {
-				throw new RuntimeException("Failed to create window");
-			}
-			GLFW.glfwShowWindow(contextID);
-			GLFW.glfwMakeContextCurrent(contextID);
-			glCaps = GL.createCapabilities();
+			this.createWindow(800, 800);
 		}
 	}
 
@@ -72,6 +58,25 @@ public class RenderLoop extends Thread {
 		surface = surf;
 		hook = GLRenderer.getRenderer(surface);
 		return true;
+	}
+
+	private void createWindow(int width, int height) {
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
+		//GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
+		//GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
+		if (contextID > 0)
+			GLFW.glfwDestroyWindow(contextID);
+		contextID = GLFW.glfwCreateWindow(width, height, GLFWWindow.PROGRAM_TITLE, 0, 0);
+		System.out.println("Created window ID "+contextID);
+		if (contextID == 0) {
+			throw new RuntimeException("Failed to create window");
+		}
+		GLFW.glfwShowWindow(contextID);
+		GLFW.glfwMakeContextCurrent(contextID);
+		glCaps = GL.createCapabilities();
 	}
 
 	@Override
@@ -88,7 +93,8 @@ public class RenderLoop extends Thread {
 		if (chain != null)
 			chain.dispose();
 		chain = null;
-		GLFW.glfwDestroyWindow(contextID);
+		if (contextID > 0)
+			GLFW.glfwDestroyWindow(contextID);
 		GLFW.glfwTerminate();
 	}
 
@@ -103,7 +109,7 @@ public class RenderLoop extends Thread {
 			throw new RuntimeException("Render box is size zero!");
 
 		if (chain == null || size.x != width || size.y != height) {
-			System.err.println("(re)create swapchain");
+			System.out.println("Recreating swapchain");
 			if (chain != null) {
 				chain.dispose();
 			}
@@ -113,11 +119,20 @@ public class RenderLoop extends Thread {
 			width = size.x;
 			height = size.y;
 
-			msaaBuffer = -1;
+			msaaBuffer = null;
+
+			this.createWindow(width, height);
 		}
 
-		if (msaaBuffer == -1) {
-			//this.setupMSAA();
+		if (contextID <= 0)
+			return;
+
+		if (msaaBuffer == null) {
+			this.setupMSAA();
+		}
+
+		if (intermediate == null) {
+			intermediate = new Framebuffer(width, height);
 		}
 
 		/*
@@ -159,7 +174,10 @@ public class RenderLoop extends Thread {
 				break;
 		}*/
 
+		intermediate.bind(false);
 		this.render(width, height);
+		intermediate.unbind();
+		intermediate.draw();
 		/*
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL32.glActiveTexture(GL32.GL_TEXTURE0);
@@ -192,6 +210,7 @@ public class RenderLoop extends Thread {
 	}
 
 	private void setupMSAA() {
+		/*
 		msaaBuffer = GL32.glGenFramebuffers();
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, msaaBuffer);
 		// create a multisampled color attachment texture
@@ -210,6 +229,7 @@ public class RenderLoop extends Thread {
 		if (GL32.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER) != GL32.GL_FRAMEBUFFER_COMPLETE)
 			System.out.println("MSAA Framebuffer is not complete!");
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
+		 */
 	}
 
 	private void render(int x, int y) throws InterruptedException {
