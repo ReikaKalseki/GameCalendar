@@ -1,5 +1,7 @@
 package Reika.GameCalendar.Rendering;
 
+import java.nio.ByteBuffer;
+
 import org.eclipse.fx.drift.DriftFXSurface;
 import org.eclipse.fx.drift.GLRenderer;
 import org.eclipse.fx.drift.PresentationMode;
@@ -51,13 +53,13 @@ public class RenderLoop extends Thread {
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
 			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
-			//GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
-			//GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
+			GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
+			GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
 			contextID = GLFW.glfwCreateWindow(800, 800, GLFWWindow.PROGRAM_TITLE, 0, 0);
 			if (contextID == 0) {
 				throw new RuntimeException("Failed to create window");
 			}
-			//GLFW.glfwHideWindow(contextID);
+			GLFW.glfwHideWindow(contextID);
 			GLFW.glfwMakeContextCurrent(contextID);
 			glCaps = GL.createCapabilities();
 		}
@@ -115,20 +117,19 @@ public class RenderLoop extends Thread {
 
 		int tex = GLRenderer.getGLTextureId(target);
 		int depthTex = GL11.glGenTextures();
-		GL11.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, depthTex);
-		GL11.glTexParameterf(GL32.GL_TEXTURE_2D_MULTISAMPLE, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameterf(GL32.GL_TEXTURE_2D_MULTISAMPLE, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameterf(GL32.GL_TEXTURE_2D_MULTISAMPLE, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-		GL11.glTexParameterf(GL32.GL_TEXTURE_2D_MULTISAMPLE, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-		GL32.glTexImage2DMultisample(GL32.GL_TEXTURE_2D_MULTISAMPLE, 4, GL32.GL_DEPTH_COMPONENT32F, width, height, false);
-		//GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL32.GL_DEPTH_COMPONENT32F, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer)null);
-		GL11.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, 0);
+		GL32.glBindTexture(GL11.GL_TEXTURE_2D, depthTex);
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL32.GL_DEPTH_COMPONENT32F, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer)null);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
 		int fb = GL32.glGenFramebuffers();
 
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fb);
-		GL32.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL32.GL_TEXTURE_2D_MULTISAMPLE, tex, 0);
-		GL32.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, GL32.GL_TEXTURE_2D_MULTISAMPLE, depthTex, 0);
+		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, tex, 0);
+		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, depthTex, 0);
 
 		int status = GL32.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER);
 		switch (status) {
