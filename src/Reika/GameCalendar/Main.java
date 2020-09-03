@@ -33,6 +33,9 @@ public class Main {
 	//each category
 	//ongoing sections
 
+	//add box in gui to show description of a section or highlight
+	//add another box to show a sample screenshot, linked to with a .png
+
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
 		@Override

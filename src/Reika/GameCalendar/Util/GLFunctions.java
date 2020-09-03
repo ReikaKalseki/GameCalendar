@@ -1,5 +1,9 @@
 package Reika.GameCalendar.Util;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
@@ -31,5 +35,13 @@ public class GLFunctions {
 			System.arraycopy(data, (height - 1 - l) * width, data, l * width, width);
 			System.arraycopy(temp, 0, data, (height - 1 - l) * width, width);
 		}
+	}
+
+	public static synchronized ByteBuffer createDirectByteBuffer(int bytes) {
+		return ByteBuffer.allocateDirect(bytes).order(ByteOrder.nativeOrder());
+	}
+
+	public static IntBuffer createDirectIntBuffer(int ints) {
+		return createDirectByteBuffer(ints << 2).asIntBuffer();
 	}
 }

@@ -54,12 +54,20 @@ public class DataLoader {
 
 	private static Highlight parseEvent(ActivityCategory a, File f) throws IOException {
 		HashMap<String, String> map = getFileData(a.folder.getName(), f);
-		return new Highlight(a, DateStamp.parse(map.get("date")), map.get("name"), map.get("desc"));
+		Highlight ret = new Highlight(a, DateStamp.parse(map.get("date")), map.get("name"), map.get("desc"));
+		if (map.containsKey("screenshot")) {
+			ret.setScreenshot(new File(map.get("screenshot")));
+		}
+		return ret;
 	}
 
 	private static TimeSpan parsePeriod(ActivityCategory a, File f) throws IOException {
 		HashMap<String, String> map = getFileData(a.folder.getName(), f);
-		return new TimeSpan(a, DateStamp.parse(map.get("start")), DateStamp.parse(map.get("end")), map.get("name"), map.get("desc"));
+		TimeSpan ret = new TimeSpan(a, DateStamp.parse(map.get("start")), DateStamp.parse(map.get("end")), map.get("name"), map.get("desc"));
+		if (map.containsKey("screenshot")) {
+			ret.setScreenshot(new File(map.get("screenshot")));
+		}
+		return ret;
 	}
 
 	public static HashMap<String, String> getFileData(String cat, File f) throws IOException {

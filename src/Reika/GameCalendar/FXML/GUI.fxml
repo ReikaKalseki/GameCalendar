@@ -7,34 +7,32 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="root" prefHeight="700.0" prefWidth="1350.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.GuiController">
-   <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-   </rowConstraints>
-   <children>
-      <TitledPane alignment="TOP_CENTER" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Calendar" GridPane.valignment="TOP">
+
+<SplitPane fx:id="root" dividerPositions="0.5" prefHeight="800.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.GuiController">
+   <items>
+      <TitledPane alignment="TOP_CENTER" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Calendar">
          <content>
-            <BorderPane fx:id="renderField" />
+            <StackPane>
+               <children>
+                  <BorderPane fx:id="renderField" />
+                  <Pane fx:id="calendarOverlay" />
+               </children>
+            </StackPane>
          </content>
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </TitledPane>
-      <VBox GridPane.columnIndex="1" GridPane.hgrow="NEVER">
+      <VBox>
          <children>
-            <SplitPane dividerPositions="0.8" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="505.0">
+            <SplitPane dividerPositions="0.8" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="604.0" prefWidth="796.0">
                <items>
-                  <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Categories">
+                  <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" prefHeight="549.0" prefWidth="632.0" text="Categories">
                      <content>
                         <ListView fx:id="catList" prefHeight="165.0" prefWidth="282.0" />
                      </content>
@@ -78,5 +76,5 @@
             </Label>
          </children>
       </VBox>
-   </children>
-</GridPane>
+   </items>
+</SplitPane>

@@ -37,13 +37,13 @@ import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
 public class GuiController implements EventHandler<ActionEvent>, ChangeListener {
 
 	@FXML
-	public GridPane root;
+	public SplitPane root;
 
 	@FXML
 	public ListView<String> catList;
@@ -73,6 +73,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 
 	@FXML
 	public CheckBox summerBreak;
+
+	@FXML
+	public Pane calendarOverlay;
 
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
@@ -111,6 +114,8 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		renderer = new DriftFXSurface();
 		renderField.setCenter(renderer);
 		renderField.setPadding(new Insets(0));
+
+		Labelling.instance.init(calendarOverlay);
 
 		this.dynamicizeTextBoxes(root);
 		sortList.setItems(FXCollections.observableList(SortingMode.list()));

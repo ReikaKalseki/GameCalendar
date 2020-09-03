@@ -15,9 +15,12 @@ import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
+import Reika.GameCalendar.GUI.Labelling;
 import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
+
+import javafx.application.Platform;
 
 public class CalendarRenderer {
 
@@ -42,6 +45,8 @@ public class CalendarRenderer {
 	}
 
 	public void draw(int sw, int sh) {
+		Labelling.instance.setRenderParams(sw, sh);
+		Platform.runLater(Labelling.instance);
 		double tf = 0.35;
 		double ty = MAX_THICKNESS/years.size();
 		GL11.glLineWidth(2);
@@ -255,7 +260,7 @@ public class CalendarRenderer {
 		return sp.getColor();
 	}
 
-	private double getGuiAngle(double a) {
+	public static double getGuiAngle(double a) {
 		return Math.toRadians(-a+90);
 	}
 
