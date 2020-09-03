@@ -25,10 +25,14 @@ public class Framebuffer {
 	private int depthBuffer = -1;
 
 	public Framebuffer(int w, int h) {
+		this(w, h, false);
+	}
+
+	public Framebuffer(int w, int h, boolean msaa) {
 		width = w;
 		height = h;
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		this.createFramebuffer(w, h);
+		this.createFramebuffer(w, h, msaa);
 		this.checkFramebufferComplete();
 		GLFunctions.bindFramebuffer(0);
 	}
@@ -38,7 +42,7 @@ public class Framebuffer {
 		this.unbind();
 
 		if (depthBuffer > -1) {
-			GLFunctions.deleteRenderbuffer(depthBuffer);
+			GL30.glDeleteRenderbuffers(depthBuffer);
 			depthBuffer = -1;
 		}
 
@@ -49,25 +53,41 @@ public class Framebuffer {
 
 		if (bufferID > -1) {
 			GLFunctions.bindFramebuffer(0);
-			GLFunctions.deleteFramebuffer(bufferID);
+			GL30.glDeleteFramebuffers(bufferID);
 			bufferID = -1;
 		}
 	}
 
-	private void createFramebuffer(int w, int h) {
-		bufferID = GLFunctions.createFramebuffer();
+	private void createFramebuffer(int w, int h, boolean msaa) {
+		bufferID = GL30.glGenFramebuffers();
 		textureID = GL11.glGenTextures();
-		depthBuffer = GLFunctions.createRenderBuffer();
+		depthBuffer = GL30.glGenRenderbuffers();
 
-		this.setFilterType(GL11.GL_NEAREST);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, w, h, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
-		GLFunctions.bindFramebuffer(bufferID);
-		GLFunctions.setupFramebuffer(textureID);
+		if (msaa) {
+			this.setFilterType(GL11.GL_LINEAR);
+			GLFunctions.bindFramebuffer(bufferID);
+			// create a multisampled color attachment texture
+			GL32.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, textureID);
+			GL32.glTexImage2DMultisample(GL32.GL_TEXTURE_2D_MULTISAMPLE, 4, GL32.GL_RGBA, width, height, true);
+			GL32.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, 0);
+			GL32.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL32.GL_TEXTURE_2D_MULTISAMPLE, textureID, 0);
+			// create a (also multisampled) renderbuffer object for depth and stencil attachments
+			GLFunctions.bindRenderbuffer(depthBuffer);
+			GL32.glRenderbufferStorageMultisample(GL32.GL_RENDERBUFFER, 4, GL32.GL_DEPTH24_STENCIL8, width, height);
+			GL32.glBindRenderbuffer(GL32.GL_RENDERBUFFER, 0);
+			GL32.glFramebufferRenderbuffer(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_STENCIL_ATTACHMENT, GL32.GL_RENDERBUFFER, depthBuffer);
+		}
+		else {
+			this.setFilterType(GL11.GL_NEAREST);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, w, h, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
+			GLFunctions.bindFramebuffer(bufferID);
+			GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, textureID, 0);
 
-		GLFunctions.bindRenderbuffer(depthBuffer);
-		GLFunctions.setupRenderbuffer(w, h);
-		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, depthBuffer);
+			GLFunctions.bindRenderbuffer(depthBuffer);
+			GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT24, w, h);
+			GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, depthBuffer);
+		}
 
 		this.clear();
 		this.unbindTexture();
@@ -83,7 +103,7 @@ public class Framebuffer {
 	}
 
 	public void checkFramebufferComplete() {
-		int code = GLFunctions.verifyActiveFramebuffer();
+		int code = GL30.glCheckFramebufferStatus(GL30.GL_FRAMEBUFFER);
 
 		switch(code) {
 			case GL32.GL_FRAMEBUFFER_COMPLETE:
@@ -165,8 +185,15 @@ public class Framebuffer {
 		this.unbind();
 	}
 
-	public void sendTo(int otherBuffer) {
+	public void sendTo(Framebuffer other) {
+		this.sendTo(other.bufferID);
+	}
 
+	public void sendTo(int otherBuffer) {
+		GL32.glBindFramebuffer(GL32.GL_DRAW_FRAMEBUFFER, otherBuffer);
+		GL32.glBindFramebuffer(GL32.GL_READ_FRAMEBUFFER, bufferID);
+		GL32.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
+		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
 	}
 
 	public String saveAsFile(File f) {

@@ -128,7 +128,8 @@ public class RenderLoop extends Thread {
 			return;
 
 		if (msaaBuffer == null) {
-			this.setupMSAA();
+			//this.setupMSAA();
+			msaaBuffer = new Framebuffer(width, height, true);
 		}
 
 		if (intermediate == null) {
@@ -174,10 +175,18 @@ public class RenderLoop extends Thread {
 				break;
 		}*/
 
-		intermediate.bind(false);
+		msaaBuffer.bind(false);
 		this.render(width, height);
-		intermediate.unbind();
+		msaaBuffer.unbind();
+		msaaBuffer.sendTo(intermediate);
 		intermediate.draw();
+		/*
+		if (true) {
+			File f = new File("E:/bufferimage.png");
+			String s = intermediate.saveAsFile(f);
+			System.out.println(s);
+			shouldClose = true;
+		}*/
 		/*
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL32.glActiveTexture(GL32.GL_TEXTURE0);
