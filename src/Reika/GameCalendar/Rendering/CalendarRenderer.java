@@ -32,6 +32,9 @@ public class CalendarRenderer {
 	private final ArrayList<Highlight> events = new ArrayList();
 	private final ArrayList<Integer> years;
 
+	private final double arcThickness;
+	private final double arcThicknessHalfFraction = 0.35;
+
 	private GuiSection selectedSection = null;
 
 	public CalendarRenderer(Timeline t) {
@@ -42,23 +45,23 @@ public class CalendarRenderer {
 		events.addAll(t.getEvents());
 		years = new ArrayList(t.getYears());
 		Collections.sort(years);
+
+		arcThickness = MAX_THICKNESS/years.size();
+	}
+
+	public List<Integer> getYears() {
+		return Collections.unmodifiableList(years);
 	}
 
 	public void draw(int sw, int sh) {
-		Labelling.instance.setRenderParams(sw, sh);
-		Platform.runLater(Labelling.instance);
-		double tf = 0.35;
-		double ty = MAX_THICKNESS/years.size();
 		GL11.glLineWidth(2);
 		GL11.glColor4f(0, 0, 0, 1);
 		for (int i = 0; i < years.size(); i++) {
-			double r1 = INNER_RADIUS+i*ty;
-			double r2 = r1+ty;
 			int year = years.get(i);
 			GL11.glBegin(GL11.GL_LINE_STRIP);
 			for (double a = 0; a <= 360; a += 2) {
 				double ang = this.getGuiAngle(a);
-				double r = (r1+(r2-r1)*(a/360D))-ty*tf;
+				double r = this.getArcCenterlineRadiusAt(i, a)-arcThickness*arcThicknessHalfFraction;
 				double x = r*Math.cos(ang);
 				double y = r*Math.sin(ang);
 				GL11.glVertex2d(x, y);
@@ -68,7 +71,7 @@ public class CalendarRenderer {
 			GL11.glBegin(GL11.GL_LINE_STRIP);
 			for (double a = 0; a <= 360; a += 2) {
 				double ang = this.getGuiAngle(a);
-				double r = (r1+(r2-r1)*(a/360D))+ty*tf;
+				double r = this.getArcCenterlineRadiusAt(i, a)+arcThickness*arcThicknessHalfFraction;
 				double x = r*Math.cos(ang);
 				double y = r*Math.sin(ang);
 				GL11.glVertex2d(x, y);
@@ -83,7 +86,7 @@ public class CalendarRenderer {
 			double df = m.ordinal()/12D;
 			double a = 360*df;
 			double ang = this.getGuiAngle(a);
-			double r = MAX_THICKNESS+INNER_RADIUS+ty*(tf+df-1);
+			double r = MAX_THICKNESS+INNER_RADIUS+arcThickness*(arcThicknessHalfFraction+df-1);
 			double x = r*Math.cos(ang);
 			double y = r*Math.sin(ang);
 			GL11.glVertex2d(x, y);
@@ -93,7 +96,7 @@ public class CalendarRenderer {
 		GL11.glLineWidth(4);
 		GL11.glBegin(GL11.GL_LINES);
 		GL11.glVertex2d(0, 0);
-		GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+ty*tf);
+		GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+arcThickness*arcThicknessHalfFraction);
 		GL11.glEnd();
 		if (JFXWindow.getGUI().getCheckbox("currentDate")) {
 			GL11.glLineWidth(3);
@@ -101,9 +104,9 @@ public class CalendarRenderer {
 			double lang = DateStamp.launch.getAngle();
 			double dayang = this.getGuiAngle(lang);
 			double r1 = INNER_RADIUS;
-			double r2 = r1+ty;
-			double ri = (r1+(r2-r1)*(lang/360D))-ty*tf+0.002;
-			double ro = ri+ty*years.size()-ty*tf+0.005;//ri+ty*tf*2;
+			double r2 = r1+arcThickness;
+			double ri = (r1+(r2-r1)*(lang/360D))-arcThickness*arcThicknessHalfFraction+0.002;
+			double ro = ri+arcThickness*years.size()-arcThickness*arcThicknessHalfFraction+0.005;//ri+ty*tf*2;
 			double dx1 = ri*Math.cos(dayang);
 			double dy1 = ri*Math.sin(dayang);
 			double dx2 = ro*Math.cos(dayang);
@@ -124,13 +127,13 @@ public class CalendarRenderer {
 			double a2 = s.section.getEnd().getAngle();
 			int i1 = years.indexOf(s.section.startTime.year);
 			int i2 = years.indexOf(s.section.getEnd().year);
-			double r1a = INNER_RADIUS+i1*ty;
-			double r1b = INNER_RADIUS+(i1+1)*ty;
-			double r2a = INNER_RADIUS+i2*ty;
-			double r2b = INNER_RADIUS+(i2+1)*ty;
+			double r1a = INNER_RADIUS+i1*arcThickness;
+			double r1b = INNER_RADIUS+(i1+1)*arcThickness;
+			double r2a = INNER_RADIUS+i2*arcThickness;
+			double r2b = INNER_RADIUS+(i2+1)*arcThickness;
 			if (a1 > a2) { //across the new year
 				a2 += 360;
-				r2b -= ty;
+				r2b -= arcThickness;
 			}
 			ArrayList<DoublePoint> pointsInner = new ArrayList();
 			ArrayList<DoublePoint> pointsOuter = new ArrayList();
@@ -139,8 +142,8 @@ public class CalendarRenderer {
 				double ang = this.getGuiAngle(a);
 				double r1 = r1a;
 				double r2 = r2b;
-				double ra = r1+(r2-r1)*(a/360D)-ty*tf*wf;
-				double rb = r1+(r2-r1)*(a/360D)+ty*tf*wf;
+				double ra = r1+(r2-r1)*(a/360D)-arcThickness*arcThicknessHalfFraction*wf;
+				double rb = r1+(r2-r1)*(a/360D)+arcThickness*arcThicknessHalfFraction*wf;
 				double xa = ra*Math.cos(ang);
 				double ya = ra*Math.sin(ang);
 				double xb = rb*Math.cos(ang);
@@ -200,8 +203,8 @@ public class CalendarRenderer {
 					continue;
 				double a = h.time.getAngle();
 				int i = years.indexOf(h.time.year);
-				double r1 = INNER_RADIUS+i*ty;
-				double r2 = INNER_RADIUS+(i+1)*ty;
+				double r1 = INNER_RADIUS+i*arcThickness;
+				double r2 = INNER_RADIUS+(i+1)*arcThickness;
 				double r = r1+(r2-r1)*(a/360D);
 				double ang = this.getGuiAngle(a);
 				double x = r*Math.cos(ang);
@@ -211,6 +214,9 @@ public class CalendarRenderer {
 			GL11.glEnd();
 			GL11.glPopMatrix();
 		}
+
+		Labelling.instance.setRenderParams(sw, sh, this);
+		Platform.runLater(Labelling.instance);
 
 		/*
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -223,6 +229,12 @@ public class CalendarRenderer {
 		GL32.glDrawArrays(GL11.GL_QUADS, 0, quads * 4);
 		GL11.glPopMatrix();
 		GL32.glDisableClientState(GL32.GL_VERTEX_ARRAY);*/
+	}
+
+	public double getArcCenterlineRadiusAt(int i, double a) {
+		double r1 = INNER_RADIUS+i*arcThickness;
+		double r2 = r1+arcThickness;
+		return (r1+(r2-r1)*(a/360D));
 	}
 
 	private boolean shouldRenderSection(GuiSection s) {

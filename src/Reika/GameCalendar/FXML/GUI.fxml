@@ -12,15 +12,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<SplitPane fx:id="root" dividerPositions="0.5" prefHeight="800.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.GuiController">
+<SplitPane fx:id="root" dividerPositions="0.5" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.GuiController">
    <items>
       <TitledPane alignment="TOP_CENTER" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Calendar">
          <content>
             <StackPane>
                <children>
                   <BorderPane fx:id="renderField" />
-                  <Pane fx:id="calendarOverlay" />
+                  <Pane fx:id="calendarOverlay" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" />
                </children>
             </StackPane>
          </content>
@@ -30,11 +29,11 @@
       </TitledPane>
       <VBox>
          <children>
-            <SplitPane dividerPositions="0.8" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="604.0" prefWidth="796.0">
+            <SplitPane dividerPositions="0.8" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="659.0" prefWidth="796.0">
                <items>
                   <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" prefHeight="549.0" prefWidth="632.0" text="Categories">
                      <content>
-                        <ListView fx:id="catList" prefHeight="165.0" prefWidth="282.0" />
+                        <ListView fx:id="catList" prefHeight="646.0" prefWidth="630.0" />
                      </content>
                      <font>
                         <Font name="System Bold" size="12.0" />
@@ -50,7 +49,7 @@
                   </TitledPane>
                </items>
             </SplitPane>
-            <TitledPane animated="false" collapsible="false" text="Display Options">
+            <TitledPane animated="false" collapsible="false" prefHeight="98.0" prefWidth="796.0" text="Display Options">
                <content>
                   <VBox alignment="CENTER_LEFT" spacing="12.0">
                      <children>

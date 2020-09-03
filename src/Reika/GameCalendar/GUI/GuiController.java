@@ -300,6 +300,7 @@ if (o instanceof ChoiceBox) {
 
 		}
 		JFXWindow.getGUI().updateActiveSections();
+		Labelling.instance.init(calendarOverlay);
 	}
 
 	public static class NodeWrapper {
