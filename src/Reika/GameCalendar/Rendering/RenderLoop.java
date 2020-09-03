@@ -1,8 +1,11 @@
 package Reika.GameCalendar.Rendering;
 
+import java.nio.ByteBuffer;
+
 import org.eclipse.fx.drift.DriftFXSurface;
 import org.eclipse.fx.drift.GLRenderer;
 import org.eclipse.fx.drift.PresentationMode;
+import org.eclipse.fx.drift.RenderTarget;
 import org.eclipse.fx.drift.Renderer;
 import org.eclipse.fx.drift.StandardTransferTypes;
 import org.eclipse.fx.drift.Swapchain;
@@ -12,8 +15,8 @@ import org.eclipse.fx.drift.Vec2i;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
-import org.lwjgl.opengl.GLUtil;
 
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.GUI.JFXWindow;
@@ -32,10 +35,10 @@ public class RenderLoop extends Thread {
 	private long contextID = -1;
 	private GLCapabilities glCaps;
 
+	private boolean shouldClose = false;
+
 	private Framebuffer msaaBuffer;
 	private Framebuffer intermediate;
-
-	private boolean shouldClose = false;
 
 	public RenderLoop() {
 
@@ -49,12 +52,20 @@ public class RenderLoop extends Thread {
 			org.eclipse.fx.drift.internal.GL.makeContextCurrent(contextID);
 			glCaps = GL.createCapabilities();
 			 */
-			//this.printGLErrors("DFX Init");
 			GLFW.glfwInit();
-			//this.printGLErrors("GLFW Setup");
-			this.createWindow(800, 800);
-			GLUtil.setupDebugMessageCallback(System.out);
-			GLFunctions.printGLErrors("Init");
+			GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
+			//GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
+			//GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
+			contextID = GLFW.glfwCreateWindow(800, 800, GLFWWindow.PROGRAM_TITLE, 0, 0);
+			if (contextID == 0) {
+				throw new RuntimeException("Failed to create window");
+			}
+			GLFW.glfwHideWindow(contextID);
+			GLFW.glfwMakeContextCurrent(contextID);
+			glCaps = GL.createCapabilities();
 		}
 	}
 
@@ -66,29 +77,8 @@ public class RenderLoop extends Thread {
 		return true;
 	}
 
-	private void createWindow(int width, int height) {
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GL11.GL_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
-		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_COMPAT_PROFILE);
-		//GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 4);
-		//GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 4);
-		if (contextID > 0)
-			GLFW.glfwDestroyWindow(contextID);
-		contextID = GLFW.glfwCreateWindow(width, height, GLFWWindow.PROGRAM_TITLE, 0, 0);
-		System.out.println("Created window ID "+contextID);
-		if (contextID == 0) {
-			throw new RuntimeException("Failed to create window");
-		}
-		GLFW.glfwShowWindow(contextID);
-		GLFW.glfwMakeContextCurrent(contextID);
-		glCaps = GL.createCapabilities();
-		GLFunctions.printGLErrors("Window "+contextID+" Setup");
-	}
-
 	@Override
 	public void run() {
-		//this.printGLErrors("Thread Start");
 		while (!shouldClose) {
 			try {
 				this.renderLoop();
@@ -101,8 +91,7 @@ public class RenderLoop extends Thread {
 		if (chain != null)
 			chain.dispose();
 		chain = null;
-		if (contextID > 0)
-			GLFW.glfwDestroyWindow(contextID);
+		GLFW.glfwDestroyWindow(contextID);
 		GLFW.glfwTerminate();
 	}
 
@@ -117,7 +106,7 @@ public class RenderLoop extends Thread {
 			throw new RuntimeException("Render box is size zero!");
 
 		if (chain == null || size.x != width || size.y != height) {
-			System.out.println("Recreating swapchain");
+			System.err.println("Recreating swapchain");
 			if (chain != null) {
 				chain.dispose();
 			}
@@ -128,11 +117,9 @@ public class RenderLoop extends Thread {
 			height = size.y;
 
 			msaaBuffer = null;
-
-			this.createWindow(width, height);
+			intermediate = null;
 		}
 		GLFunctions.printGLErrors("Main loop");
-
 		if (contextID <= 0)
 			return;
 
@@ -142,20 +129,16 @@ public class RenderLoop extends Thread {
 		if (intermediate == null)
 			intermediate = new Framebuffer(width, height);
 
-		/*
-		int fb = GL32.glGenFramebuffers();
-
-		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, msaaBuffer);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GLFunctions.printGLErrors("Pre-render");
+		msaaBuffer.bind(false);
+		GLFunctions.printGLErrors("Framebuffer bind");
 		this.render(width, height);
-		// 2. now blit multisampled buffer(s) to normal colorbuffer of intermediate FBO. Image is stored in screenTexture
-		GL32.glBindFramebuffer(GL32.GL_READ_FRAMEBUFFER, msaaBuffer);
-		GL32.glBindFramebuffer(GL32.GL_DRAW_FRAMEBUFFER, fb);
-		GL32.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
-		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
-		 */
+		GLFunctions.printGLErrors("Draw");
+		msaaBuffer.unbind();
+		GLFunctions.printGLErrors("Framebuffer unbind");
+		msaaBuffer.sendTo(intermediate);
+		GLFunctions.printGLErrors("Framebuffer copy to intermediate");
 
-		/*
 		RenderTarget target = chain.acquire();
 
 		int tex = GLRenderer.getGLTextureId(target);
@@ -168,6 +151,8 @@ public class RenderLoop extends Thread {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL32.GL_DEPTH_COMPONENT32F, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer)null);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
+		int fb = GL32.glGenFramebuffers();
+
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fb);
 		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, tex, 0);
 		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, depthTex, 0);
@@ -179,48 +164,22 @@ public class RenderLoop extends Thread {
 			case GL32.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
 				System.err.println("INCOMPLETE_ATTACHMENT!");
 				break;
-		}*/
+		}
 
-		GLFunctions.printGLErrors("Pre-render");
-		msaaBuffer.bind(false);
-		GLFunctions.printGLErrors("Framebuffer bind");
-		this.render(width, height);
-		GLFunctions.printGLErrors("Draw");
-		msaaBuffer.unbind();
-		GLFunctions.printGLErrors("Framebuffer unbind");
-		msaaBuffer.sendTo(intermediate);
-		GLFunctions.printGLErrors("Framebuffer copy");
-		intermediate.draw();
-		GLFunctions.printGLErrors("Framebuffer draw");
-		/*
+		GLFunctions.printGLErrors("DFX Framebuffer bind");
+		//intermediate.sendTo(fb);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL32.glActiveTexture(GL32.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, ??);
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(1, 1, 1, 1);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(0, 1);
-		GL11.glVertex2d(-1, -1);
-		GL11.glTexCoord2f(0, 0);
-		GL11.glVertex2d(-1, 1);
-		GL11.glTexCoord2f(1, 0);
-		GL11.glVertex2d(1, 1);
-		GL11.glTexCoord2f(1, 1);
-		GL11.glVertex2d(1, -1);
-		GL11.glEnd();*/
+		intermediate.draw();
+		GLFunctions.printGLErrors("Framebuffer render to DFX");
+		//this.render(width, height);
 
-		/*
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
 		GL32.glDeleteFramebuffers(fb);
 		GL11.glDeleteTextures(depthTex);
+		GLFunctions.printGLErrors("DFX Framebuffer unbind");
 
 		chain.present(target);
-		 */
 		//Thread.sleep(16);
-
-		GLFW.glfwSwapBuffers(contextID);
-		GLFW.glfwPollEvents();
 	}
 
 	private void render(int x, int y) throws InterruptedException {
@@ -228,8 +187,8 @@ public class RenderLoop extends Thread {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glViewport(0, 0, x, y);
-		//GLFW.glfwSwapBuffers(contextID);
-		//GLFW.glfwPollEvents();
+		GLFW.glfwSwapBuffers(contextID);
+		GLFW.glfwPollEvents();
 		Main.getCalendarRenderer().draw(x, y);
 		long post = System.currentTimeMillis();
 		long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);

@@ -22,7 +22,7 @@ import Reika.GameCalendar.Util.DoublePoint;
 public class CalendarRenderer {
 
 	private static final double INNER_RADIUS = 0.2;
-	private static final double MAX_THICKNESS = 0.6;
+	private static final double MAX_THICKNESS = 0.75;
 
 	private final Timeline data;
 	private final ArrayList<GuiSection> sections = new ArrayList();
