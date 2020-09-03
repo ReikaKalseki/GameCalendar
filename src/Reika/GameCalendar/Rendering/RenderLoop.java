@@ -13,9 +13,11 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.opengl.GLUtil;
 
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.GUI.JFXWindow;
+import Reika.GameCalendar.Util.GLFunctions;
 
 public class RenderLoop extends Thread {
 
@@ -47,8 +49,12 @@ public class RenderLoop extends Thread {
 			org.eclipse.fx.drift.internal.GL.makeContextCurrent(contextID);
 			glCaps = GL.createCapabilities();
 			 */
+			//this.printGLErrors("DFX Init");
 			GLFW.glfwInit();
+			//this.printGLErrors("GLFW Setup");
 			this.createWindow(800, 800);
+			GLUtil.setupDebugMessageCallback(System.out);
+			GLFunctions.printGLErrors("Init");
 		}
 	}
 
@@ -77,10 +83,12 @@ public class RenderLoop extends Thread {
 		GLFW.glfwShowWindow(contextID);
 		GLFW.glfwMakeContextCurrent(contextID);
 		glCaps = GL.createCapabilities();
+		GLFunctions.printGLErrors("Window "+contextID+" Setup");
 	}
 
 	@Override
 	public void run() {
+		//this.printGLErrors("Thread Start");
 		while (!shouldClose) {
 			try {
 				this.renderLoop();
@@ -123,18 +131,16 @@ public class RenderLoop extends Thread {
 
 			this.createWindow(width, height);
 		}
+		GLFunctions.printGLErrors("Main loop");
 
 		if (contextID <= 0)
 			return;
 
-		if (msaaBuffer == null) {
-			//this.setupMSAA();
+		if (msaaBuffer == null)
 			msaaBuffer = new Framebuffer(width, height, true);
-		}
 
-		if (intermediate == null) {
+		if (intermediate == null)
 			intermediate = new Framebuffer(width, height);
-		}
 
 		/*
 		int fb = GL32.glGenFramebuffers();
@@ -175,23 +181,17 @@ public class RenderLoop extends Thread {
 				break;
 		}*/
 
+		GLFunctions.printGLErrors("Pre-render");
 		msaaBuffer.bind(false);
+		GLFunctions.printGLErrors("Framebuffer bind");
 		this.render(width, height);
+		GLFunctions.printGLErrors("Draw");
 		msaaBuffer.unbind();
+		GLFunctions.printGLErrors("Framebuffer unbind");
 		msaaBuffer.sendTo(intermediate);
-		int error = GL11.glGetError();
-		while (error != GL11.GL_NO_ERROR) {
-			System.out.println("GL Error: "+error);
-			error = GL11.glGetError();
-		}
+		GLFunctions.printGLErrors("Framebuffer copy");
 		intermediate.draw();
-		/*
-		if (true) {
-			File f = new File("E:/bufferimage.png");
-			String s = intermediate.saveAsFile(f);
-			System.out.println(s);
-			shouldClose = true;
-		}*/
+		GLFunctions.printGLErrors("Framebuffer draw");
 		/*
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL32.glActiveTexture(GL32.GL_TEXTURE0);
@@ -221,29 +221,6 @@ public class RenderLoop extends Thread {
 
 		GLFW.glfwSwapBuffers(contextID);
 		GLFW.glfwPollEvents();
-	}
-
-	private void setupMSAA() {
-		/*
-		msaaBuffer = GL32.glGenFramebuffers();
-		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, msaaBuffer);
-		// create a multisampled color attachment texture
-		msaaColorBuffer = GL32.glGenTextures();
-		GL32.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, msaaColorBuffer);
-		GL32.glTexImage2DMultisample(GL32.GL_TEXTURE_2D_MULTISAMPLE, 4, GL32.GL_RGB, width, height, true);
-		GL32.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, 0);
-		GL32.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL32.GL_TEXTURE_2D_MULTISAMPLE, msaaColorBuffer, 0);
-		// create a (also multisampled) renderbuffer object for depth and stencil attachments
-		msaaRBO = GL32.glGenRenderbuffers();
-		GL32.glBindRenderbuffer(GL32.GL_RENDERBUFFER, msaaRBO);
-		GL32.glRenderbufferStorageMultisample(GL32.GL_RENDERBUFFER, 4, GL32.GL_DEPTH24_STENCIL8, width, height);
-		GL32.glBindRenderbuffer(GL32.GL_RENDERBUFFER, 0);
-		GL32.glFramebufferRenderbuffer(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_STENCIL_ATTACHMENT, GL32.GL_RENDERBUFFER, msaaRBO);
-
-		if (GL32.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER) != GL32.GL_FRAMEBUFFER_COMPLETE)
-			System.out.println("MSAA Framebuffer is not complete!");
-		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
-		 */
 	}
 
 	private void render(int x, int y) throws InterruptedException {

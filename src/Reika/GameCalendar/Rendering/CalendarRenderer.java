@@ -185,6 +185,8 @@ public class CalendarRenderer {
 		}
 
 		if (JFXWindow.getGUI().getCheckbox("highlights")) {
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, 0, -0.1);
 			GL11.glPointSize(8);
 			GL11.glColor4f(0, 0, 0, 1);
 			GL11.glBegin(GL11.GL_POINTS);
@@ -202,6 +204,7 @@ public class CalendarRenderer {
 				GL11.glVertex2d(x, y);
 			}
 			GL11.glEnd();
+			GL11.glPopMatrix();
 		}
 
 		/*

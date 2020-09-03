@@ -19,6 +19,7 @@ public class Framebuffer {
 
 	public final int width;
 	public final int height;
+	public final boolean isMultisampled;
 
 	private int bufferID = -1;
 	private int textureID = -1;
@@ -31,8 +32,9 @@ public class Framebuffer {
 	public Framebuffer(int w, int h, boolean msaa) {
 		width = w;
 		height = h;
+		isMultisampled = msaa;
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		this.createFramebuffer(w, h, msaa);
+		this.createFramebuffer();
 		this.checkFramebufferComplete();
 		GLFunctions.bindFramebuffer(0);
 	}
@@ -58,48 +60,61 @@ public class Framebuffer {
 		}
 	}
 
-	private void createFramebuffer(int w, int h, boolean msaa) {
+	private void createFramebuffer() {
 		bufferID = GL30.glGenFramebuffers();
 		textureID = GL11.glGenTextures();
 		depthBuffer = GL30.glGenRenderbuffers();
+		GLFunctions.printGLErrors("Framebuffer alloc");
 
-		if (msaa) {
+		if (isMultisampled) {
 			this.setFilterType(GL11.GL_LINEAR);
+
 			GLFunctions.bindFramebuffer(bufferID);
 			// create a multisampled color attachment texture
 			GL32.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, textureID);
+			GLFunctions.printGLErrors("MSAA Framebuffer tex bind");
 			GL32.glTexImage2DMultisample(GL32.GL_TEXTURE_2D_MULTISAMPLE, 4, GL32.GL_RGBA, width, height, true);
+			GLFunctions.printGLErrors("MSAA Framebuffer tex alloc");
 			GL32.glBindTexture(GL32.GL_TEXTURE_2D_MULTISAMPLE, 0);
+			GLFunctions.printGLErrors("MSAA Framebuffer tex unbind");
 			GL32.glFramebufferTexture2D(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, GL32.GL_TEXTURE_2D_MULTISAMPLE, textureID, 0);
+			GLFunctions.printGLErrors("MSAA Framebuffer tex setup");
+
 			// create a (also multisampled) renderbuffer object for depth and stencil attachments
 			GLFunctions.bindRenderbuffer(depthBuffer);
 			GL32.glRenderbufferStorageMultisample(GL32.GL_RENDERBUFFER, 4, GL32.GL_DEPTH24_STENCIL8, width, height);
 			GL32.glBindRenderbuffer(GL32.GL_RENDERBUFFER, 0);
 			GL32.glFramebufferRenderbuffer(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_STENCIL_ATTACHMENT, GL32.GL_RENDERBUFFER, depthBuffer);
+			GLFunctions.printGLErrors("MSAA Framebuffer depth binding");
 		}
 		else {
 			this.setFilterType(GL11.GL_NEAREST);
+
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, w, h, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
 			GLFunctions.bindFramebuffer(bufferID);
 			GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, textureID, 0);
+			GLFunctions.printGLErrors("Framebuffer tex setup");
 
 			GLFunctions.bindRenderbuffer(depthBuffer);
-			GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT24, w, h);
+			GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL30.GL_DEPTH_COMPONENT24, width, height);
 			GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, depthBuffer);
+			GLFunctions.printGLErrors("Framebuffer depth binding");
 		}
 
 		this.clear();
 		this.unbindTexture();
+		GLFunctions.printGLErrors("Framebuffer completion");
 	}
 
 	public void setFilterType(int type) {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+		GL11.glBindTexture(isMultisampled ? GL32.GL_TEXTURE_2D_MULTISAMPLE : GL11.GL_TEXTURE_2D, textureID);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, type);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, type);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL11.glBindTexture(isMultisampled ? GL32.GL_TEXTURE_2D_MULTISAMPLE : GL11.GL_TEXTURE_2D, 0);
+		GLFunctions.printGLErrors("Framebuffer filtering");
 	}
 
 	public void checkFramebufferComplete() {
