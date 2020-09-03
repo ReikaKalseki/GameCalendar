@@ -179,6 +179,11 @@ public class RenderLoop extends Thread {
 		this.render(width, height);
 		msaaBuffer.unbind();
 		msaaBuffer.sendTo(intermediate);
+		int error = GL11.glGetError();
+		while (error != GL11.GL_NO_ERROR) {
+			System.out.println("GL Error: "+error);
+			error = GL11.glGetError();
+		}
 		intermediate.draw();
 		/*
 		if (true) {
