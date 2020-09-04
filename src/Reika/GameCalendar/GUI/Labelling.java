@@ -77,13 +77,14 @@ public class Labelling implements Runnable {
 			double a = 360/12D*(m.ordinal()+0.5);
 			//System.out.println(m.name()+" > "+a+" @ '"+l.getText()+"'");
 			double angle = CalendarRenderer.getGuiAngle(a);
-			double r = renderer.getArcCenterlineRadiusAt(years.size(), a);
+			double r = renderer.getArcCenterlineRadiusAt(years.size(), a)-0.025;
 			double x = c*(1+r*Math.cos(angle));
 			double y = c*(1-r*Math.sin(angle));
 			double w = l.getWidth();
 			double h = l.getHeight();
 			l.layoutXProperty().set(x-w/2);
 			l.layoutYProperty().set(y-h/2);
+			l.rotateProperty().set(a);
 		}
 		for (int i = 0; i < years.size(); i++) {
 			int year = years.get(i);
