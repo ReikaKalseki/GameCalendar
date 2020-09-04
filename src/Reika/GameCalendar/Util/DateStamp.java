@@ -19,6 +19,8 @@ public class DateStamp implements Comparable<DateStamp> {
 	public static final DateStamp xmasStart = new DateStamp(0, Month.DECEMBER, 7);
 	public static final DateStamp xmasFull = new DateStamp(0, Month.DECEMBER, 19);
 	public static final DateStamp xmasEnd = new DateStamp(0, Month.JANUARY, 11);
+	public static final DateStamp readingStart = new DateStamp(0, Month.FEBRUARY, 13);
+	public static final DateStamp readingEnd = new DateStamp(0, Month.FEBRUARY, 19);
 	public static final DateStamp summerStart = new DateStamp(0, Month.APRIL, 16);
 	public static final DateStamp summerFull = new DateStamp(0, Month.MAY, 1);
 	public static final DateStamp summerEnd = new DateStamp(0, Month.SEPTEMBER, 8);

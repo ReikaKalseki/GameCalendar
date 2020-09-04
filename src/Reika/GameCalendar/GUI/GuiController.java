@@ -75,6 +75,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	public CheckBox summerBreak;
 
 	@FXML
+	public CheckBox readingWeek;
+
+	@FXML
 	public Pane calendarOverlay;
 
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
@@ -140,10 +143,20 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		});
 
 		for (NodeWrapper n : optionNodes.values()) {
-			((CheckBox)n.object).selectedProperty().set(true);
+			((CheckBox)n.object).selectedProperty().set(this.isDefaultSelected(n.fxID));
 		}
 
 		//this.update();
+	}
+
+	private boolean isDefaultSelected(String fxID) {
+		switch(fxID) {
+			case "highlights":
+			case "currentDate":
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	private void dynamicizeTextBoxes(Parent p) {

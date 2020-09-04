@@ -14,7 +14,7 @@
 
 <SplitPane fx:id="root" dividerPositions="0.5" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.GuiController">
    <items>
-      <TitledPane alignment="TOP_CENTER" animated="false" collapsible="false" maxHeight="1.7976931348623157E308" text="Calendar">
+      <TitledPane alignment="TOP_CENTER" animated="false" collapsible="false" text="Calendar">
          <content>
             <StackPane>
                <children>
@@ -29,11 +29,11 @@
       </TitledPane>
       <VBox>
          <children>
-            <SplitPane dividerPositions="0.8" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="659.0" prefWidth="796.0">
+            <SplitPane dividerPositions="0.8" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="630.0" prefWidth="796.0">
                <items>
                   <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" prefHeight="549.0" prefWidth="632.0" text="Categories">
                      <content>
-                        <ListView fx:id="catList" prefHeight="646.0" prefWidth="630.0" />
+                        <ListView fx:id="catList" prefHeight="604.0" prefWidth="630.0" />
                      </content>
                      <font>
                         <Font name="System Bold" size="12.0" />
@@ -57,6 +57,7 @@
                         <CheckBox fx:id="highlights" mnemonicParsing="false" text="Show Highlights" />
                         <CheckBox fx:id="currentDate" mnemonicParsing="false" text="Show Current Date" />
                         <CheckBox mnemonicParsing="false" text="Show Christmas Break" fx:id="xmasBreak" />
+                        <CheckBox fx:id="readingWeek" mnemonicParsing="false" text="Show Reading Week" />
                         <CheckBox fx:id="summerBreak" mnemonicParsing="false" text="Show Summer Break" />
                      </children>
                      <padding>
