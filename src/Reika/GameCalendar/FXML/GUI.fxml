@@ -18,7 +18,7 @@
          <content>
             <StackPane>
                <children>
-                  <BorderPane fx:id="renderField" />
+                  <BorderPane fx:id="renderField" mouseTransparent="true" />
                   <Pane fx:id="calendarOverlay" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" />
                </children>
             </StackPane>

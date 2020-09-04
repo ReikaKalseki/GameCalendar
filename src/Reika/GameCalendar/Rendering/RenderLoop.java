@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GLCapabilities;
 
 import Reika.GameCalendar.Main;
+import Reika.GameCalendar.GUI.GLFWInputHandler;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.Util.GLFunctions;
 
@@ -31,6 +32,7 @@ public class RenderLoop extends Thread {
 	private int width;
 	private int height;
 
+	private GLFWInputHandler input;
 	private TransferType transfer = StandardTransferTypes.NVDXInterop;
 	private long contextID = -1;
 	private GLCapabilities glCaps;
@@ -115,6 +117,10 @@ public class RenderLoop extends Thread {
 
 			width = size.x;
 			height = size.y;
+
+			input = new GLFWInputHandler(width, height, contextID);
+			GLFW.glfwSetCursorPosCallback(contextID, input.mouseCall);
+			GLFW.glfwSetMouseButtonCallback(contextID, input.clickCall);
 
 			msaaBuffer = null;
 			intermediate = null;

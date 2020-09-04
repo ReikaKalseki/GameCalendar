@@ -436,9 +436,10 @@ public class CalendarRenderer {
 		return Math.toRadians(-a+90);
 	}
 
-	public void handleMouse(int w, int h) {
+	public void handleMouse(double x, double y) {
 		//int mx = Mouse.getX();
 		//int my = Mouse.getY();
+		System.out.println(x+","+y);
 		/*
 		ArrayList<DoublePoint> points = new ArrayList();
 		points.add(new DoublePoint(-0.25, -0.25));
