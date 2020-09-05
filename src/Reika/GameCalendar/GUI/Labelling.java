@@ -2,14 +2,19 @@ package Reika.GameCalendar.GUI;
 
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.lwjglx.debug.joptsimple.internal.Strings;
+
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -99,8 +104,36 @@ public class Labelling implements Runnable {
 			l.setTextFill(Color.rgb(0, 0, 0, 1));
 		}
 		GuiSection s = renderer.getSelectedSection();
-		String desc = s != null ? s.section.generateDescription() : "";
-		JFXWindow.getDescriptionPane().textProperty().set(desc);
+		ArrayList<String> desc = s != null ? s.section.generateDescription() : null;
+		if (desc != null && desc.size() >= 12) {
+			Iterator<String> it = desc.iterator();
+			while (it.hasNext()) {
+				String sg = it.next();
+				if (Strings.isNullOrEmpty(sg)) {
+					it.remove();
+				}
+			}
+		}
+		TextArea area = JFXWindow.getDescriptionPane();
+		area.textProperty().set(desc != null ? this.lineBreakStringList(desc) : "");
+		Font f = area.getFont();
+		double sz = 12;
+		if (desc.size() > 8) {
+			int over = desc.size()-8;
+			sz -= over*1;
+		}
+		area.setFont(new Font(f.getFamily(), sz));
+	}
+
+	private String lineBreakStringList(ArrayList<String> li) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < li.size(); i++) {
+			sb.append(li.get(i));
+			if (i < li.size()-1) {
+				sb.append("\n");
+			}
+		}
+		return sb.toString();
 	}
 
 }

@@ -34,7 +34,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </TitledPane>
-                  <TextArea fx:id="descriptionPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="150.0" />
+                  <TextArea fx:id="descriptionPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="160.0" />
               </items>
             </SplitPane>
             <SplitPane dividerPositions="0.67" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="630.0" prefWidth="796.0">

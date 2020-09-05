@@ -116,7 +116,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		}
 	}
 
-	public void postInit() {
+	void postInit() {
 		System.out.println("Post-initializing GUI.");
 		renderer = new DriftFXSurface();
 		calendarOverlay.setOnMouseClicked(new DFXInputHandler(renderer));

@@ -56,9 +56,14 @@ public class Section implements Comparable<Section> {
 		return Collections.unmodifiableList(activeSpans);
 	}
 
-	public String generateDescription() {
-		StringBuilder sb = new StringBuilder();
-		ArrayList<TimeSpan> li = new ArrayList(activeSpans);
+	public ArrayList<String> generateDescription() {
+		ArrayList<TimeSpan> li = new ArrayList();
+		for (TimeSpan ts : activeSpans) {
+			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+				li.add(ts);
+			}
+		}
+		ArrayList<String> ret = new ArrayList();
 		Collections.sort(li, new Comparator<TimeSpan>() {
 
 			@Override
@@ -69,20 +74,16 @@ public class Section implements Comparable<Section> {
 		});
 		for (int i = 0; i < li.size(); i++) {
 			TimeSpan ts = li.get(i);
-			sb.append(ts.category.name);
-			sb.append(": ");
-			sb.append(ts.name);
+			String line = ts.category.name+": "+ts.name;
+			ret.add(line);
 			if (!Strings.isNullOrEmpty(ts.description)) {
-				sb.append("\n\t");
-				sb.append(ts.description);
+				ret.add("\t"+ts.description);
 			}
 			if (i < activeSpans.size()-1) {
-				sb.append("\n");
-				if (activeSpans.size() < 4)
-					sb.append("\n");
+				ret.add("");
 			}
 		}
-		return sb.toString();
+		return ret;
 	}
 
 }
