@@ -13,27 +13,15 @@ import Reika.GameCalendar.Rendering.RenderLoop;
 public class Main {
 	/*
 	DO NOT FORGET:
-		KSP (NOT IN SHAREX FILES due to copy-upload)
-		ELITE SESSIONS
-		FACTORIO SESSIONS
-		PORTAL MAPS & PETI PLAYTHROUGHS
-		PSMEL
-		SPACE ENGINEERS (CHECK STEAM AND DEDICATED SCREENSHOTS)
-		2014 EVERYTHING
-		CIV PLAYTHROUGHS (NOT SHAREX), INCLUDING CIV:BE
+		SPLIT THE CIV SAVES
+SPLIT THE SE PLAYS
+2020 and probably other years PeTI
 	 */
 
 	//TODO:
 	//checkboxes to show:
-	//"bookmark" holidays like christmas and halloween
-	//the "christmas break"
-	//the "summer break" (uni bounds)
-	//current date
-	//events
-	//each category
 	//ongoing sections
 
-	//add box in gui to show description of a section or highlight
 	//add another box to show a sample screenshot, linked to with a .png
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
