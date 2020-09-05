@@ -3,9 +3,13 @@ package Reika.GameCalendar.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
+import org.lwjglx.debug.joptsimple.internal.Strings;
+
+import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.Util.DateStamp;
 
 public class Section implements Comparable<Section> {
@@ -50,6 +54,35 @@ public class Section implements Comparable<Section> {
 
 	public List<TimeSpan> getActiveSpans() {
 		return Collections.unmodifiableList(activeSpans);
+	}
+
+	public String generateDescription() {
+		StringBuilder sb = new StringBuilder();
+		ArrayList<TimeSpan> li = new ArrayList(activeSpans);
+		Collections.sort(li, new Comparator<TimeSpan>() {
+
+			@Override
+			public int compare(TimeSpan o1, TimeSpan o2) {
+				return o1.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.category);
+			}
+
+		});
+		for (int i = 0; i < li.size(); i++) {
+			TimeSpan ts = li.get(i);
+			sb.append(ts.category.name);
+			sb.append(": ");
+			sb.append(ts.name);
+			if (!Strings.isNullOrEmpty(ts.description)) {
+				sb.append("\n\t");
+				sb.append(ts.description);
+			}
+			if (i < activeSpans.size()-1) {
+				sb.append("\n");
+				if (activeSpans.size() < 4)
+					sb.append("\n");
+			}
+		}
+		return sb.toString();
 	}
 
 }

@@ -98,6 +98,9 @@ public class Labelling implements Runnable {
 			l.layoutYProperty().set(y-h/2+1);
 			l.setTextFill(Color.rgb(0, 0, 0, 1));
 		}
+		GuiSection s = renderer.getSelectedSection();
+		String desc = s != null ? s.section.generateDescription() : "";
+		JFXWindow.getDescriptionPane().textProperty().set(desc);
 	}
 
 }

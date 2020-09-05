@@ -1,6 +1,5 @@
 package Reika.GameCalendar.Rendering;
 
-import java.awt.Polygon;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +19,7 @@ import Reika.GameCalendar.GUI.Labelling;
 import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
+import Reika.GameCalendar.Util.DoublePolygon;
 import Reika.GameCalendar.Util.GLFunctions.BlendMode;
 
 import javafx.application.Platform;
@@ -158,7 +158,7 @@ public class CalendarRenderer {
 			if (pointsInner.isEmpty()) {
 				continue;
 			}
-			s.polygon = new Polygon();
+			s.polygon = new DoublePolygon();
 			ArrayList<DoublePoint> points = new ArrayList();
 			for (int i = 0; i < pointsInner.size(); i++) {
 				points.add(pointsInner.get(i));
@@ -188,9 +188,7 @@ public class CalendarRenderer {
 			for (DoublePoint p : points) {
 				if (s == selectedSection)
 					GL11.glVertex2d(p.x, p.y);
-				int lx = (int)(p.x*sw/2D+sw/2D);
-				int ly = (int)(p.y*sh/2D+sh/2D);
-				s.polygon.addPoint(lx-GLFWWindow.BORDER_X, ly-GLFWWindow.BORDER_Y*3/4);
+				s.polygon.addPoint(p.x, p.y);
 			}
 			if (s == selectedSection)
 				GL11.glEnd();
@@ -439,7 +437,6 @@ public class CalendarRenderer {
 	public void handleMouse(double x, double y) {
 		//int mx = Mouse.getX();
 		//int my = Mouse.getY();
-		System.out.println(x+","+y);
 		/*
 		ArrayList<DoublePoint> points = new ArrayList();
 		points.add(new DoublePoint(-0.25, -0.25));
@@ -488,16 +485,19 @@ public class CalendarRenderer {
 		if (Mouse.isButtonDown(0)) {
 			selectedSection = null;
 			//System.out.println(mx+","+my);
-		}
+		}*/
+		selectedSection = null;
 		for (GuiSection s : sections) {
 			if (s.polygon != null && s.polygon.npoints > 0)	{
-				if (s.polygon.contains(mx, my)) {
+				if (s.polygon.contains(x, y)) {
 					//System.out.println(mx+","+my+" > "+s.section);
-					if (Mouse.isButtonDown(0)) {
-						selectedSection = s;
-					}
+					selectedSection = s;
 				}
 			}
-		}*/
+		}
+	}
+
+	public GuiSection getSelectedSection() {
+		return selectedSection;
 	}
 }

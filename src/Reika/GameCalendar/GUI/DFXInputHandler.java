@@ -28,7 +28,13 @@ public class DFXInputHandler implements EventHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent event) {
 		if (event.getEventType() == MouseEvent.MOUSE_CLICKED && event.getButton() == MouseButton.PRIMARY) {
-			Main.getCalendarRenderer().handleMouse(event.getX(), event.getY());
+			double w = renderSurface.getWidth();
+			double h = renderSurface.getHeight();
+			double midX = w/2;
+			double midY = h/2;
+			double dx = event.getX()-midX;
+			double dy = event.getY()-midY;
+			Main.getCalendarRenderer().handleMouse(dx*2/w, -dy*2/h);
 		}
 	}
 

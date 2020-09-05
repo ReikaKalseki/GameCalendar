@@ -98,7 +98,11 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 
 	@Override
 	public int compareTo(ActivityCategory o) {
-		switch(sorting) {
+		return this.compareTo(sorting, o);
+	}
+
+	public int compareTo(SortingMode mode, ActivityCategory o) {
+		switch(mode) {
 			case ALPHA:
 				return String.CASE_INSENSITIVE_ORDER.compare(name, o.name);
 			case EXPLICIT:

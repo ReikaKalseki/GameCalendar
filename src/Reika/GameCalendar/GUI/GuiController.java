@@ -35,6 +35,7 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -43,42 +44,45 @@ import javafx.scene.layout.Region;
 public class GuiController implements EventHandler<ActionEvent>, ChangeListener {
 
 	@FXML
-	public SplitPane root;
+	private SplitPane root;
 
 	@FXML
-	public ListView<String> catList;
+	private BorderPane renderField;
 
 	@FXML
-	public ListView<String> sortList;
+	private Pane calendarOverlay;
+
+	@FXML TextArea descriptionPane;
 
 	@FXML
-	public Label status;
+	private ListView<String> catList;
+
+	@FXML ListView<String> sortList;
 
 	@FXML
-	public BorderPane renderField;
+	private CheckBox importantDates;
+
+	@FXML
+	private CheckBox highlights;
+
+	@FXML
+	private CheckBox currentDate;
+
+	@FXML
+	private CheckBox xmasBreak;
+
+	@FXML
+	private CheckBox readingWeek;
+
+	@FXML
+	private CheckBox summerBreak;
+
+	@FXML
+	private ImageView screenshot;
+
+	@FXML Label status;
 
 	DriftFXSurface renderer;
-
-	@FXML
-	public CheckBox importantDates;
-
-	@FXML
-	public CheckBox highlights;
-
-	@FXML
-	public CheckBox currentDate;
-
-	@FXML
-	public CheckBox xmasBreak;
-
-	@FXML
-	public CheckBox summerBreak;
-
-	@FXML
-	public CheckBox readingWeek;
-
-	@FXML
-	public Pane calendarOverlay;
 
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
@@ -121,7 +125,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 
 		Labelling.instance.init(calendarOverlay);
 
-		this.dynamicizeTextBoxes(root);
+		//this.dynamicizeTextBoxes(root);
 		sortList.setItems(FXCollections.observableList(SortingMode.list()));
 		sortList.getSelectionModel().clearAndSelect(SortingMode.TIME.ordinal());
 		catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
@@ -147,6 +151,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 			((CheckBox)n.object).selectedProperty().set(this.isDefaultSelected(n.fxID));
 		}
 
+		descriptionPane.setEditable(false);
+		descriptionPane.wrapTextProperty().set(true);
+
 		//this.update();
 	}
 
@@ -160,6 +167,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		}
 	}
 
+	/*
 	private void dynamicizeTextBoxes(Parent p) {
 		for (Node n : JFXWindow.getRecursiveChildren(p)) {
 			if (n instanceof TextArea) {
@@ -173,7 +181,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 				});
 			}
 		}
-	}
+	}*/
 
 	private void addWrapperHooks(Collection<NodeWrapper> li) {
 		for (NodeWrapper n2 : li) {
@@ -188,15 +196,15 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		}
 		else if (n2.object instanceof ChoiceBox) {
 			((ChoiceBox)n2.object).setOnAction(this);
-			optionNodes.put(n2.fxID, n2);
+			//optionNodes.put(n2.fxID, n2);
 		}
 		else if (n2.object instanceof ComboBox) {
 			((ComboBox)n2.object).setOnAction(this);
-			optionNodes.put(n2.fxID, n2);
+			//optionNodes.put(n2.fxID, n2);
 		}
 		else if (n2.object instanceof TextInputControl) {
-			((TextInputControl)n2.object).textProperty().addListener(this);
-			optionNodes.put(n2.fxID, n2);
+			//((TextInputControl)n2.object).textProperty().addListener(this);
+			//optionNodes.put(n2.fxID, n2);
 		}
 		else if (n2.object instanceof ListView) {
 			((ListView)n2.object).getSelectionModel().selectedItemProperty().addListener(this);

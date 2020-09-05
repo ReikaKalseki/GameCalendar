@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.eclipse.fx.drift.DriftFXSurface;
 
 import Reika.GameCalendar.Main;
+import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -19,6 +20,7 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -102,6 +104,14 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	public static DriftFXSurface getRenderPane() {
 		return gui != null && gui.controller != null ? gui.controller.renderer : null;
+	}
+
+	public static TextArea getDescriptionPane() {
+		return gui != null && gui.controller != null ? gui.controller.descriptionPane : null;
+	}
+
+	public SortingMode getSortingMode() {
+		return gui != null && gui.controller != null ? SortingMode.values()[gui.controller.sortList.getSelectionModel().getSelectedIndex()] : SortingMode.ALPHA;
 	}
 
 	public boolean getCheckbox(String id) {
