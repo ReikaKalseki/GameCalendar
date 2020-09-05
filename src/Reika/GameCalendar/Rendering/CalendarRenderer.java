@@ -8,11 +8,14 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.ImportantDates;
 import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
+import Reika.GameCalendar.GUI.CalendarItem;
+import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.Labelling;
@@ -31,20 +34,22 @@ public class CalendarRenderer {
 
 	private final Timeline data;
 	private final ArrayList<GuiSection> sections = new ArrayList();
-	private final ArrayList<Highlight> events = new ArrayList();
+	private final ArrayList<GuiHighlight> events = new ArrayList();
 	private final ArrayList<Integer> years;
 
 	public final double arcThickness;
 	public final double arcThicknessHalfFraction = 0.35;
 
-	private GuiSection selectedSection = null;
+	private CalendarItem selectedObject = null;
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
 		for (Section s : t.getSections()) {
 			sections.add(new GuiSection(s));
 		}
-		events.addAll(t.getEvents());
+		for (Highlight s : t.getEvents()) {
+			events.add(new GuiHighlight(s));
+		}
 		years = new ArrayList(t.getYears());
 		Collections.sort(years);
 
@@ -123,6 +128,9 @@ public class CalendarRenderer {
 		GL11.glLineWidth(2);
 		double wf = 0.8;
 		for (GuiSection s : sections) {
+			s.polygon = null;
+		}
+		for (GuiSection s : sections) {
 			if (s.section.isEmpty())
 				continue;
 			if (!this.shouldRenderSection(s))
@@ -181,17 +189,21 @@ public class CalendarRenderer {
 			points.addAll(pointsInner);
 			Collections.reverse(pointsOuter);
 			points.addAll(pointsOuter);
-			if (s == selectedSection) {
+			if (s == selectedObject) {
 				GL11.glColor4f(0, 0, 0, 1);
 				GL11.glBegin(GL11.GL_LINE_LOOP);
 			}
 			for (DoublePoint p : points) {
-				if (s == selectedSection)
+				if (s == selectedObject)
 					GL11.glVertex2d(p.x, p.y);
 				s.polygon.addPoint(p.x, p.y);
 			}
-			if (s == selectedSection)
+			if (s == selectedObject)
 				GL11.glEnd();
+		}
+
+		for (GuiHighlight h : events) {
+			h.position = null;
 		}
 
 		if (JFXWindow.getGUI().getCheckbox("highlights")) {
@@ -200,21 +212,34 @@ public class CalendarRenderer {
 			GL11.glPointSize(8);
 			GL11.glColor4f(0, 0, 0, 1);
 			GL11.glBegin(GL11.GL_POINTS);
-			for (Highlight h : events) {
-				if (!JFXWindow.getGUI().isListEntrySelected("catList", h.category.name))
+			for (GuiHighlight h : events) {
+				if (!JFXWindow.getGUI().isListEntrySelected("catList", h.event.category.name))
 					continue;
-				double a = h.time.getAngle();
-				int i = years.indexOf(h.time.year);
+				double a = h.event.time.getAngle();
+				int i = years.indexOf(h.event.time.year);
 				double r1 = INNER_RADIUS+i*arcThickness;
 				double r2 = INNER_RADIUS+(i+1)*arcThickness;
 				double r = r1+(r2-r1)*(a/360D);
 				double ang = this.getGuiAngle(a);
 				double x = r*Math.cos(ang);
 				double y = r*Math.sin(ang);
+				h.position = new DoublePoint(x, y);
 				GL11.glVertex2d(x, y);
 			}
 			GL11.glEnd();
 			GL11.glPopMatrix();
+
+			if (selectedObject instanceof GuiHighlight) {
+				GuiHighlight gh = (GuiHighlight)selectedObject;
+				double d = 1/50D;
+				GL11.glBegin(GL11.GL_LINE_LOOP);
+				for (double a = 0; a < 360; a += 60) {
+					double dx = d*Math.cos(Math.toRadians(a+90));
+					double dy = d*Math.sin(Math.toRadians(a+90));
+					GL11.glVertex2d(gh.position.x+dx, gh.position.y+dy);
+				}
+				GL11.glEnd();
+			}
 		}
 
 		if (JFXWindow.getGUI().getCheckbox("xmasBreak")) {
@@ -396,8 +421,8 @@ public class CalendarRenderer {
 	}
 
 	private boolean shouldRenderSection(GuiSection s) {
-		for (TimeSpan ts : s.section.getActiveSpans()) {
-			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+		for (ActivityCategory ts : s.section.getCategories()) {
+			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.name)) {
 				return true;
 			}
 		}
@@ -486,18 +511,33 @@ public class CalendarRenderer {
 			selectedSection = null;
 			//System.out.println(mx+","+my);
 		}*/
-		selectedSection = null;
-		for (GuiSection s : sections) {
-			if (s.polygon != null && s.polygon.npoints > 0)	{
-				if (s.polygon.contains(x, y)) {
-					//System.out.println(mx+","+my+" > "+s.section);
-					selectedSection = s;
+		selectedObject = null;
+		if (JFXWindow.getGUI().getCheckbox("highlights")) {
+			double d = 1/50D;
+			for (GuiHighlight h : events) {
+				if (h.position != null)	{
+					if (Math.abs(x-h.position.x) < d && Math.abs(y-h.position.y) < d) {
+						//System.out.println(mx+","+my+" > "+s.section);
+						selectedObject = h;
+						break;
+					}
+				}
+			}
+		}
+		if (selectedObject == null) {
+			for (GuiSection s : sections) {
+				if (s.polygon != null && s.polygon.npoints > 0)	{
+					if (s.polygon.contains(x, y)) {
+						//System.out.println(mx+","+my+" > "+s.section);
+						selectedObject = s;
+						break;
+					}
 				}
 			}
 		}
 	}
 
-	public GuiSection getSelectedSection() {
-		return selectedSection;
+	public CalendarItem getSelectedObject() {
+		return selectedObject;
 	}
 }

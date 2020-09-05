@@ -123,7 +123,7 @@ public class RenderLoop extends Thread {
 		}
 
 		if (chain == null || size.x != width || size.y != height) {
-			System.err.println("Recreating swapchain");
+			System.out.println("Recreating swapchain");
 			if (chain != null) {
 				chain.dispose();
 			}
@@ -133,9 +133,9 @@ public class RenderLoop extends Thread {
 			width = size.x;
 			height = size.y;
 
-			input = new GLFWInputHandler(width, height, contextID);
-			GLFW.glfwSetCursorPosCallback(contextID, input.mouseCall);
-			GLFW.glfwSetMouseButtonCallback(contextID, input.clickCall);
+			//input = new GLFWInputHandler(width, height, contextID);
+			//GLFW.glfwSetCursorPosCallback(contextID, input.mouseCall);
+			//GLFW.glfwSetMouseButtonCallback(contextID, input.clickCall);
 
 			msaaBuffer = null;
 			intermediate = null;

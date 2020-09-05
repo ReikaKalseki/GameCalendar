@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.lwjglx.debug.joptsimple.internal.Strings;
 
@@ -18,6 +19,7 @@ public class Section implements Comparable<Section> {
 	private DateStamp endTime;
 	private final ArrayList<TimeSpan> activeSpans;
 	private final HashSet<String> nameSet = new HashSet();
+	private final HashSet<ActivityCategory> catSet = new HashSet();
 
 	public Section(DateStamp start, Collection<TimeSpan> active) {
 		startTime = start;
@@ -25,6 +27,9 @@ public class Section implements Comparable<Section> {
 		Collections.sort(activeSpans);
 		for (TimeSpan t : active) {
 			nameSet.add(t.name);
+			if (!catSet.add(t.category)) {
+				System.out.println("Note: Section @ "+startTime+" has multiple overlapping regions for category '"+t.category.name+"'!");
+			}
 		}
 	}
 
@@ -54,6 +59,10 @@ public class Section implements Comparable<Section> {
 
 	public List<TimeSpan> getActiveSpans() {
 		return Collections.unmodifiableList(activeSpans);
+	}
+
+	public Set<ActivityCategory> getCategories() {
+		return Collections.unmodifiableSet(catSet);
 	}
 
 	public ArrayList<String> generateDescription() {

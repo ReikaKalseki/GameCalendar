@@ -17,7 +17,7 @@ public class DataLoader {
 		File events = new File(cat.folder, "Events");
 		for (File f : events.listFiles()) {
 			if (f.length() == 0) {
-				System.out.println("Event File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
+				System.err.println("Event File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
 				continue;
 			}
 			try {
@@ -34,7 +34,7 @@ public class DataLoader {
 		File ranges = new File(cat.folder, "Periods");
 		for (File f : ranges.listFiles()) {
 			if (f.length() == 0) {
-				System.out.println("Period File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
+				System.err.println("Period File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
 				continue;
 			}
 			try {
@@ -76,13 +76,13 @@ public class DataLoader {
 		for (String s : li) {
 			int idx = s.indexOf(':');
 			if (idx < 0) {
-				System.out.println("File '"+cat+"/"+f.getName()+"' has invalid line '"+s+"'!");
+				System.err.println("File '"+cat+"/"+f.getName()+"' has invalid line '"+s+"'!");
 			}
 			else {
 				if (idx > 0 && idx < s.length()-1)
 					ret.put(s.substring(0, idx), s.substring(idx+1));
 				else
-					System.out.println("File '"+cat+"/"+f.getName()+"' has valueless line '"+s+"'!");
+					System.err.println("File '"+cat+"/"+f.getName()+"' has valueless line '"+s+"'!");
 			}
 		}
 		String n = f.getName().substring(0, f.getName().length()-4);

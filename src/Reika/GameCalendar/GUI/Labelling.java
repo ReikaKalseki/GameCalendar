@@ -2,7 +2,6 @@ package Reika.GameCalendar.GUI;
 
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -103,8 +102,8 @@ public class Labelling implements Runnable {
 			l.layoutYProperty().set(y-h/2+1);
 			l.setTextFill(Color.rgb(0, 0, 0, 1));
 		}
-		GuiSection s = renderer.getSelectedSection();
-		ArrayList<String> desc = s != null ? s.section.generateDescription() : null;
+		CalendarItem s = renderer.getSelectedObject();
+		List<String> desc = s != null ? s.generateDescription() : null;
 		if (desc != null && desc.size() >= 12) {
 			Iterator<String> it = desc.iterator();
 			while (it.hasNext()) {
@@ -125,7 +124,7 @@ public class Labelling implements Runnable {
 		area.setFont(new Font(f.getFamily(), sz));
 	}
 
-	private String lineBreakStringList(ArrayList<String> li) {
+	private String lineBreakStringList(List<String> li) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < li.size(); i++) {
 			sb.append(li.get(i));
