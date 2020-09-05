@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.fx.drift.DriftFXSurface;
@@ -78,6 +79,15 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	private CheckBox summerBreak;
 
 	@FXML
+	private Button catAll;
+
+	@FXML
+	private Button catNone;
+
+	@FXML
+	private Button catFlip;
+
+	@FXML
 	private ImageView screenshot;
 
 	@FXML Label status;
@@ -86,6 +96,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
+	private final HashMap<String, NodeWrapper> buttons = new HashMap();
 	private final HashMap<String, NodeWrapper> listSelects = new HashMap();
 
 	@FXML
@@ -190,9 +201,13 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	}
 
 	private void addHook(NodeWrapper n2) {
-		if (n2.object instanceof ButtonBase) {
-			((ButtonBase)n2.object).setOnAction(this);
+		if (n2.object instanceof CheckBox) {
+			((CheckBox)n2.object).setOnAction(this);
 			optionNodes.put(n2.fxID, n2);
+		}
+		else if (n2.object instanceof ButtonBase) {
+			((ButtonBase)n2.object).setOnAction(this);
+			buttons.put(n2.fxID, n2);
 		}
 		else if (n2.object instanceof ChoiceBox) {
 			((ChoiceBox)n2.object).setOnAction(this);
@@ -301,17 +316,27 @@ if (o instanceof ChoiceBox) {
 
 	private void onButtonClick(String fxID) {
 		switch(fxID) {
-
+			case "catNone":
+				catList.getSelectionModel().clearSelection();
+				break;
+			case "catAll":
+				catList.getSelectionModel().selectAll();
+				break;
+			case "catFlip":
+				HashSet<Integer> li = new HashSet(catList.getSelectionModel().getSelectedIndices());
+				catList.getSelectionModel().clearSelection();
+				List<String> li2 = catList.getItems();
+				for (int i = 0; i < li2.size(); i++) {
+					if (!li.contains(i))
+						catList.getSelectionModel().select(i);
+				}
+				break;
 		}
 	}
 
 	@Override
 	public void changed(ObservableValue observable, Object oldValue, Object newValue) {
 		this.update();
-	}
-
-	private void updateElement(String elem) {
-
 	}
 
 	void update() {
@@ -321,6 +346,7 @@ if (o instanceof ChoiceBox) {
 		if (e != null && !e.isEmpty()) {
 
 		}
+		StatusHandler.postStatus("Reloading render state", 200);
 		JFXWindow.getGUI().updateActiveSections();
 		Labelling.instance.init(calendarOverlay);
 	}

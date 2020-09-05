@@ -118,7 +118,7 @@ public class Labelling implements Runnable {
 		area.textProperty().set(desc != null ? this.lineBreakStringList(desc) : "");
 		Font f = area.getFont();
 		double sz = 12;
-		if (desc.size() > 8) {
+		if (desc != null && desc.size() > 8) {
 			int over = desc.size()-8;
 			sz -= over*1;
 		}

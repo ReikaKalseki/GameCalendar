@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GLCapabilities;
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.GUI.GLFWInputHandler;
 import Reika.GameCalendar.GUI.JFXWindow;
+import Reika.GameCalendar.GUI.StatusHandler;
 import Reika.GameCalendar.Util.GLFunctions;
 
 public class RenderLoop extends Thread {
@@ -68,6 +69,10 @@ public class RenderLoop extends Thread {
 			GLFW.glfwHideWindow(contextID);
 			GLFW.glfwMakeContextCurrent(contextID);
 			glCaps = GL.createCapabilities();
+			StatusHandler.postStatus("Renderer initialized.", 10000);
+		}
+		else {
+			//not feasible StatusHandler.postStatus("Renderer waiting for DFX surface...", 10000);
 		}
 	}
 
@@ -83,7 +88,15 @@ public class RenderLoop extends Thread {
 	public void run() {
 		while (!shouldClose) {
 			try {
+				long pre = System.currentTimeMillis();
+
 				this.renderLoop();
+
+				long post = System.currentTimeMillis();
+				long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);
+				if (sleep > 0) {
+					Thread.sleep(sleep);
+				}
 			}
 			catch (InterruptedException e) {
 				e.printStackTrace();
@@ -104,8 +117,10 @@ public class RenderLoop extends Thread {
 		}
 		Vec2i size = hook.getSize();
 
-		if (size.x == 0 || size.y == 0)
+		if (size.x == 0 || size.y == 0) {
+			shouldClose = true;
 			throw new RuntimeException("Render box is size zero!");
+		}
 
 		if (chain == null || size.x != width || size.y != height) {
 			System.err.println("Recreating swapchain");
@@ -124,6 +139,7 @@ public class RenderLoop extends Thread {
 
 			msaaBuffer = null;
 			intermediate = null;
+			StatusHandler.postStatus("DriftFX interface loaded", 750, false);
 		}
 		GLFunctions.printGLErrors("Main loop");
 		if (contextID <= 0)
@@ -189,18 +205,12 @@ public class RenderLoop extends Thread {
 	}
 
 	private void render(int x, int y) throws InterruptedException {
-		long pre = System.currentTimeMillis();
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glViewport(0, 0, x, y);
 		GLFW.glfwSwapBuffers(contextID);
 		GLFW.glfwPollEvents();
 		Main.getCalendarRenderer().draw(x, y);
-		long post = System.currentTimeMillis();
-		long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);
-		if (sleep > 0) {
-			Thread.sleep(sleep);
-		}
 	}
 
 	public void close() {

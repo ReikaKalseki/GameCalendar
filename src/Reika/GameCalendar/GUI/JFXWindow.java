@@ -69,12 +69,12 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		//window.setX(resolution.getWidth()/4);
 		//window.setY(resolution.getHeight()/4);
 		window.show();
+		this.setStatus("Program initialized.");
 		controller.postInit();
 
 		double midX = window.getWidth()/2;
 		double midY = window.getHeight()/2;
 
-		this.setStatus("The status line works in 2020.");
 		for (TitledPane p : controller.getCollapsibleSections()) {
 			p.setExpanded(false);
 		}
@@ -86,7 +86,7 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	}
 
-	public void setStatus(String value) {
+	void setStatus(String value) {
 		controller.status.setText(value);
 	}
 
