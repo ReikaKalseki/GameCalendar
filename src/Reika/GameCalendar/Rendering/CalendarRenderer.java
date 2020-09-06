@@ -15,6 +15,7 @@ import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.CalendarItem;
+import Reika.GameCalendar.GUI.DFXInputHandler;
 import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
@@ -273,20 +274,12 @@ public class CalendarRenderer {
 			}
 		}
 
+		DFXInputHandler dfx = JFXWindow.getGUI().getMouseHandler();
+		double ang = Math.toDegrees(Math.atan2(dfx.getMouseY(), dfx.getMouseX()));
+		JFXWindow.getGUI().setTooltip(String.valueOf(ang));
+
 		Labelling.instance.setRenderParams(sw, sh, this);
 		Platform.runLater(Labelling.instance);
-
-		/*
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		String text = "testString";
-		ByteBuffer charBuffer = BufferUtils.createByteBuffer(text.length() * 270);
-		GL32.glEnableClientState(GL32.GL_VERTEX_ARRAY);
-		GL32.glVertexPointer(2, GL11.GL_FLOAT, 16, charBuffer);
-		GL11.glPushMatrix();
-		int quads = STBEasyFont.stb_easy_font_print(0, 0, text, null, charBuffer);
-		GL32.glDrawArrays(GL11.GL_QUADS, 0, quads * 4);
-		GL11.glPopMatrix();
-		GL32.glDisableClientState(GL32.GL_VERTEX_ARRAY);*/
 	}
 
 	private void drawTimeWedge(double t, DateStamp d1, DateStamp d2, int c1, int c2) {

@@ -99,6 +99,8 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 
 	DriftFXSurface renderer;
 
+	DFXInputHandler mouseHandler;
+
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> buttons = new HashMap();
@@ -135,7 +137,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	void postInit() {
 		System.out.println("Post-initializing GUI.");
 		renderer = new DriftFXSurface();
-		calendarOverlay.setOnMouseClicked(new DFXInputHandler(renderer));
+		mouseHandler = new DFXInputHandler(renderer);
+		calendarOverlay.setOnMouseClicked(mouseHandler);
+		calendarOverlay.setOnMouseMoved(mouseHandler);
 		renderField.setCenter(renderer);
 		renderField.setPadding(new Insets(0));
 

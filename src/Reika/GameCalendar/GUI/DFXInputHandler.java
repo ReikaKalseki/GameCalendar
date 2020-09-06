@@ -28,14 +28,40 @@ public class DFXInputHandler implements EventHandler<MouseEvent> {
 	@Override
 	public void handle(MouseEvent event) {
 		if (event.getEventType() == MouseEvent.MOUSE_CLICKED && event.getButton() == MouseButton.PRIMARY) {
-			double w = renderSurface.getWidth();
-			double h = renderSurface.getHeight();
-			double midX = w/2;
-			double midY = h/2;
-			double dx = event.getX()-midX;
-			double dy = event.getY()-midY;
-			Main.getCalendarRenderer().handleMouse(dx*2/w, -dy*2/h);
+			mouseX = this.convertX(event.getX());
+			mouseY = this.convertY(event.getY());
+			Main.getCalendarRenderer().handleMouse(mouseX, mouseY);
 		}
+		if (event.getEventType() == MouseEvent.MOUSE_MOVED || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+			lastMouseX = mouseX;
+			lastMouseY = mouseY;
+			mouseX = this.convertX(event.getX());
+			mouseY = this.convertY(event.getY());
+			mouseVelX.addValue(mouseX-lastMouseX);
+			mouseVelY.addValue(mouseY-lastMouseY);
+		}
+	}
+
+	private double convertX(double x) {
+		double w = renderSurface.getWidth();
+		double midX = w/2;
+		double dx = x-midX;
+		return dx*2/w;
+	}
+
+	private double convertY(double y) {
+		double h = renderSurface.getHeight();
+		double midY = h/2;
+		double dy = y-midY;
+		return -dy*2/h;
+	}
+
+	public double getMouseX() {
+		return mouseX;
+	}
+
+	public double getMouseY() {
+		return mouseY;
 	}
 
 }

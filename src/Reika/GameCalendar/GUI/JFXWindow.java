@@ -109,7 +109,7 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		controller.status.setText(value);
 	}
 
-	void setTooltip(String value) {
+	public void setTooltip(String value) {
 		tooltipHandler.value = value;
 		Platform.runLater(tooltipHandler);
 	}
@@ -132,6 +132,10 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	public static TextArea getDescriptionPane() {
 		return gui != null && gui.controller != null ? gui.controller.descriptionPane : null;
+	}
+
+	public static DFXInputHandler getMouseHandler() {
+		return gui != null && gui.controller != null ? gui.controller.mouseHandler : null;
 	}
 
 	public SortingMode getSortingMode() {
