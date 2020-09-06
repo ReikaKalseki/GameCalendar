@@ -14,6 +14,7 @@ public class Main {
 	/*
 	DO NOT FORGET:
 		SPLIT THE CIV SAVES
+		SPLIT THE FACTORIO SAVES
 SPLIT THE SE PLAYS
 2020 and probably other years PeTI
 	 */

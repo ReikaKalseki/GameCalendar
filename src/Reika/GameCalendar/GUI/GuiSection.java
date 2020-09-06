@@ -14,8 +14,16 @@ public class GuiSection implements CalendarItem {
 	public final double angleStart;
 	public final double angleEnd;
 
-	public GuiSection(Section s) {
+	private GuiSection next;
+	public final int index;
+	public final GuiSection previous;
+
+	public GuiSection(Section s, int idx, GuiSection prev) {
 		section = s;
+		index = idx;
+		previous = prev;
+		if (prev != null)
+			prev.next = this;
 
 		angleStart = s.startTime.getAngle();
 		angleEnd = s.getEnd().getAngle();
@@ -42,6 +50,10 @@ public class GuiSection implements CalendarItem {
 	@Override
 	public String getDescriptiveDate() {
 		return section.getTimeSpan();
+	}
+
+	public GuiSection getNext() {
+		return next;
 	}
 
 }

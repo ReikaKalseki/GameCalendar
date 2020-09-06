@@ -9,10 +9,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.fx.drift.DriftFXSurface;
+import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
+import Reika.GameCalendar.Util.Colors;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -37,11 +39,16 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 
 public class GuiController implements EventHandler<ActionEvent>, ChangeListener {
 
@@ -131,6 +138,45 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		}
 	}
 
+	private static class CategoryListCell extends ListCell<String> {
+
+		private CategoryListCell() {
+			super();
+			this.textProperty().bind(this.itemProperty());
+		}
+
+		@Override
+		public void updateItem(String item, boolean empty) {
+			super.updateItem(item, empty);
+			if (empty) {
+				this.setGraphic(null);
+			}
+			else {
+				ActivityCategory cat = ActivityCategory.getByName(item);
+				Image fxImage = this.generateCategoryColorBox(cat.color);
+				ImageView imageView = new ImageView(fxImage);
+				this.setGraphic(imageView);
+				if (!Strings.isNullOrEmpty(cat.desc))
+					this.setTooltip(new Tooltip(cat.desc));
+			}
+		}
+
+		private Image generateCategoryColorBox(int color) {
+			int s = 14;
+			int t = 2;
+			WritableImage img = new WritableImage(s, s);
+			PixelWriter pw = img.getPixelWriter();
+			Color c = Color.rgb(Colors.getRed(color), Colors.getGreen(color), Colors.getBlue(color));
+			Color c2 = Color.rgb(0, 0, 0);
+			for (int i = 0; i < s; i++) {
+				for (int k = 0; k < s; k++) {
+					pw.setColor(i, k, i < t || k < t || i >= s-t || k >= s-t ? c2 : c);
+				}
+			}
+			return img;
+		}
+	}
+
 	void postInit() {
 		System.out.println("Post-initializing GUI.");
 		renderer = new DriftFXSurface();
@@ -148,8 +194,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
 		catList.getSelectionModel().selectAll();
 		catList.setCellFactory(lv -> {
-			ListCell<String> cell = new ListCell<>();
-			cell.textProperty().bind(cell.itemProperty());
+			ListCell<String> cell = new CategoryListCell();
 			cell.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
 				catList.requestFocus();
 				if (!cell.isEmpty()) {

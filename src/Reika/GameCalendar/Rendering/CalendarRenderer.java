@@ -47,8 +47,10 @@ public class CalendarRenderer {
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
-		for (Section s : t.getSections()) {
-			sections.add(new GuiSection(s));
+		List<Section> li = t.getSections();
+		for (int i = 0; i < li.size(); i++) {
+			Section s = li.get(i);
+			sections.add(new GuiSection(s, i, i == 0 ? null : sections.get(i-1)));
 		}
 		for (Highlight s : t.getEvents()) {
 			events.add(new GuiHighlight(s));
@@ -286,10 +288,10 @@ public class CalendarRenderer {
 			int idx = (int)Math.floor(ang*12/360);
 			Month m = Month.of(1+idx);
 			double frac = (ang-idx*360/12)/(360/12);
-			int day = (int)Math.ceil(frac*m.length(true));
 			int yearidx = (int)Math.round((r-INNER_RADIUS)/(arcThickness));//(int)Math.round((r-INNER_RADIUS)*0.5*years.size()/(MAX_THICKNESS-INNER_RADIUS));
 			if (r0 >= INNER_RADIUS-arcThickness*arcThicknessHalfFraction && yearidx >= 0 && yearidx < years.size()) {
 				int year = years.get(yearidx);
+				int day = (int)Math.ceil(frac*m.length(DateStamp.isLeapYear(year)));
 				Labelling.instance.tooltipString = m.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+day+", "+year;
 			}
 			else {
