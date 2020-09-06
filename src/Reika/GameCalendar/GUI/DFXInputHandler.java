@@ -18,6 +18,9 @@ public class DFXInputHandler implements EventHandler<MouseEvent> {
 	private double lastMouseX;
 	private double lastMouseY;
 
+	private double JFXmouseX;
+	private double JFXmouseY;
+
 	private MovingAverage mouseVelX = new MovingAverage(10);
 	private MovingAverage mouseVelY = new MovingAverage(10);
 
@@ -39,6 +42,8 @@ public class DFXInputHandler implements EventHandler<MouseEvent> {
 			mouseY = this.convertY(event.getY());
 			mouseVelX.addValue(mouseX-lastMouseX);
 			mouseVelY.addValue(mouseY-lastMouseY);
+			JFXmouseX = event.getX();
+			JFXmouseY = event.getY();
 		}
 	}
 
@@ -56,12 +61,12 @@ public class DFXInputHandler implements EventHandler<MouseEvent> {
 		return -dy*2/h;
 	}
 
-	public double getMouseX() {
-		return mouseX;
+	public double getMouseX(boolean jfx) {
+		return jfx ? JFXmouseX : mouseX;
 	}
 
-	public double getMouseY() {
-		return mouseY;
+	public double getMouseY(boolean jfx) {
+		return jfx ? JFXmouseY : mouseY;
 	}
 
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.eclipse.fx.drift.DriftFXSurface;
 
+import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 
@@ -36,7 +37,6 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -94,9 +94,6 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	@FXML
 	Label status;
 
-	@FXML
-	Tooltip tooltip;
-
 	DriftFXSurface renderer;
 
 	DFXInputHandler mouseHandler;
@@ -143,9 +140,6 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		renderField.setCenter(renderer);
 		renderField.setPadding(new Insets(0));
 
-		tooltip = new Tooltip();
-		Tooltip.install(calendarOverlay, tooltip);
-
 		Labelling.instance.init(calendarOverlay);
 
 		//this.dynamicizeTextBoxes(root);
@@ -166,6 +160,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 						catList.getSelectionModel().select(index);
 					event.consume();
 				}
+				this.update();
 			});
 			return cell ;
 		});
@@ -360,6 +355,7 @@ if (o instanceof ChoiceBox) {
 		}
 		StatusHandler.postStatus("Reloading render state", 200);
 		JFXWindow.getGUI().updateActiveSections();
+		Main.getCalendarRenderer().clearSelection();
 		Labelling.instance.init(calendarOverlay);
 	}
 

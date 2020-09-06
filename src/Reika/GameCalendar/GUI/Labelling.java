@@ -12,8 +12,12 @@ import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -30,8 +34,11 @@ public class Labelling implements Runnable {
 	private int width;
 	private int height;
 
+	private Label tooltip;
 	private final HashMap<Month, Label> monthTexts = new HashMap();
 	private final HashMap<Integer, Label> yearTexts = new HashMap();
+
+	public String tooltipString;
 
 	private Labelling() {
 
@@ -73,6 +80,12 @@ public class Labelling implements Runnable {
 				field.getChildren().add(l);
 				yearTexts.put(year, l);
 			}
+
+			tooltip = new Label();
+			Font f = tooltip.getFont();
+			f = Font.font(f.getFamily(), FontWeight.BOLD, f.getSize()*1.25);
+			tooltip.setFont(f);
+			field.getChildren().add(tooltip);
 		}
 		double c = (width+height)/4D;
 		for (Entry<Month, Label> e : monthTexts.entrySet()) {
@@ -122,6 +135,14 @@ public class Labelling implements Runnable {
 			sz -= over*1;
 		}
 		area.setFont(new Font(f.getFamily(), sz));
+
+		tooltip.setBackground(new Background(new BackgroundFill(Color.rgb(1, 0, 0, 0.6), new CornerRadii(0), new Insets(0))));
+		tooltip.toFront();
+		tooltip.setText(tooltipString != null ? tooltipString : "");
+		tooltip.setTextFill(Color.rgb(255, 255, 255, 1));
+		tooltip.visibleProperty().set(tooltipString != null);
+		tooltip.layoutXProperty().set(JFXWindow.getMouseHandler().getMouseX(true)+16);
+		tooltip.layoutYProperty().set(JFXWindow.getMouseHandler().getMouseY(true)+16);
 	}
 
 	private String lineBreakStringList(List<String> li) {

@@ -10,7 +10,6 @@ import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -38,24 +37,6 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 	private Scene display;
 	private Parent root;
 	private GuiController controller;
-
-	private final TooltipHandler tooltipHandler = new TooltipHandler();
-
-	private static class TooltipHandler implements Runnable {
-
-		private String value;
-
-		public void run() {
-			gui.controller.tooltip.setText(value != null ? value : "");
-			if (value == null) {
-
-			}
-			else {
-
-			}
-		}
-
-	}
 
 	public JFXWindow() {
 		gui = this;
@@ -107,11 +88,6 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	void setStatus(String value) {
 		controller.status.setText(value);
-	}
-
-	public void setTooltip(String value) {
-		tooltipHandler.value = value;
-		Platform.runLater(tooltipHandler);
 	}
 
 	public static void create() {

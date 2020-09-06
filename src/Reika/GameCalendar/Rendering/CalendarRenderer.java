@@ -1,10 +1,12 @@
 package Reika.GameCalendar.Rendering;
 
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import org.lwjgl.opengl.GL11;
 
@@ -275,8 +277,28 @@ public class CalendarRenderer {
 		}
 
 		DFXInputHandler dfx = JFXWindow.getGUI().getMouseHandler();
-		double ang = Math.toDegrees(Math.atan2(dfx.getMouseY(), dfx.getMouseX()));
-		JFXWindow.getGUI().setTooltip(String.valueOf(ang));
+		double mx = dfx.getMouseX(false);
+		double my = dfx.getMouseY(false);
+		double r0 = Math.sqrt(mx*mx+my*my);
+		if (r0 >= INNER_RADIUS-arcThickness*arcThicknessHalfFraction && r0 <= INNER_RADIUS+arcThickness*(years.size()+1)) {
+			double ang = (Math.toDegrees(Math.atan2(mx, my))+360)%360;
+			double r = r0-ang*arcThickness/360;
+			int idx = (int)Math.floor(ang*12/360);
+			Month m = Month.of(1+idx);
+			double frac = (ang-idx*360/12)/(360/12);
+			int day = (int)Math.ceil(frac*m.length(true));
+			int yearidx = (int)Math.round((r-INNER_RADIUS)/(arcThickness));//(int)Math.round((r-INNER_RADIUS)*0.5*years.size()/(MAX_THICKNESS-INNER_RADIUS));
+			if (r0 >= INNER_RADIUS-arcThickness*arcThicknessHalfFraction && yearidx >= 0 && yearidx < years.size()) {
+				int year = years.get(yearidx);
+				Labelling.instance.tooltipString = m.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+day+", "+year;
+			}
+			else {
+				Labelling.instance.tooltipString = null;
+			}
+		}
+		else {
+			Labelling.instance.tooltipString = null;
+		}
 
 		Labelling.instance.setRenderParams(sw, sh, this);
 		Platform.runLater(Labelling.instance);
@@ -532,5 +554,9 @@ public class CalendarRenderer {
 
 	public CalendarItem getSelectedObject() {
 		return selectedObject;
+	}
+
+	public void clearSelection() {
+		selectedObject = null;
 	}
 }
