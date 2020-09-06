@@ -36,6 +36,7 @@ import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -90,7 +91,11 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	@FXML
 	private ImageView screenshot;
 
-	@FXML Label status;
+	@FXML
+	Label status;
+
+	@FXML
+	Tooltip tooltip;
 
 	DriftFXSurface renderer;
 
@@ -133,6 +138,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		calendarOverlay.setOnMouseClicked(new DFXInputHandler(renderer));
 		renderField.setCenter(renderer);
 		renderField.setPadding(new Insets(0));
+
+		tooltip = new Tooltip();
+		Tooltip.install(calendarOverlay, tooltip);
 
 		Labelling.instance.init(calendarOverlay);
 

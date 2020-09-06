@@ -6,4 +6,6 @@ public interface CalendarItem {
 
 	List<String> generateDescription();
 
+	public String getDescriptiveDate();
+
 }

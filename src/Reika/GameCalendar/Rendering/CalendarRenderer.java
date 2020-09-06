@@ -135,14 +135,14 @@ public class CalendarRenderer {
 				continue;
 			if (!this.shouldRenderSection(s))
 				continue;
-			double a1 = s.section.startTime.getAngle();
-			double a2 = s.section.getEnd().getAngle();
 			int i1 = years.indexOf(s.section.startTime.year);
 			int i2 = years.indexOf(s.section.getEnd().year);
 			double r1a = INNER_RADIUS+i1*arcThickness;
 			double r1b = INNER_RADIUS+(i1+1)*arcThickness;
 			double r2a = INNER_RADIUS+i2*arcThickness;
 			double r2b = INNER_RADIUS+(i2+1)*arcThickness;
+			double a1 = s.angleStart;
+			double a2 = s.angleEnd;
 			if (a1 > a2) { //across the new year
 				a2 += 360;
 				r2b -= arcThickness;

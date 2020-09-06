@@ -83,7 +83,7 @@ public class Section implements Comparable<Section> {
 		});
 		for (int i = 0; i < li.size(); i++) {
 			TimeSpan ts = li.get(i);
-			String line = ts.category.name+": "+ts.name;
+			String line = ts.category.name+": "+ts.name+" ["+ts.start+" - "+ts.end+"]";
 			ret.add(line);
 			if (!Strings.isNullOrEmpty(ts.description)) {
 				ret.add("\t"+ts.description);
@@ -93,6 +93,10 @@ public class Section implements Comparable<Section> {
 			}
 		}
 		return ret;
+	}
+
+	public String getTimeSpan() {
+		return startTime.toString()+" - "+endTime.toString();
 	}
 
 }

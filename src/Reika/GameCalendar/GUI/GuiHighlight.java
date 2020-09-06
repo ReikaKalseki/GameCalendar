@@ -21,12 +21,17 @@ public class GuiHighlight implements CalendarItem {
 	@Override
 	public List<String> generateDescription() {
 		ArrayList<String> ret = new ArrayList();
-		String line = event.category.name+": "+event.name;
+		String line = event.category.name+": "+event.name+" ["+event.time+"]";
 		ret.add(line);
 		if (!Strings.isNullOrEmpty(event.description)) {
 			ret.add("\t"+event.description);
 		}
 		return ret;
+	}
+
+	@Override
+	public String getDescriptiveDate() {
+		return event.time.toString();
 	}
 
 }
