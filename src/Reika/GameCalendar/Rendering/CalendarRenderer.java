@@ -4,6 +4,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,7 +36,7 @@ public class CalendarRenderer {
 
 	private final Timeline data;
 	private final ArrayList<GuiSection> sections = new ArrayList();
-	private final ArrayList<GuiHighlight> events = new ArrayList();
+	private final HashMap<DateStamp, GuiHighlight> events = new HashMap();
 	private final ArrayList<Integer> years;
 
 	public final double arcThickness;
@@ -51,7 +52,13 @@ public class CalendarRenderer {
 			sections.add(new GuiSection(s, i, i == 0 ? null : sections.get(i-1)));
 		}
 		for (Highlight s : t.getEvents()) {
-			events.add(new GuiHighlight(s));
+			GuiHighlight at = events.get(s.time);
+			if (at == null) {
+				at = new GuiHighlight(s);
+				events.put(at.time, at);
+			}
+			else
+				at.addEvent(s);
 		}
 		years = new ArrayList(t.getYears());
 		Collections.sort(years);
@@ -216,7 +223,7 @@ public class CalendarRenderer {
 				GL11.glEnd();
 		}
 
-		for (GuiHighlight h : events) {
+		for (GuiHighlight h : events.values()) {
 			h.position = null;
 		}
 
@@ -226,11 +233,11 @@ public class CalendarRenderer {
 			GL11.glPointSize(8);
 			GL11.glColor4f(0, 0, 0, 1);
 			GL11.glBegin(GL11.GL_POINTS);
-			for (GuiHighlight h : events) {
-				if (!JFXWindow.getGUI().isListEntrySelected("catList", h.event.category.name))
+			for (GuiHighlight h : events.values()) {
+				if (h.getActiveCategories().isEmpty())
 					continue;
-				double a = h.event.time.getAngle();
-				int i = years.indexOf(h.event.time.year);
+				double a = h.time.getAngle();
+				int i = years.indexOf(h.time.year);
 				double r1 = INNER_RADIUS+i*arcThickness;
 				double r2 = INNER_RADIUS+(i+1)*arcThickness;
 				double r = r1+(r2-r1)*(a/360D);
@@ -525,7 +532,7 @@ public class CalendarRenderer {
 		selectedObject = null;
 		if (JFXWindow.getGUI().getCheckbox("highlights")) {
 			double d = 1/50D;
-			for (GuiHighlight h : events) {
+			for (GuiHighlight h : events.values()) {
 				if (h.position != null)	{
 					if (Math.abs(x-h.position.x) < d && Math.abs(y-h.position.y) < d) {
 						//System.out.println(mx+","+my+" > "+s.section);

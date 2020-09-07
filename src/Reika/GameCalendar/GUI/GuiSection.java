@@ -72,6 +72,7 @@ public class GuiSection implements CalendarItem {
 		return set;
 	}
 
+	//TODO - cache this
 	public List<TimeSpan> getActiveSpans() {
 		List<TimeSpan> li = new ArrayList();
 		for (TimeSpan ts : section.getSpans()) {
