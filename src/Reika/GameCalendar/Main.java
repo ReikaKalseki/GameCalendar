@@ -16,6 +16,10 @@ public class Main {
 		SPLIT THE CIV SAVES
 		SPLIT THE FACTORIO SAVES
 SPLIT THE SE PLAYS
+SPLIT STELLARIS
+
+split the p2 maps?
+
 2020 and probably other years PeTI
 	 */
 

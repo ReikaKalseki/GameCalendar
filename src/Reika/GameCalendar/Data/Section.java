@@ -57,7 +57,7 @@ public class Section implements Comparable<Section> {
 		return activeSpans.isEmpty();
 	}
 
-	public List<TimeSpan> getActiveSpans() {
+	public List<TimeSpan> getSpans() {
 		return Collections.unmodifiableList(activeSpans);
 	}
 

@@ -1,8 +1,12 @@
 package Reika.GameCalendar.GUI;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Section;
+import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePolygon;
 
@@ -17,6 +21,8 @@ public class GuiSection implements CalendarItem {
 	private GuiSection next;
 	public final int index;
 	public final GuiSection previous;
+
+	public boolean skipRender;
 
 	public GuiSection(Section s, int idx, GuiSection prev) {
 		section = s;
@@ -54,6 +60,26 @@ public class GuiSection implements CalendarItem {
 
 	public GuiSection getNext() {
 		return next;
+	}
+
+	public HashSet<ActivityCategory> getActiveCategories() {
+		HashSet<ActivityCategory> set = new HashSet();
+		for (ActivityCategory ts : section.getCategories()) {
+			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.name)) {
+				set.add(ts);
+			}
+		}
+		return set;
+	}
+
+	public List<TimeSpan> getActiveSpans() {
+		List<TimeSpan> li = new ArrayList();
+		for (TimeSpan ts : section.getSpans()) {
+			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+				li.add(ts);
+			}
+		}
+		return li;
 	}
 
 }

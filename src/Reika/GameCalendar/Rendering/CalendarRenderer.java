@@ -4,13 +4,11 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.ImportantDates;
 import Reika.GameCalendar.Data.Section;
@@ -134,11 +132,14 @@ public class CalendarRenderer {
 		double wf = 0.8;
 		for (GuiSection s : sections) {
 			s.polygon = null;
+			s.skipRender = false;
 		}
 		for (GuiSection s : sections) {
+			if (s.skipRender)
+				continue;
 			if (s.section.isEmpty())
 				continue;
-			if (!this.shouldRenderSection(s))
+			if (s.getActiveCategories().isEmpty())
 				continue;
 			int i1 = years.indexOf(s.section.startTime.year);
 			int i2 = years.indexOf(s.section.getEnd().year);
@@ -148,7 +149,14 @@ public class CalendarRenderer {
 			double r2b = INNER_RADIUS+(i2+1)*arcThickness;
 			double a1 = s.angleStart;
 			double a2 = s.angleEnd;
-			if (a1 > a2) { //across the new year
+			double a02 = a2;
+			GuiSection g2 = s.getNext();
+			while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
+				g2.skipRender = true;
+				a2 = g2.angleEnd;
+				g2 = g2.getNext();
+			}
+			while (a1 > a2) { //across a new year
 				a2 += 360;
 				r2b -= arcThickness;
 			}
@@ -181,7 +189,7 @@ public class CalendarRenderer {
 			int clr = 0xffffff;
 			int i = 0;
 			for (DoublePoint p : points) {
-				clr = this.getSectionColorAtIndex(s.section, i/colorstep);
+				clr = this.getSectionColorAtIndex(s, i/colorstep);
 				float r = Colors.HextoColorMultiplier(clr, 0);
 				float g = Colors.HextoColorMultiplier(clr, 1);
 				float b = Colors.HextoColorMultiplier(clr, 2);
@@ -437,23 +445,8 @@ public class CalendarRenderer {
 		return (r1+(r2-r1)*(a/360D));
 	}
 
-	private boolean shouldRenderSection(GuiSection s) {
-		for (ActivityCategory ts : s.section.getCategories()) {
-			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.name)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private int getSectionColorAtIndex(Section s, int i) {
-		List<TimeSpan> li = new ArrayList(s.getActiveSpans());
-		Iterator<TimeSpan> it = li.iterator();
-		while (it.hasNext()) {
-			TimeSpan ts = it.next();
-			if (!JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name))
-				it.remove();
-		}
+	private int getSectionColorAtIndex(GuiSection s, int i) {
+		List<TimeSpan> li = s.getActiveSpans();
 		if (li.isEmpty())
 			return 0x000000;
 		/*
