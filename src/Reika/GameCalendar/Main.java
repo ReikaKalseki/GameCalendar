@@ -14,13 +14,14 @@ public class Main {
 	/*
 	DO NOT FORGET:
 		SPLIT THE CIV SAVES
-		SPLIT THE FACTORIO SAVES
+		SPLIT THE FACTORIO SAVES (especially the three 2020 sections [campaign, survival 1, survival2]
 SPLIT THE SE PLAYS
-SPLIT STELLARIS
+SPLIT STELLARIS (2018 into its two plays and 2020 into the "good" play and the one or two shortlived that preceeded it)
 
 split the p2 maps?
 
 2020 and probably other years PeTI
+
 	 */
 
 	//TODO:

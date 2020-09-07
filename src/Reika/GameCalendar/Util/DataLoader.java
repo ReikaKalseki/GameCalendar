@@ -74,6 +74,10 @@ public class DataLoader {
 		HashMap<String, String> ret = new HashMap();
 		ArrayList<String> li = FileIO.getFileAsLines(f);
 		for (String s : li) {
+			int idx0 = s.indexOf('$');
+			if (idx0 > 0) {
+				s = s.substring(0, idx0);
+			}
 			int idx = s.indexOf(':');
 			if (idx < 0) {
 				System.err.println("File '"+cat+"/"+f.getName()+"' has invalid line '"+s+"'!");
