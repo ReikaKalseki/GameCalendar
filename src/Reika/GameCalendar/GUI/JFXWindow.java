@@ -10,6 +10,7 @@ import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -26,6 +27,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class JFXWindow extends Application implements EventHandler<javafx.event.Event> {
 
@@ -69,6 +71,14 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		//window.setX(resolution.getWidth()/4);
 		//window.setY(resolution.getHeight()/4);
 		window.show();
+
+		primary.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent t) {
+				Platform.exit();
+			}
+		});
+
 		this.setStatus("Program initialized.");
 		controller.postInit();
 
@@ -80,6 +90,12 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		}
 
 		isLoaded = true;
+	}
+
+	@Override
+	public void stop() throws Exception {
+		super.stop();
+		System.out.println("Closing window");
 	}
 
 	public void updateActiveSections() {

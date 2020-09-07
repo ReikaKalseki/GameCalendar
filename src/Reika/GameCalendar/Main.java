@@ -16,7 +16,6 @@ public class Main {
 		SPLIT THE CIV SAVES
 		SPLIT THE FACTORIO SAVES (especially the three 2020 sections [campaign, survival 1, survival2]
 SPLIT THE SE PLAYS
-SPLIT STELLARIS (2018 into its two plays and 2020 into the "good" play and the one or two shortlived that preceeded it)
 
 split the p2 maps?
 
@@ -25,6 +24,9 @@ split the p2 maps?
 	 */
 
 	//TODO:
+	//ability to handle "concurrent" highlights
+
+
 	//checkboxes to show:
 	//ongoing sections
 
@@ -71,7 +73,7 @@ split the p2 maps?
 		//WavefrontObjDemoStandalone.main(args);
 		//window.create();
 		renderer.close();
-		System.out.print("Run complete");
+		System.out.print("Exiting program");
 		System.exit(0);
 	}
 	/*
