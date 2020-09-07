@@ -141,21 +141,22 @@ public class CalendarRenderer {
 				continue;
 			if (s.getActiveCategories().isEmpty())
 				continue;
-			int i1 = years.indexOf(s.section.startTime.year);
-			int i2 = years.indexOf(s.section.getEnd().year);
-			double r1a = INNER_RADIUS+i1*arcThickness;
-			double r1b = INNER_RADIUS+(i1+1)*arcThickness;
-			double r2a = INNER_RADIUS+i2*arcThickness;
-			double r2b = INNER_RADIUS+(i2+1)*arcThickness;
 			double a1 = s.angleStart;
 			double a2 = s.angleEnd;
-			double a02 = a2;
+			DateStamp end = s.section.getEnd();
 			GuiSection g2 = s.getNext();
 			while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
 				g2.skipRender = true;
 				a2 = g2.angleEnd;
+				end = g2.section.getEnd();
 				g2 = g2.getNext();
 			}
+			int i1 = years.indexOf(s.section.startTime.year);
+			int i2 = years.indexOf(end.year);
+			double r1a = INNER_RADIUS+i1*arcThickness;
+			double r1b = INNER_RADIUS+(i1+1)*arcThickness;
+			double r2a = INNER_RADIUS+i2*arcThickness;
+			double r2b = INNER_RADIUS+(i2+1)*arcThickness;
 			while (a1 > a2) { //across a new year
 				a2 += 360;
 				r2b -= arcThickness;
