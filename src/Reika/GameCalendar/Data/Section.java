@@ -84,6 +84,8 @@ public class Section implements Comparable<Section> {
 		for (int i = 0; i < li.size(); i++) {
 			TimeSpan ts = li.get(i);
 			String line = ts.category.name+": "+ts.name+" ["+ts.start+" - "+ts.end+"]";
+			if (ts.end.equals(DateStamp.launch))
+				line = ts.category.name+": "+ts.name+" ["+ts.start+", ongoing]";
 			ret.add(line);
 			if (!Strings.isNullOrEmpty(ts.description)) {
 				ret.add("\t"+ts.description);
