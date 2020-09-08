@@ -13,7 +13,6 @@ import Reika.GameCalendar.Rendering.RenderLoop;
 public class Main {
 	/*
 	DO NOT FORGET:
-		SPLIT THE 2014 and 2015 CIV SAVES
 SPLIT THE SE PLAYS
 
 split the p2 map dev into maps?
