@@ -14,29 +14,17 @@ public class Main {
 	/*
 	DO NOT FORGET:
 		SPLIT THE CIV SAVES
-		SPLIT THE FACTORIO SAVES (three 2020 sections [campaign, survival 1, survival2]
 SPLIT THE SE PLAYS
 
-ELITE 2020 ENGINEERING THE COBRA (may)
-elite 2020 mat (mostly surface) hunting + overcharged multicannons: may 10 to 24
-ELITE 2020 JUN 19 ANACONDA GRAVEYARD EVENT
-elite 2020 july engineering the t10
-
-ADD TUNGSTEN GEARBOXES TO THE APPROPRATE 2020 MODDING DESC (early may)
-
-split the p2 maps?
+split the p2 map dev into maps?
 
 2020 and probably other years PeTI
 
 	 */
 
 	//TODO:
-	//ability to handle "concurrent" highlights
-
-
 	//checkboxes to show:
 	//ongoing sections
-
 	//add another box to show a sample screenshot, linked to with a .png
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
