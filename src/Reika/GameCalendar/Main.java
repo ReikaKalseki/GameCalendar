@@ -13,8 +13,6 @@ import Reika.GameCalendar.Rendering.RenderLoop;
 public class Main {
 	/*
 	DO NOT FORGET:
-SPLIT THE SE PLAYS
-
 split the p2 map dev into maps?
 
 2020 and probably other years PeTI

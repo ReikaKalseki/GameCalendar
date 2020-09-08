@@ -28,6 +28,7 @@ import Reika.GameCalendar.Util.DoublePolygon;
 import Reika.GameCalendar.Util.GLFunctions.BlendMode;
 
 import javafx.application.Platform;
+import javafx.scene.image.Image;
 
 public class CalendarRenderer {
 
@@ -552,6 +553,11 @@ public class CalendarRenderer {
 					}
 				}
 			}
+		}
+
+		if (selectedObject != null) {
+			Image image = selectedObject.getScreenshot();
+			JFXWindow.getGUI().setScreenshot(image);
 		}
 	}
 

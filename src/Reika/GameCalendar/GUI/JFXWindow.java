@@ -106,6 +106,15 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		controller.status.setText(value);
 	}
 
+	public void setScreenshot(Image image) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				controller.screenshot.setImage(image);
+			}
+		});
+	}
+
 	public static void create() {
 		launch();
 	}

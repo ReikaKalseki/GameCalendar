@@ -12,6 +12,8 @@ import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
 
+import javafx.scene.image.Image;
+
 public class GuiHighlight implements CalendarItem {
 
 	private final ArrayList<Highlight> events = new ArrayList();
@@ -77,6 +79,11 @@ public class GuiHighlight implements CalendarItem {
 			}
 		}
 		return set;
+	}
+
+	@Override
+	public Image getScreenshot() {
+		return events.get(0).getScreenshot();
 	}
 
 }

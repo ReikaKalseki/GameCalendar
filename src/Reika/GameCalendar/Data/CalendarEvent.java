@@ -1,9 +1,12 @@
 package Reika.GameCalendar.Data;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-import Reika.GameCalendar.Rendering.Texture;
 import Reika.GameCalendar.Util.DateStamp;
+
+import javafx.scene.image.Image;
 
 public abstract class CalendarEvent {
 
@@ -14,7 +17,7 @@ public abstract class CalendarEvent {
 
 	private File screenshot;
 
-	private Texture screenshotData;
+	private Image screenshotData;
 
 	public CalendarEvent(ActivityCategory a, String n, String desc) {
 		if (a == null)
@@ -25,6 +28,8 @@ public abstract class CalendarEvent {
 	}
 
 	public CalendarEvent setScreenshot(File f) {
+		if (!f.exists())
+			throw new IllegalArgumentException("Screenshot "+f.getAbsolutePath()+" does not exist!");
 		screenshot = f;
 		return this;
 	}
@@ -38,13 +43,17 @@ public abstract class CalendarEvent {
 
 	public abstract int getColor();
 
-	public void bindScreenshot() {
-		if (screenshot != null) {
-			if (screenshotData == null) {
-				screenshotData = new Texture(screenshot, true);
+	public Image getScreenshot() {
+		if (screenshot != null && screenshotData == null) {
+			try(InputStream in = new FileInputStream(screenshot)) {
+				screenshotData = new Image(in);
 			}
-			screenshotData.bind();
+			catch (Exception e) {
+				System.err.println("Could not load screenshot '"+screenshot.getAbsolutePath()+"'!");
+				e.printStackTrace();
+			}
 		}
+		return screenshotData;
 	}
 
 }

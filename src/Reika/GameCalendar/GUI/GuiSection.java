@@ -10,6 +10,8 @@ import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePolygon;
 
+import javafx.scene.image.Image;
+
 public class GuiSection implements CalendarItem {
 
 	public final Section section;
@@ -81,6 +83,11 @@ public class GuiSection implements CalendarItem {
 			}
 		}
 		return li;
+	}
+
+	@Override
+	public Image getScreenshot() {
+		return this.getActiveSpans().get(0).getScreenshot();
 	}
 
 }

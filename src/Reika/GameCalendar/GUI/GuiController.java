@@ -95,8 +95,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	@FXML
 	private Button catFlip;
 
-	@FXML
-	private ImageView screenshot;
+	@FXML ImageView screenshot;
 
 	@FXML
 	Label status;
@@ -402,6 +401,7 @@ if (o instanceof ChoiceBox) {
 		JFXWindow.getGUI().updateActiveSections();
 		Main.getCalendarRenderer().clearSelection();
 		Labelling.instance.init(calendarOverlay);
+		screenshot.setImage(null);
 	}
 
 	public static class NodeWrapper {

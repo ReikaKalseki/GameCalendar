@@ -5,6 +5,8 @@ import java.util.List;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 
+import javafx.scene.image.Image;
+
 public interface CalendarItem {
 
 	List<String> generateDescription();
@@ -12,5 +14,7 @@ public interface CalendarItem {
 	public String getDescriptiveDate();
 
 	public HashSet<ActivityCategory> getActiveCategories();
+
+	public Image getScreenshot();
 
 }
