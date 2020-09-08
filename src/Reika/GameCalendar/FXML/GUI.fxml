@@ -8,7 +8,6 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -17,7 +16,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.GuiController">
    <children>
@@ -41,10 +39,10 @@
                   <TextArea fx:id="descriptionPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="160.0" />
               </items>
             </SplitPane>
-            <SplitPane dividerPositions="0.67" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="630.0" prefWidth="796.0">
+            <SplitPane dividerPositions="0.75" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="630.0" prefWidth="796.0">
                <items>
-                  <VBox>
-                     <children>
+                  <SplitPane dividerPositions="0.97" orientation="VERTICAL">
+                     <items>
                         <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="791.0" prefWidth="530.0" text="Categories">
                            <content>
                               <ListView fx:id="catList" prefHeight="604.0" prefWidth="630.0" />
@@ -68,16 +66,11 @@
                               <Button fx:id="catFlip" mnemonicParsing="false" text="Invert Selection" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                            </children>
                         </GridPane>
-                        <BorderPane>
-                           <center>
-                              <ImageView fx:id="screenshot" fitHeight="180.0" fitWidth="320.0" pickOnBounds="true" preserveRatio="true" />
-                           </center>
-                        </BorderPane>
-                     </children>
-                  </VBox>
-                  <VBox>
+                     </items>
+                  </SplitPane>
+                  <VBox fx:id="rightmostColumn" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <TitledPane animated="false" collapsible="false" text="Sorting Mode">
+                        <TitledPane animated="false" collapsible="false" prefHeight="126.0" prefWidth="260.0" text="Sorting Mode">
                            <content>
                               <ListView fx:id="sortList" prefHeight="165.0" prefWidth="282.0" />
                            </content>
@@ -100,6 +93,14 @@
                                     <Insets bottom="6.0" left="8.0" right="6.0" top="6.0" />
                                  </padding>
                               </VBox>
+                           </content>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </TitledPane>
+                        <TitledPane fx:id="screenshotsTitled" text="Screenshots for Selected Period">
+                           <content>
+                              <VBox fx:id="imageContainer" prefHeight="180.0" prefWidth="320.0" />
                            </content>
                            <font>
                               <Font name="System Bold" size="12.0" />

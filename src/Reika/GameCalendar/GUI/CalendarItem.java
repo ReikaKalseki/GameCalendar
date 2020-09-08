@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import Reika.GameCalendar.Data.ActivityCategory;
-
-import javafx.scene.image.Image;
+import Reika.GameCalendar.Data.CalendarEvent;
 
 public interface CalendarItem {
 
@@ -15,6 +14,6 @@ public interface CalendarItem {
 
 	public HashSet<ActivityCategory> getActiveCategories();
 
-	public Image getScreenshot();
+	public List<? extends CalendarEvent> getItems(boolean activeOnly);
 
 }

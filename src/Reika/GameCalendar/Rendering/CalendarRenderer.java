@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.ImportantDates;
 import Reika.GameCalendar.Data.Section;
@@ -28,7 +29,6 @@ import Reika.GameCalendar.Util.DoublePolygon;
 import Reika.GameCalendar.Util.GLFunctions.BlendMode;
 
 import javafx.application.Platform;
-import javafx.scene.image.Image;
 
 public class CalendarRenderer {
 
@@ -556,8 +556,11 @@ public class CalendarRenderer {
 		}
 
 		if (selectedObject != null) {
-			Image image = selectedObject.getScreenshot();
-			JFXWindow.getGUI().setScreenshot(image);
+			List<? extends CalendarEvent> li = selectedObject.getItems(true);
+			JFXWindow.getGUI().setScreenshots(li);
+		}
+		else {
+			JFXWindow.getGUI().setScreenshots(null);
 		}
 	}
 

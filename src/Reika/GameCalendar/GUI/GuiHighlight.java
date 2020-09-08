@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 
 import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Data.ActivityCategory;
+import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
-
-import javafx.scene.image.Image;
 
 public class GuiHighlight implements CalendarItem {
 
@@ -42,12 +42,7 @@ public class GuiHighlight implements CalendarItem {
 	}
 
 	public ArrayList<String> generateDescription() {
-		ArrayList<Highlight> li = new ArrayList();
-		for (Highlight ts : events) {
-			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
-				li.add(ts);
-			}
-		}
+		ArrayList<Highlight> li = this.getActiveEvents();
 		ArrayList<String> ret = new ArrayList();
 		Collections.sort(li, new Comparator<Highlight>() {
 
@@ -71,6 +66,7 @@ public class GuiHighlight implements CalendarItem {
 		return ret;
 	}
 
+	//TODO cache this
 	public HashSet<ActivityCategory> getActiveCategories() {
 		HashSet<ActivityCategory> set = new HashSet();
 		for (Highlight ts : events) {
@@ -82,8 +78,19 @@ public class GuiHighlight implements CalendarItem {
 	}
 
 	@Override
-	public Image getScreenshot() {
-		return events.get(0).getScreenshot();
+	public List<? extends CalendarEvent> getItems(boolean activeOnly) {
+		return activeOnly ? this.getActiveEvents() : Collections.unmodifiableList(events);
+	}
+
+	//TODO cache this
+	public ArrayList<Highlight> getActiveEvents() {
+		ArrayList<Highlight> li = new ArrayList();
+		for (Highlight ts : events) {
+			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+				li.add(ts);
+			}
+		}
+		return li;
 	}
 
 }

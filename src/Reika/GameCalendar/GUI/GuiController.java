@@ -14,8 +14,10 @@ import org.lwjglx.debug.joptsimple.internal.Strings;
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
+import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Util.Colors;
 
+import javafx.application.HostServices;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -48,6 +50,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class GuiController implements EventHandler<ActionEvent>, ChangeListener {
@@ -95,7 +98,14 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	@FXML
 	private Button catFlip;
 
-	@FXML ImageView screenshot;
+	@FXML
+	private VBox imageContainer;
+
+	@FXML
+	private TitledPane screenshotsTitled;
+
+	@FXML
+	private VBox rightmostColumn;
 
 	@FXML
 	Label status;
@@ -103,6 +113,8 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	DriftFXSurface renderer;
 
 	DFXInputHandler mouseHandler;
+
+	private HostServices host;
 
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
@@ -176,8 +188,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		}
 	}
 
-	void postInit() {
+	void postInit(HostServices host) {
 		System.out.println("Post-initializing GUI.");
+		this.host = host;
 		renderer = new DriftFXSurface();
 		mouseHandler = new DFXInputHandler(renderer);
 		calendarOverlay.setOnMouseClicked(mouseHandler);
@@ -215,6 +228,11 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 
 		descriptionPane.setEditable(false);
 		descriptionPane.wrapTextProperty().set(true);
+
+		this.setImages(null);
+
+		imageContainer.setPadding(Insets.EMPTY);
+		screenshotsTitled.setPadding(Insets.EMPTY);
 
 		//this.update();
 	}
@@ -401,7 +419,7 @@ if (o instanceof ChoiceBox) {
 		JFXWindow.getGUI().updateActiveSections();
 		Main.getCalendarRenderer().clearSelection();
 		Labelling.instance.init(calendarOverlay);
-		screenshot.setImage(null);
+		this.setImages(null);
 	}
 
 	public static class NodeWrapper {
@@ -431,6 +449,54 @@ if (o instanceof ChoiceBox) {
 			split.setPosition(position);
 		}
 
+	}
+
+	void setImages(List<? extends CalendarEvent> images) {
+		imageContainer.getChildren().clear();
+		if (images != null) {
+			for (CalendarEvent e : images) {
+				Image img = e.getScreenshot();
+				if (img == null) {
+					continue;
+					/*
+					img = new WritableImage(320, 180);
+					PixelWriter pw = ((WritableImage)img).getPixelWriter();
+					Color c = Color.rgb(240, 240, 240);
+					Color c2 = Color.rgb(220, 220, 220);
+					for (int i = 0; i < img.getWidth(); i++) {
+						for (int k = 0; k < img.getHeight(); k++) {
+							pw.setColor(i, k, Math.abs(i) == Math.abs(k) ? c2 : c);
+						}
+					}
+					 */
+				}
+				ImageView v = new ImageView(img);
+				v.setFitWidth(320-2);
+				v.setFitHeight(180-1);
+				//Tooltip.install(v, new Tooltip(e.name));
+				TitledPane ttl = new TitledPane();
+				ttl.setText(e.name);
+				ttl.setContent(v);
+				ttl.setExpanded(true);
+				ttl.setAnimated(false);
+				ttl.setCollapsible(false);
+				imageContainer.getChildren().add(ttl);
+				imageContainer.setMargin(ttl, new Insets(4, 0, 0, 0));
+				Tooltip.install(v, new Tooltip("Click to open"));
+				v.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+					@Override
+					public void handle(MouseEvent event) {
+						host.showDocument(e.getScreenshotFile().getAbsolutePath());
+					}
+
+				});
+				ttl.toBack();
+			}
+		}
+		boolean flag = !imageContainer.getChildren().isEmpty();
+		screenshotsTitled.setExpanded(flag);
+		screenshotsTitled.disableProperty().set(!flag);
 	}
 
 }

@@ -56,4 +56,8 @@ public abstract class CalendarEvent {
 		return screenshotData;
 	}
 
+	public File getScreenshotFile() {
+		return screenshot;
+	}
+
 }

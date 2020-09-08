@@ -3,11 +3,13 @@ package Reika.GameCalendar.GUI;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.fx.drift.DriftFXSurface;
 
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
+import Reika.GameCalendar.Data.CalendarEvent;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -80,7 +82,7 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		});
 
 		this.setStatus("Program initialized.");
-		controller.postInit();
+		controller.postInit(this.getHostServices());
 
 		double midX = window.getWidth()/2;
 		double midY = window.getHeight()/2;
@@ -106,11 +108,11 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		controller.status.setText(value);
 	}
 
-	public void setScreenshot(Image image) {
+	public void setScreenshots(List<? extends CalendarEvent> images) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				controller.screenshot.setImage(image);
+				controller.setImages(images);
 			}
 		});
 	}

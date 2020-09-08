@@ -1,16 +1,19 @@
 package Reika.GameCalendar.GUI;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
+import org.lwjglx.debug.joptsimple.internal.Strings;
+
 import Reika.GameCalendar.Data.ActivityCategory;
+import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePolygon;
-
-import javafx.scene.image.Image;
 
 public class GuiSection implements CalendarItem {
 
@@ -50,9 +53,31 @@ public class GuiSection implements CalendarItem {
 		return section.toString();
 	}
 
-	@Override
 	public List<String> generateDescription() {
-		return section.generateDescription();
+		ArrayList<TimeSpan> li = this.getActiveSpans();
+		ArrayList<String> ret = new ArrayList();
+		Collections.sort(li, new Comparator<TimeSpan>() {
+
+			@Override
+			public int compare(TimeSpan o1, TimeSpan o2) {
+				return o1.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.category);
+			}
+
+		});
+		for (int i = 0; i < li.size(); i++) {
+			TimeSpan ts = li.get(i);
+			String line = ts.category.name+": "+ts.name+" ["+ts.start+" - "+ts.end+"]";
+			if (ts.end.equals(DateStamp.launch))
+				line = ts.category.name+": "+ts.name+" ["+ts.start+", ongoing]";
+			ret.add(line);
+			if (!Strings.isNullOrEmpty(ts.description)) {
+				ret.add("\t"+ts.description);
+			}
+			if (i < section.spanCount()-1) {
+				ret.add("");
+			}
+		}
+		return ret;
 	}
 
 	@Override
@@ -64,6 +89,7 @@ public class GuiSection implements CalendarItem {
 		return next;
 	}
 
+	//TODO cache this
 	public HashSet<ActivityCategory> getActiveCategories() {
 		HashSet<ActivityCategory> set = new HashSet();
 		for (ActivityCategory ts : section.getCategories()) {
@@ -75,8 +101,8 @@ public class GuiSection implements CalendarItem {
 	}
 
 	//TODO - cache this
-	public List<TimeSpan> getActiveSpans() {
-		List<TimeSpan> li = new ArrayList();
+	public ArrayList<TimeSpan> getActiveSpans() {
+		ArrayList<TimeSpan> li = new ArrayList();
 		for (TimeSpan ts : section.getSpans()) {
 			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
 				li.add(ts);
@@ -86,8 +112,8 @@ public class GuiSection implements CalendarItem {
 	}
 
 	@Override
-	public Image getScreenshot() {
-		return this.getActiveSpans().get(0).getScreenshot();
+	public List<? extends CalendarEvent> getItems(boolean activeOnly) {
+		return activeOnly ? this.getActiveSpans() : section.getSpans();
 	}
 
 }
