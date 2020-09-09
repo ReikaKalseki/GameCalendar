@@ -484,12 +484,10 @@ if (o instanceof ChoiceBox) {
 				imageContainer.setMargin(ttl, new Insets(4, 0, 0, 0));
 				Tooltip.install(v, new Tooltip("Click to open"));
 				v.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
 					@Override
 					public void handle(MouseEvent event) {
 						host.showDocument(e.getScreenshotFile().getAbsolutePath());
 					}
-
 				});
 				ttl.toBack();
 			}

@@ -17,12 +17,16 @@ split the p2 map dev into maps?
 
 2020 and probably other years PeTI
 
+MAKING MYPHRASEKT AND TANKED
+
+ALL THE SCREENSHOTS
+
 	 */
 
 	//TODO:
 	//checkboxes to show:
+	//to merge all category arcs together so it just shows game->game ("show subsections")
 	//ongoing sections
-	//add another box to show a sample screenshot, linked to with a .png
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
