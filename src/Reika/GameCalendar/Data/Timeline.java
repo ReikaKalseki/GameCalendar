@@ -68,6 +68,15 @@ public class Timeline {
 		}
 		sections.get(sections.size()-1).setEndTime(latest);
 		Collections.sort(sections);
+
+		for (TimeSpan t : periods) {
+			if (t.getScreenshotFile() == null)
+				System.out.println("Time span "+t.category.name+"\\"+t.name+" ["+t.start+" - "+t.end+"] has no screenshot!");
+		}
+		for (Highlight t : events) {
+			if (t.getScreenshotFile() == null)
+				System.out.println("Event "+t.category.name+"\\"+t.name+" ["+t.time+"] has no screenshot!");
+		}
 	}
 
 	private void splitSection(DateStamp at, HashSet<TimeSpan> active) {
