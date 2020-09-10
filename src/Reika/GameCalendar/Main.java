@@ -27,6 +27,7 @@ ALL THE SCREENSHOTS
 	//fix the sorting order thing
 	//ongoing sections
 	//ability to reload data
+	//checkbox: "also select section under highlight when highlight is clicked"
 	//"open definition file(s)" button? -> how? each section is many files
 
 	//"IMPORTANT/MEMORABLE" HIGHLIGHTING & CHECKBOX********************************** -> for things like the sagA trip, 2016 CivV continents, and late 2018 stellaris
