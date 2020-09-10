@@ -55,6 +55,7 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		System.out.println("Initializing GUI.");
 		window = primary;
 		window.getIcons().add(new Image(Main.class.getResourceAsStream("icon.png")));
+		window.setResizable(false);
 
 		FXMLLoader loader = new FXMLLoader(Main.class.getResource("FXML/GUI.fxml"));
 		root = loader.load();
