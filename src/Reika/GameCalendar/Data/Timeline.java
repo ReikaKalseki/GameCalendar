@@ -69,6 +69,19 @@ public class Timeline {
 		sections.get(sections.size()-1).setEndTime(latest);
 		Collections.sort(sections);
 
+		/*
+		Collections.sort(periods, new Comparator<TimeSpan>(){
+			@Override
+			public int compare(TimeSpan o1, TimeSpan o2) {
+				return o1.category.compareTo(SortingMode.ALPHA, o2.category);
+			}
+		});
+		Collections.sort(events, new Comparator<Highlight>(){
+			@Override
+			public int compare(Highlight o1, Highlight o2) {
+				return o1.category.compareTo(SortingMode.ALPHA, o2.category);
+			}
+		});
 		for (TimeSpan t : periods) {
 			if (t.getScreenshotFile() == null)
 				System.out.println("Time span "+t.category.name+"\\"+t.name+" ["+t.start+" - "+t.end+"] has no screenshot!");
@@ -77,6 +90,7 @@ public class Timeline {
 			if (t.getScreenshotFile() == null)
 				System.out.println("Event "+t.category.name+"\\"+t.name+" ["+t.time+"] has no screenshot!");
 		}
+		 */
 	}
 
 	private void splitSection(DateStamp at, HashSet<TimeSpan> active) {
