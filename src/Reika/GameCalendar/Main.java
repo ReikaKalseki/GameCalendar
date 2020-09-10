@@ -26,6 +26,10 @@ ALL THE SCREENSHOTS
 	//to merge all category arcs together so it just shows game->game ("show subsections")
 	//fix the sorting order thing
 	//ongoing sections
+	//ability to reload data
+	//"open definition file(s)" button? -> how? each section is many files
+
+	//"IMPORTANT/MEMORABLE" HIGHLIGHTING & CHECKBOX********************************** -> for things like the sagA trip, 2016 CivV continents, and late 2018 stellaris
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
