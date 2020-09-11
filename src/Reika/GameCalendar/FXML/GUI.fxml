@@ -56,6 +56,7 @@
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -64,6 +65,7 @@
                               <Button fx:id="catAll" mnemonicParsing="false" text="Select All" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                               <Button fx:id="catNone" mnemonicParsing="false" text="Deselect All" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                               <Button fx:id="catFlip" mnemonicParsing="false" text="Invert Selection" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <Button fx:id="reloadFiles" mnemonicParsing="false" text="Reload Data Files" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                            </children>
                         </GridPane>
                      </items>
@@ -82,12 +84,15 @@
                            <content>
                               <VBox alignment="CENTER_LEFT" spacing="12.0">
                                  <children>
-                                    <CheckBox fx:id="importantDates" mnemonicParsing="false" text="Show Important Dates" />
-                                    <CheckBox fx:id="highlights" mnemonicParsing="false" text="Show Highlights" />
-                                    <CheckBox fx:id="currentDate" mnemonicParsing="false" text="Show Current Date" />
-                                    <CheckBox mnemonicParsing="false" text="Show Christmas Break" fx:id="xmasBreak" />
-                                    <CheckBox fx:id="readingWeek" mnemonicParsing="false" text="Show Reading Week" />
-                                    <CheckBox fx:id="summerBreak" mnemonicParsing="false" text="Show Summer Break" />
+                                    <CheckBox fx:id="importantDates" mnemonicParsing="false" text="Show Important Holidays/Dates" />
+                                    <CheckBox fx:id="highlights" mnemonicParsing="false" text="Show Highlights/Single Events" />
+                                    <CheckBox fx:id="currentDate" mnemonicParsing="false" text="Show Current Date Marker" />
+                                    <CheckBox mnemonicParsing="false" text="Show Christmas Break Period" fx:id="xmasBreak" />
+                                    <CheckBox fx:id="readingWeek" mnemonicParsing="false" text="Show Reading Week Period" />
+                                    <CheckBox fx:id="summerBreak" mnemonicParsing="false" text="Show Summer Break Period" />
+                                    <CheckBox fx:id="memorable" mnemonicParsing="false" text="Show &quot;Memorable&quot; Sections As Special" />
+                                    <CheckBox fx:id="selectHighlightsInSection" mnemonicParsing="false" text="Also Select Highlights Within Clicked Section" />
+                                    <CheckBox fx:id="selectSectionsWithHighlight" mnemonicParsing="false" text="Also Select Section Containing Clicked Highlight" />
                                  </children>
                                  <padding>
                                     <Insets bottom="6.0" left="8.0" right="6.0" top="6.0" />

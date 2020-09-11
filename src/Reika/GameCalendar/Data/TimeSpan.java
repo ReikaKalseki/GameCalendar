@@ -43,4 +43,9 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 		return category.color;
 	}
 
+	@Override
+	public String getFullDateString() {
+		return start.toString()+" - "+end.toString();
+	}
+
 }

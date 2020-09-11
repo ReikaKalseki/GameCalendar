@@ -12,6 +12,7 @@ import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePolygon;
 
@@ -93,7 +94,7 @@ public class GuiSection implements CalendarItem {
 	public HashSet<ActivityCategory> getActiveCategories() {
 		HashSet<ActivityCategory> set = new HashSet();
 		for (ActivityCategory ts : section.getCategories()) {
-			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.name)) {
+			if (GuiElement.CATEGORIES.isStringSelected(ts.name)) {
 				set.add(ts);
 			}
 		}
@@ -104,7 +105,7 @@ public class GuiSection implements CalendarItem {
 	public ArrayList<TimeSpan> getActiveSpans() {
 		ArrayList<TimeSpan> li = new ArrayList();
 		for (TimeSpan ts : section.getSpans()) {
-			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name)) {
 				li.add(ts);
 			}
 		}

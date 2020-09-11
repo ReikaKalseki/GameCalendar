@@ -18,6 +18,7 @@ import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.CalendarItem;
 import Reika.GameCalendar.GUI.DFXInputHandler;
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
@@ -118,7 +119,7 @@ public class CalendarRenderer {
 		GL11.glVertex2d(0, 0);
 		GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+arcThickness*arcThicknessHalfFraction);
 		GL11.glEnd();
-		if (JFXWindow.getGUI().getCheckbox("currentDate")) {
+		if (GuiElement.TODAY.isChecked()) {
 			GL11.glLineWidth(3);
 			GL11.glBegin(GL11.GL_LINES);
 			double lang = DateStamp.launch.getAngle();
@@ -228,7 +229,7 @@ public class CalendarRenderer {
 			h.position = null;
 		}
 
-		if (JFXWindow.getGUI().getCheckbox("highlights")) {
+		if (GuiElement.HIGHLIGHTS.isChecked()) {
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, -0.1);
 			GL11.glPointSize(8);
@@ -264,19 +265,19 @@ public class CalendarRenderer {
 			}
 		}
 
-		if (JFXWindow.getGUI().getCheckbox("xmasBreak")) {
+		if (GuiElement.XMAS.isChecked()) {
 			this.drawSplitTimeWedge(t, DateStamp.xmasStart, DateStamp.xmasFull, DateStamp.xmasEnd, 0xff0000, 0x007700);
 		}
 
-		if (JFXWindow.getGUI().getCheckbox("readingWeek")) {
+		if (GuiElement.READING.isChecked()) {
 			this.drawTimeWedge(t, DateStamp.readingStart, DateStamp.readingEnd, 0xc0c0c0, 0x00ffff);
 		}
 
-		if (JFXWindow.getGUI().getCheckbox("summerBreak")) {
+		if (GuiElement.SUMMER.isChecked()) {
 			this.drawSplitTimeWedge(t, DateStamp.summerStart, DateStamp.summerFull, DateStamp.summerEnd, 0xffff00, 0x00ff00);
 		}
 
-		if (JFXWindow.getGUI().getCheckbox("importantDates")) {
+		if (GuiElement.HOLIDAYS.isChecked()) {
 			for (ImportantDates d : ImportantDates.dates) {
 				GL11.glColor4f(0, 0, 0, 1);
 				GL11.glBegin(GL11.GL_LINE_STRIP);
@@ -531,7 +532,7 @@ public class CalendarRenderer {
 			//System.out.println(mx+","+my);
 		}*/
 		selectedObject = null;
-		if (JFXWindow.getGUI().getCheckbox("highlights")) {
+		if (GuiElement.HIGHLIGHTS.isChecked()) {
 			double d = 1/50D;
 			for (GuiHighlight h : events.values()) {
 				if (h.position != null)	{

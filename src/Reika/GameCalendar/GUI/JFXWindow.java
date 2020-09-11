@@ -10,6 +10,7 @@ import org.eclipse.fx.drift.DriftFXSurface;
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 import Reika.GameCalendar.Data.CalendarEvent;
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -146,22 +147,22 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		return gui != null && gui.controller != null ? SortingMode.values()[gui.controller.sortList.getSelectionModel().getSelectedIndex()] : SortingMode.ALPHA;
 	}
 
-	public boolean getCheckbox(String id) {
-		Node n = this.getOption(id);
+	boolean getCheckbox(GuiElement e) {
+		Node n = this.getOption(e);
 		return n != null && ((CheckBox)n).selectedProperty().get();
 	}
 
-	public boolean isListEntrySelected(String node, String s) {
-		ListView n = this.getListView(node);
+	boolean isListEntrySelected(GuiElement e, String s) {
+		ListView n = this.getListView(e);
 		return n != null && n.getSelectionModel().isSelected(n.getItems().indexOf(s));
 	}
 
-	private Node getOption(String id) {
-		return gui != null && gui.controller != null ? gui.controller.getOption(id) : null;
+	private Node getOption(GuiElement e) {
+		return gui != null && gui.controller != null ? gui.controller.getOption(e) : null;
 	}
 
-	private ListView getListView(String id) {
-		return gui != null && gui.controller != null ? gui.controller.getListView(id) : null;
+	private ListView getListView(GuiElement e) {
+		return gui != null && gui.controller != null ? gui.controller.getListView(e) : null;
 	}
 
 	@Override

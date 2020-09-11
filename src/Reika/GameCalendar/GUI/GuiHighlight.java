@@ -11,6 +11,7 @@ import org.lwjglx.debug.joptsimple.internal.Strings;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Highlight;
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
 
@@ -70,7 +71,7 @@ public class GuiHighlight implements CalendarItem {
 	public HashSet<ActivityCategory> getActiveCategories() {
 		HashSet<ActivityCategory> set = new HashSet();
 		for (Highlight ts : events) {
-			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name)) {
 				set.add(ts.category);
 			}
 		}
@@ -86,7 +87,7 @@ public class GuiHighlight implements CalendarItem {
 	public ArrayList<Highlight> getActiveEvents() {
 		ArrayList<Highlight> li = new ArrayList();
 		for (Highlight ts : events) {
-			if (JFXWindow.getGUI().isListEntrySelected("catList", ts.category.name)) {
+			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name)) {
 				li.add(ts);
 			}
 		}

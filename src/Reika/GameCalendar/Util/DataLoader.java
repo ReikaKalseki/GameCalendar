@@ -58,6 +58,9 @@ public class DataLoader {
 		if (map.containsKey("screenshot")) {
 			ret.setScreenshot(new File(map.get("screenshot")));
 		}
+		if (Boolean.valueOf(map.get("memorable"))) {
+			ret.setMemorable();
+		}
 		return ret;
 	}
 
@@ -66,6 +69,9 @@ public class DataLoader {
 		TimeSpan ret = new TimeSpan(a, DateStamp.parse(map.get("start")), DateStamp.parse(map.get("end")), map.get("name"), map.get("desc"));
 		if (map.containsKey("screenshot")) {
 			ret.setScreenshot(new File(map.get("screenshot")));
+		}
+		if (Boolean.valueOf(map.get("memorable"))) {
+			ret.setMemorable();
 		}
 		return ret;
 	}

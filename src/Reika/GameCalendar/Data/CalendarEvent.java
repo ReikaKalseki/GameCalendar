@@ -15,6 +15,8 @@ public abstract class CalendarEvent {
 
 	public final ActivityCategory category;
 
+	private boolean isMemorable;
+
 	private File screenshot;
 
 	private Image screenshotData;
@@ -31,6 +33,11 @@ public abstract class CalendarEvent {
 		if (!f.exists())
 			throw new IllegalArgumentException("Screenshot "+f.getAbsolutePath()+" does not exist!");
 		screenshot = f;
+		return this;
+	}
+
+	public CalendarEvent setMemorable() {
+		isMemorable = true;
 		return this;
 	}
 
@@ -59,5 +66,7 @@ public abstract class CalendarEvent {
 	public File getScreenshotFile() {
 		return screenshot;
 	}
+
+	public abstract String getFullDateString();
 
 }

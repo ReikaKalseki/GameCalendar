@@ -90,6 +90,15 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	private CheckBox summerBreak;
 
 	@FXML
+	private CheckBox memorable;
+
+	@FXML
+	private CheckBox selectHighlightsInSection;
+
+	@FXML
+	private CheckBox selectSectionsWithHighlight;
+
+	@FXML
 	private Button catAll;
 
 	@FXML
@@ -97,6 +106,9 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 
 	@FXML
 	private Button catFlip;
+
+	@FXML
+	private Button reloadFiles;
 
 	@FXML
 	private VBox imageContainer;
@@ -312,7 +324,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		}
 	}
 
-	public Collection<NodeWrapper> getAllNodes() {
+	Collection<NodeWrapper> getAllNodes() {
 		if (allNodes.isEmpty()) {
 			try {
 				this.collectAllNodes();
@@ -324,7 +336,7 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		return Collections.unmodifiableCollection(allNodes.values());
 	}
 
-	public Collection<NodeWrapper> getAllActiveNodes() {
+	Collection<NodeWrapper> getAllActiveNodes() {
 		Collection<NodeWrapper> ret = new ArrayList();
 		for (NodeWrapper n : this.getAllNodes()) {
 			if (!n.object.isDisabled())
@@ -342,15 +354,15 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		return ret;
 	}
 
-	public Node getOption(String id) {
-		return optionNodes.get(id).object;
+	Node getOption(GuiElement e) {
+		return optionNodes.get(e.id).object;
 	}
 
-	public ListView getListView(String id) {
-		return (ListView)listSelects.get(id).object;
+	ListView getListView(GuiElement e) {
+		return (ListView)listSelects.get(e.id).object;
 	}
 
-	public Collection<TitledPane> getCollapsibleSections() {
+	Collection<TitledPane> getCollapsibleSections() {
 		Collection<TitledPane> ret = new ArrayList();
 		for (NodeWrapper n : this.getAllNodes()) {
 			if (n.object instanceof TitledPane)
@@ -422,7 +434,7 @@ if (o instanceof ChoiceBox) {
 		this.setImages(null);
 	}
 
-	public static class NodeWrapper {
+	static class NodeWrapper {
 
 		private final String fxID;
 		private final Node object;
@@ -495,6 +507,41 @@ if (o instanceof ChoiceBox) {
 		boolean flag = !imageContainer.getChildren().isEmpty();
 		screenshotsTitled.setExpanded(flag);
 		screenshotsTitled.disableProperty().set(!flag);
+	}
+
+	public static enum GuiElement {
+
+		SELALL("catAll"),
+		SELNONE("catNone"),
+		INVERTSEL("catFlip"),
+		RELOAD("reloadFiles"),
+		HOLIDAYS("importantDates"),
+		HIGHLIGHTS("highlights"),
+		TODAY("currentDate"),
+		XMAS("christmasBreak"),
+		READING("readingWeek"),
+		SUMMER("summerBreak"),
+		MEMORABLE("memorable"),
+		HIGHLIGHTSINSECTION("selectHighlightsInSection"),
+		SECTIONSWITHHIGHLIGHT("selectSectionsWithHighlight"),
+		CATEGORIES("catList"),
+		SORTORDER("sortList"),
+		;
+
+		private final String id;
+
+		private GuiElement(String s) {
+			id = s;
+		}
+
+		public boolean isChecked() {
+			return JFXWindow.getGUI().getCheckbox(this);
+		}
+
+		public boolean isStringSelected(String s) {
+			return JFXWindow.getGUI().isListEntrySelected(this, s);
+		}
+
 	}
 
 }

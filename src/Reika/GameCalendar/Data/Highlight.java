@@ -26,4 +26,9 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 		return 0x000000;
 	}
 
+	@Override
+	public String getFullDateString() {
+		return this.getDescriptiveDate().toString();
+	}
+
 }

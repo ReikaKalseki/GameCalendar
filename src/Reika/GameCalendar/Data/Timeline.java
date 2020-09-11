@@ -73,29 +73,27 @@ public class Timeline {
 		sections.get(sections.size()-1).setEndTime(latest);
 		Collections.sort(sections);
 
-		if (true) {
-			Collections.sort(periods, new Comparator<TimeSpan>(){
+		if (false) {
+			ArrayList<CalendarEvent> check = new ArrayList();
+			check.addAll(periods);
+			check.addAll(events);
+			boolean flag = false;
+			Collections.sort(check, new Comparator<CalendarEvent>(){
 				@Override
-				public int compare(TimeSpan o1, TimeSpan o2) {
+				public int compare(CalendarEvent o1, CalendarEvent o2) {
 					return o1.category.compareTo(SortingMode.ALPHA, o2.category);
 				}
 			});
-			Collections.sort(events, new Comparator<Highlight>(){
-				@Override
-				public int compare(Highlight o1, Highlight o2) {
-					return o1.category.compareTo(SortingMode.ALPHA, o2.category);
+			for (CalendarEvent t : check) {
+				if (t.getScreenshotFile() == null) {
+					System.out.println("Calendar Item "+t.category.name+"\\"+t.name+" ["+t.getFullDateString()+"] has no screenshot!");
+					flag = true;
 				}
-			});
-			for (TimeSpan t : periods) {
-				if (t.getScreenshotFile() == null)
-					System.out.println("Time span "+t.category.name+"\\"+t.name+" ["+t.start+" - "+t.end+"] has no screenshot!");
 			}
-			for (Highlight t : events) {
-				if (t.getScreenshotFile() == null)
-					System.out.println("Event "+t.category.name+"\\"+t.name+" ["+t.time+"] has no screenshot!");
+			if (flag) {
+				Platform.exit();
+				System.exit(0);
 			}
-			Platform.exit();
-			System.exit(0);
 		}
 	}
 
