@@ -2,6 +2,8 @@ package Reika.GameCalendar.GUI;
 
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +41,9 @@ public class Labelling implements Runnable {
 	private final HashMap<Integer, Label> yearTexts = new HashMap();
 
 	public String tooltipString;
+
+	private String descriptions = "";
+	private int descriptionSize = 1;
 
 	private Labelling() {
 
@@ -115,23 +120,13 @@ public class Labelling implements Runnable {
 			l.layoutYProperty().set(y-h/2+1);
 			l.setTextFill(Color.rgb(0, 0, 0, 1));
 		}
-		CalendarItem s = renderer.getSelectedObject();
-		List<String> desc = s != null ? s.generateDescription() : null;
-		if (desc != null && desc.size() >= 12) {
-			Iterator<String> it = desc.iterator();
-			while (it.hasNext()) {
-				String sg = it.next();
-				if (Strings.isNullOrEmpty(sg)) {
-					it.remove();
-				}
-			}
-		}
+
 		TextArea area = JFXWindow.getDescriptionPane();
-		area.textProperty().set(desc != null ? this.lineBreakStringList(desc) : "");
+		area.textProperty().set(descriptions);
 		Font f = area.getFont();
 		double sz = 12;
-		if (desc != null && desc.size() > 8) {
-			int over = desc.size()-8;
+		if (descriptionSize > 8) {
+			int over = descriptionSize-8;
 			sz -= over*1;
 		}
 		area.setFont(new Font(f.getFamily(), sz));
@@ -145,7 +140,29 @@ public class Labelling implements Runnable {
 		tooltip.layoutYProperty().set(JFXWindow.getMouseHandler().getMouseY(true)+16);
 	}
 
+	public void calculateDescriptions() {
+		Collection<CalendarItem> li = renderer.getSelectedObjects();
+		List<String> desc = new ArrayList();
+		for (CalendarItem ci : li) {
+			desc.addAll(ci.generateDescription());
+			desc.add("");
+		}
+		if (desc.size() >= 12) {
+			Iterator<String> it = desc.iterator();
+			while (it.hasNext()) {
+				String sg = it.next();
+				if (Strings.isNullOrEmpty(sg)) {
+					it.remove();
+				}
+			}
+		}
+		descriptions = this.lineBreakStringList(desc);
+		descriptionSize = desc.size();
+	}
+
 	private String lineBreakStringList(List<String> li) {
+		if (li.isEmpty())
+			return "";
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < li.size(); i++) {
 			sb.append(li.get(i));

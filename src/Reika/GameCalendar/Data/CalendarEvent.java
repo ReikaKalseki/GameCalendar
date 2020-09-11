@@ -46,7 +46,7 @@ public abstract class CalendarEvent {
 		return name+" @ "+this.getDescriptiveDate().toString();
 	}
 
-	protected abstract DateStamp getDescriptiveDate();
+	public abstract DateStamp getDescriptiveDate();
 
 	public abstract int getColor();
 

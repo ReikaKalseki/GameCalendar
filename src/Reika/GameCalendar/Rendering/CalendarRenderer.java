@@ -3,8 +3,11 @@ package Reika.GameCalendar.Rendering;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,7 +47,7 @@ public class CalendarRenderer {
 	public final double arcThickness;
 	public final double arcThicknessHalfFraction = 0.35;
 
-	private CalendarItem selectedObject = null;
+	private final Collection<CalendarItem> selectedObjects = new HashSet();
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
@@ -212,16 +215,17 @@ public class CalendarRenderer {
 			points.addAll(pointsInner);
 			Collections.reverse(pointsOuter);
 			points.addAll(pointsOuter);
-			if (s == selectedObject) {
+			boolean sel = selectedObjects.contains(s);
+			if (sel) {
 				GL11.glColor4f(0, 0, 0, 1);
 				GL11.glBegin(GL11.GL_LINE_LOOP);
 			}
 			for (DoublePoint p : points) {
-				if (s == selectedObject)
+				if (sel)
 					GL11.glVertex2d(p.x, p.y);
 				s.polygon.addPoint(p.x, p.y);
 			}
-			if (s == selectedObject)
+			if (sel)
 				GL11.glEnd();
 		}
 
@@ -252,16 +256,18 @@ public class CalendarRenderer {
 			GL11.glEnd();
 			GL11.glPopMatrix();
 
-			if (selectedObject instanceof GuiHighlight) {
-				GuiHighlight gh = (GuiHighlight)selectedObject;
-				double d = 1/50D;
-				GL11.glBegin(GL11.GL_LINE_LOOP);
-				for (double a = 0; a < 360; a += 60) {
-					double dx = d*Math.cos(Math.toRadians(a+90));
-					double dy = d*Math.sin(Math.toRadians(a+90));
-					GL11.glVertex2d(gh.position.x+dx, gh.position.y+dy);
+			for (CalendarItem ci : selectedObjects) {
+				if (ci instanceof GuiHighlight) {
+					GuiHighlight gh = (GuiHighlight)ci;
+					double d = 1/50D;
+					GL11.glBegin(GL11.GL_LINE_LOOP);
+					for (double a = 0; a < 360; a += 60) {
+						double dx = d*Math.cos(Math.toRadians(a+90));
+						double dy = d*Math.sin(Math.toRadians(a+90));
+						GL11.glVertex2d(gh.position.x+dx, gh.position.y+dy);
+					}
+					GL11.glEnd();
 				}
-				GL11.glEnd();
 			}
 		}
 
@@ -531,45 +537,71 @@ public class CalendarRenderer {
 			selectedSection = null;
 			//System.out.println(mx+","+my);
 		}*/
-		selectedObject = null;
+		selectedObjects.clear();
 		if (GuiElement.HIGHLIGHTS.isChecked()) {
 			double d = 1/50D;
 			for (GuiHighlight h : events.values()) {
 				if (h.position != null)	{
 					if (Math.abs(x-h.position.x) < d && Math.abs(y-h.position.y) < d) {
 						//System.out.println(mx+","+my+" > "+s.section);
-						selectedObject = h;
+						selectedObjects.add(h);
+						if (GuiElement.SECTIONSWITHHIGHLIGHT.isChecked()) {
+							for (GuiSection s : sections) {
+								if (h.time.isBetween(s.section.startTime, s.section.getEnd())) {
+									selectedObjects.add(s);
+								}
+							}
+						}
 						break;
 					}
 				}
 			}
 		}
-		if (selectedObject == null) {
+		if (selectedObjects.isEmpty()) {
 			for (GuiSection s : sections) {
 				if (s.polygon != null && s.polygon.npoints > 0)	{
 					if (s.polygon.contains(x, y)) {
 						//System.out.println(mx+","+my+" > "+s.section);
-						selectedObject = s;
+						selectedObjects.add(s);
+						if (GuiElement.HIGHLIGHTSINSECTION.isChecked()) {
+							for (GuiHighlight h : events.values()) {
+								if (h.time.isBetween(s.section.startTime, s.section.getEnd())) {
+									selectedObjects.add(h);
+								}
+							}
+						}
 						break;
 					}
 				}
 			}
 		}
 
-		if (selectedObject != null) {
-			List<? extends CalendarEvent> li = selectedObject.getItems(true);
-			JFXWindow.getGUI().setScreenshots(li);
-		}
-		else {
+		if (selectedObjects.isEmpty()) {
 			JFXWindow.getGUI().setScreenshots(null);
 		}
+		else {
+			List<CalendarEvent> li = new ArrayList();
+			for (CalendarItem ci : selectedObjects) {
+				for (CalendarEvent ce : ci.getItems(true)) {
+					li.add(ce);
+				}
+			}
+			Collections.sort(li, new Comparator<CalendarEvent>() {
+				@Override
+				public int compare(CalendarEvent o1, CalendarEvent o2) {
+					return o1.getDescriptiveDate().compareTo(o2.getDescriptiveDate());
+				}
+			});
+			JFXWindow.getGUI().setScreenshots(li);
+		}
+		Labelling.instance.calculateDescriptions();
 	}
 
-	public CalendarItem getSelectedObject() {
-		return selectedObject;
+	public Collection<CalendarItem> getSelectedObjects() {
+		return Collections.unmodifiableCollection(selectedObjects);
 	}
 
 	public void clearSelection() {
-		selectedObject = null;
+		selectedObjects.clear();
 	}
 }

@@ -93,4 +93,8 @@ public class DateStamp implements Comparable<DateStamp> {
 		int year = Integer.parseInt(parts.length == 3 ? parts[2] : parts[1]);
 		return new DateStamp(year, Month.of(month), day);
 	}
+
+	public boolean isBetween(DateStamp start, DateStamp end) {
+		return this.compareTo(start) >= 0 && this.compareTo(end) <= 0;
+	}
 }

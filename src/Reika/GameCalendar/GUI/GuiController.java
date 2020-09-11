@@ -518,7 +518,7 @@ if (o instanceof ChoiceBox) {
 		HOLIDAYS("importantDates"),
 		HIGHLIGHTS("highlights"),
 		TODAY("currentDate"),
-		XMAS("christmasBreak"),
+		XMAS("xmasBreak"),
 		READING("readingWeek"),
 		SUMMER("summerBreak"),
 		MEMORABLE("memorable"),

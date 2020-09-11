@@ -17,7 +17,7 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 	}
 
 	@Override
-	protected DateStamp getDescriptiveDate() {
+	public DateStamp getDescriptiveDate() {
 		return time;
 	}
 

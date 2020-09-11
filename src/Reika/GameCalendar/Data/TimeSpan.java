@@ -34,7 +34,7 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 	}
 
 	@Override
-	protected DateStamp getDescriptiveDate() {
+	public DateStamp getDescriptiveDate() {
 		return start;
 	}
 
