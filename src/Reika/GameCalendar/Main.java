@@ -19,6 +19,18 @@ split the p2 map dev into maps?
 
 ALL THE SCREENSHOTS
 
+ALL THE "MEMORABLE" FLAGS
+-2018 stellaris,
+giant 2016 Civ V continents
+2015 tour server (first half)
+2015 elite
+2016 AND 2018 sagA/colonia trips
+2018 CivV vs china
+1.6 SSP
+1.1 survival world
+space engineers intro and 2017 planet save
+bobmods 0.11, 0.14
+
 	 */
 
 	//TODO:
@@ -26,14 +38,12 @@ ALL THE SCREENSHOTS
 	//to merge all category arcs together so it just shows game->game ("show subsections")
 
 	//fix the sorting order thing
-	//also fix: when has too many screenshots to fit (eg first half of october 2015 with the "select highlights too" option on
+	//also fix: when has too many (>=3) screenshots to fit (eg first half of october 2015 with the "select highlights too" option on
 
-	//ongoing sections
 	//ability to reload data
-	//////AAAND THE INVERSE: HIGHLIGHT HIGHLIGHTS IN CLICKED SECTION -> ENABLE THIS ONE BY DEFAULT
 	//"open definition file(s)" button? -> how? each section is many files
 
-	//"IMPORTANT/MEMORABLE" HIGHLIGHTING & CHECKBOX********************************** -> for things like the sagA trip, 2016 CivV continents, and late 2018 stellaris
+	//"export as movie" functionality!!!!!!!!!!!********************************************************
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
