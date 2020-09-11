@@ -73,7 +73,7 @@ public class Timeline {
 		sections.get(sections.size()-1).setEndTime(latest);
 		Collections.sort(sections);
 
-		if (false) {
+		if (true) {
 			Collections.sort(periods, new Comparator<TimeSpan>(){
 				@Override
 				public int compare(TimeSpan o1, TimeSpan o2) {

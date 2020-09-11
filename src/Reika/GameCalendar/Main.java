@@ -28,6 +28,7 @@ ALL THE SCREENSHOTS
 	//ongoing sections
 	//ability to reload data
 	//checkbox: "also select section under highlight when highlight is clicked"
+	//////AAAND THE INVERSE: HIGHLIGHT HIGHLIGHTS IN CLICKED SECTION -> ENABLE THIS ONE BY DEFAULT
 	//"open definition file(s)" button? -> how? each section is many files
 
 	//"IMPORTANT/MEMORABLE" HIGHLIGHTING & CHECKBOX********************************** -> for things like the sagA trip, 2016 CivV continents, and late 2018 stellaris
