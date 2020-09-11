@@ -8,7 +8,7 @@ import Reika.GameCalendar.Data.CalendarEvent;
 
 public interface CalendarItem {
 
-	List<String> generateDescription();
+	//List<String> generateDescription();
 
 	public String getDescriptiveDate();
 

@@ -39,6 +39,15 @@ public class CalendarRenderer {
 	private static final double INNER_RADIUS = 0.2;
 	private static final double MAX_THICKNESS = 0.75;
 
+	private static final Comparator<CalendarEvent> eventSorter = new Comparator<CalendarEvent>() {
+		@Override
+		public int compare(CalendarEvent o1, CalendarEvent o2) {
+			int dc = o1.getDescriptiveDate().compareTo(o2.getDescriptiveDate());
+			int cc = o1.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.category);
+			return dc+cc*10000;
+		}
+	};
+
 	private final Timeline data;
 	private final ArrayList<GuiSection> sections = new ArrayList();
 	private final HashMap<DateStamp, GuiHighlight> events = new HashMap();
@@ -576,32 +585,28 @@ public class CalendarRenderer {
 			}
 		}
 
+		this.calculateDescriptions();
+	}
+
+	public void calculateDescriptions() {
+		ArrayList<CalendarEvent> li = new ArrayList();
 		if (selectedObjects.isEmpty()) {
 			JFXWindow.getGUI().setScreenshots(null);
 		}
 		else {
-			List<CalendarEvent> li = new ArrayList();
 			for (CalendarItem ci : selectedObjects) {
 				for (CalendarEvent ce : ci.getItems(true)) {
 					li.add(ce);
 				}
 			}
-			Collections.sort(li, new Comparator<CalendarEvent>() {
-				@Override
-				public int compare(CalendarEvent o1, CalendarEvent o2) {
-					return o1.getDescriptiveDate().compareTo(o2.getDescriptiveDate());
-				}
-			});
+			Collections.sort(li, eventSorter);
 			JFXWindow.getGUI().setScreenshots(li);
 		}
-		Labelling.instance.calculateDescriptions();
-	}
-
-	public Collection<CalendarItem> getSelectedObjects() {
-		return Collections.unmodifiableCollection(selectedObjects);
+		Labelling.instance.calculateDescriptions(li);
 	}
 
 	public void clearSelection() {
 		selectedObjects.clear();
+		Labelling.instance.calculateDescriptions(null);
 	}
 }

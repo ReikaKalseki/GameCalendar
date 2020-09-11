@@ -53,7 +53,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-public class GuiController implements EventHandler<ActionEvent>, ChangeListener {
+public class GuiController implements EventHandler<ActionEvent> {
 
 	@FXML
 	private SplitPane root;
@@ -229,13 +229,13 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 						catList.getSelectionModel().select(index);
 					event.consume();
 				}
-				this.update();
+				this.update(GuiElement.CATEGORIES.id);
 			});
 			return cell ;
 		});
 
 		for (NodeWrapper n : optionNodes.values()) {
-			((CheckBox)n.object).selectedProperty().set(this.isDefaultSelected(n.fxID));
+			((CheckBox)n.object).selectedProperty().set(GuiElement.getByID(n.fxID).isDefaultChecked());
 		}
 
 		descriptionPane.setEditable(false);
@@ -247,16 +247,6 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 		screenshotsTitled.setPadding(Insets.EMPTY);
 
 		//this.update();
-	}
-
-	private boolean isDefaultSelected(String fxID) {
-		switch(fxID) {
-			case "highlights":
-			case "currentDate":
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	/*
@@ -303,7 +293,13 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 			//optionNodes.put(n2.fxID, n2);
 		}
 		else if (n2.object instanceof ListView) {
-			((ListView)n2.object).getSelectionModel().selectedItemProperty().addListener(this);
+			((ListView)n2.object).getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+				@Override
+				public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+					GuiController.this.update(n2.fxID);
+				}
+
+			});
 			listSelects.put(n2.fxID, n2);
 		}
 	}
@@ -372,9 +368,11 @@ public class GuiController implements EventHandler<ActionEvent>, ChangeListener 
 	}
 
 	public void handle(ActionEvent event) {
-		this.update();
 
 		Object o = event.getSource();
+		String id = allNodes.get(o).fxID;
+		this.update(id);
+
 		/*
 if (o instanceof ToggleGroup) {
 	ToggleGroup tg = (ToggleGroup)event.getSource();
@@ -391,7 +389,7 @@ if (o instanceof ChoiceBox) {
 	}
 }*/
 		if (o instanceof Button) {
-			this.onButtonClick(allNodes.get(o).fxID);
+			this.onButtonClick(id);
 		}
 	}
 
@@ -415,23 +413,26 @@ if (o instanceof ChoiceBox) {
 		}
 	}
 
-	@Override
-	public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-		this.update();
-	}
+	void update(String fxID) {
+		GuiElement gui = fxID != null ? GuiElement.getByID(fxID) : null;
+		if (gui == null || gui.reloadCategoriesOnClick()) {
+			List<String> e = catList.getSelectionModel().getSelectedItems();
+			//catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
+			//catList.getSelectionModel().clearSelection();
+			if (e != null && !e.isEmpty()) {
 
-	void update() {
-		List<String> e = catList.getSelectionModel().getSelectedItems();
-		//catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
-		//catList.getSelectionModel().clearSelection();
-		if (e != null && !e.isEmpty()) {
-
+			}
 		}
-		StatusHandler.postStatus("Reloading render state", 200);
-		JFXWindow.getGUI().updateActiveSections();
-		Main.getCalendarRenderer().clearSelection();
-		Labelling.instance.init(calendarOverlay);
-		this.setImages(null);
+		if (gui != null && gui.reloadTexts() && !gui.resetRenderer()) {
+			StatusHandler.postStatus("Reloading descriptions", 200);
+			Main.getCalendarRenderer().calculateDescriptions();
+		}
+		else if (gui == null || gui.resetRenderer()) {
+			StatusHandler.postStatus("Reloading render state", 200);
+			Main.getCalendarRenderer().clearSelection();
+			Labelling.instance.init(calendarOverlay);
+			this.setImages(null);
+		}
 	}
 
 	static class NodeWrapper {
@@ -501,7 +502,7 @@ if (o instanceof ChoiceBox) {
 						host.showDocument(e.getScreenshotFile().getAbsolutePath());
 					}
 				});
-				ttl.toBack();
+				ttl.toFront();
 			}
 		}
 		boolean flag = !imageContainer.getChildren().isEmpty();
@@ -530,8 +531,60 @@ if (o instanceof ChoiceBox) {
 
 		private final String id;
 
+		private static final HashMap<String, GuiElement> guiMap = new HashMap();
+
 		private GuiElement(String s) {
 			id = s;
+		}
+
+		private boolean isDefaultChecked() {
+			switch(this) {
+				case HIGHLIGHTS:
+				case TODAY:
+				case MEMORABLE:
+				case HIGHLIGHTSINSECTION:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public boolean reloadCategoriesOnClick() {
+			switch(this) {
+				case SORTORDER:
+				case SELALL:
+				case SELNONE:
+				case RELOAD:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public boolean resetRenderer() {
+			switch(this) {
+				case CATEGORIES:
+				case SELALL:
+				case SELNONE:
+				case RELOAD:
+				case HIGHLIGHTS:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public boolean reloadTexts() {
+			switch(this) {
+				case SORTORDER:
+					return true;
+				default:
+					return this.resetRenderer();
+			}
+		}
+
+		private static GuiElement getByID(String fxID) {
+			return guiMap.get(fxID);
 		}
 
 		public boolean isChecked() {
@@ -540,6 +593,12 @@ if (o instanceof ChoiceBox) {
 
 		public boolean isStringSelected(String s) {
 			return JFXWindow.getGUI().isListEntrySelected(this, s);
+		}
+
+		static {
+			for (GuiElement e : values()) {
+				guiMap.put(e.id, e);
+			}
 		}
 
 	}

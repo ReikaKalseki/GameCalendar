@@ -2,11 +2,8 @@ package Reika.GameCalendar.GUI;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-
-import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
@@ -40,31 +37,6 @@ public class GuiHighlight implements CalendarItem {
 	@Override
 	public String getDescriptiveDate() {
 		return events.get(0).time.toString();
-	}
-
-	public ArrayList<String> generateDescription() {
-		ArrayList<Highlight> li = this.getActiveEvents();
-		ArrayList<String> ret = new ArrayList();
-		Collections.sort(li, new Comparator<Highlight>() {
-
-			@Override
-			public int compare(Highlight o1, Highlight o2) {
-				return o1.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.category);
-			}
-
-		});
-		for (int i = 0; i < li.size(); i++) {
-			Highlight ts = li.get(i);
-			String line = ts.category.name+": "+ts.name+" ["+ts.time+"]";
-			ret.add(line);
-			if (!Strings.isNullOrEmpty(ts.description)) {
-				ret.add("\t"+ts.description);
-			}
-			if (i < events.size()-1) {
-				ret.add("");
-			}
-		}
-		return ret;
 	}
 
 	//TODO cache this

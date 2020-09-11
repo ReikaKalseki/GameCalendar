@@ -24,10 +24,12 @@ ALL THE SCREENSHOTS
 	//TODO:
 	//checkboxes to show:
 	//to merge all category arcs together so it just shows game->game ("show subsections")
+
 	//fix the sorting order thing
+	//also fix: when has too many screenshots to fit (eg first half of october 2015 with the "select highlights too" option on
+
 	//ongoing sections
 	//ability to reload data
-	//checkbox: "also select section under highlight when highlight is clicked"
 	//////AAAND THE INVERSE: HIGHLIGHT HIGHLIGHTS IN CLICKED SECTION -> ENABLE THIS ONE BY DEFAULT
 	//"open definition file(s)" button? -> how? each section is many files
 

@@ -3,6 +3,7 @@ package Reika.GameCalendar.Data;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import Reika.GameCalendar.Util.DateStamp;
 
@@ -68,5 +69,7 @@ public abstract class CalendarEvent {
 	}
 
 	public abstract String getFullDateString();
+
+	public abstract void generateDescriptionText(ArrayList<String> ret);
 
 }

@@ -81,6 +81,7 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 			sorting = this;
 			ArrayList<ActivityCategory> li = new ArrayList(data);
 			Collections.sort(li);
+			sorting = null;
 			for (ActivityCategory cat : li) {
 				ret.add(cat.name);
 			}

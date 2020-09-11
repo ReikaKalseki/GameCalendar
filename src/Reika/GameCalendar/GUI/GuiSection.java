@@ -1,12 +1,8 @@
 package Reika.GameCalendar.GUI;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-
-import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
@@ -52,33 +48,6 @@ public class GuiSection implements CalendarItem {
 	@Override
 	public String toString() {
 		return section.toString();
-	}
-
-	public List<String> generateDescription() {
-		ArrayList<TimeSpan> li = this.getActiveSpans();
-		ArrayList<String> ret = new ArrayList();
-		Collections.sort(li, new Comparator<TimeSpan>() {
-
-			@Override
-			public int compare(TimeSpan o1, TimeSpan o2) {
-				return o1.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.category);
-			}
-
-		});
-		for (int i = 0; i < li.size(); i++) {
-			TimeSpan ts = li.get(i);
-			String line = ts.category.name+": "+ts.name+" ["+ts.start+" - "+ts.end+"]";
-			if (ts.end.equals(DateStamp.launch))
-				line = ts.category.name+": "+ts.name+" ["+ts.start+", ongoing]";
-			ret.add(line);
-			if (!Strings.isNullOrEmpty(ts.description)) {
-				ret.add("\t"+ts.description);
-			}
-			if (i < section.spanCount()-1) {
-				ret.add("");
-			}
-		}
-		return ret;
 	}
 
 	@Override

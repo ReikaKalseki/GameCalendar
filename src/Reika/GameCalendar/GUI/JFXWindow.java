@@ -102,10 +102,6 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		System.out.println("Closing window");
 	}
 
-	public void updateActiveSections() {
-
-	}
-
 	void setStatus(String value) {
 		controller.status.setText(value);
 	}
@@ -167,7 +163,7 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	@Override
 	public void handle(javafx.event.Event event) {
-		controller.update();
+		controller.update(null);
 	}
 
 	public static ArrayList<Node> getRecursiveChildren(Parent root) {

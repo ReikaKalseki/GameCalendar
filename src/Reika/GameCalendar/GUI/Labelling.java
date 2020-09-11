@@ -3,7 +3,6 @@ package Reika.GameCalendar.GUI;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.Map.Entry;
 
 import org.lwjglx.debug.joptsimple.internal.Strings;
 
+import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 
 import javafx.geometry.Insets;
@@ -43,7 +43,8 @@ public class Labelling implements Runnable {
 	public String tooltipString;
 
 	private String descriptions = "";
-	private int descriptionSize = 1;
+	private int descriptionSize = 0;
+	private boolean descriptionChanged;
 
 	private Labelling() {
 
@@ -121,15 +122,18 @@ public class Labelling implements Runnable {
 			l.setTextFill(Color.rgb(0, 0, 0, 1));
 		}
 
-		TextArea area = JFXWindow.getDescriptionPane();
-		area.textProperty().set(descriptions);
-		Font f = area.getFont();
-		double sz = 12;
-		if (descriptionSize > 8) {
-			int over = descriptionSize-8;
-			sz -= over*1;
+		if (descriptionChanged) {
+			TextArea area = JFXWindow.getDescriptionPane();
+			area.textProperty().set(descriptions);
+			Font f = area.getFont();
+			double sz = 12;
+			if (descriptionSize > 8) {
+				int over = descriptionSize-8;
+				sz -= over*1;
+			}
+			area.setFont(new Font(f.getFamily(), sz));
+			descriptionChanged = false;
 		}
-		area.setFont(new Font(f.getFamily(), sz));
 
 		tooltip.setBackground(new Background(new BackgroundFill(Color.rgb(1, 0, 0, 0.6), new CornerRadii(0), new Insets(0))));
 		tooltip.toFront();
@@ -140,24 +144,32 @@ public class Labelling implements Runnable {
 		tooltip.layoutYProperty().set(JFXWindow.getMouseHandler().getMouseY(true)+16);
 	}
 
-	public void calculateDescriptions() {
-		Collection<CalendarItem> li = renderer.getSelectedObjects();
-		List<String> desc = new ArrayList();
-		for (CalendarItem ci : li) {
-			desc.addAll(ci.generateDescription());
-			desc.add("");
+	public void calculateDescriptions(ArrayList<CalendarEvent> li) {
+		if (li == null) {
+			descriptions = "";
+			descriptionSize = 0;
 		}
-		if (desc.size() >= 12) {
-			Iterator<String> it = desc.iterator();
-			while (it.hasNext()) {
-				String sg = it.next();
-				if (Strings.isNullOrEmpty(sg)) {
-					it.remove();
+		else {
+			ArrayList<String> desc = new ArrayList();
+			for (int i = 0; i < li.size(); i++) {
+				CalendarEvent ci = li.get(i);
+				ci.generateDescriptionText(desc);
+				if (i < li.size()-1)
+					desc.add("");
+			}
+			if (desc.size() >= 12) {
+				Iterator<String> it = desc.iterator();
+				while (it.hasNext()) {
+					String sg = it.next();
+					if (Strings.isNullOrEmpty(sg)) {
+						it.remove();
+					}
 				}
 			}
+			descriptions = this.lineBreakStringList(desc);
+			descriptionSize = desc.size();
 		}
-		descriptions = this.lineBreakStringList(desc);
-		descriptionSize = desc.size();
+		descriptionChanged = true;
 	}
 
 	private String lineBreakStringList(List<String> li) {

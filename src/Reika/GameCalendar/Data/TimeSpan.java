@@ -3,6 +3,9 @@ package Reika.GameCalendar.Data;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+
+import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Util.DateStamp;
 
@@ -46,6 +49,16 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 	@Override
 	public String getFullDateString() {
 		return start.toString()+" - "+end.toString();
+	}
+
+	public void generateDescriptionText(ArrayList<String> ret) {
+		String line = category.name+": "+name+" ["+start+" - "+end+"]";
+		if (end.equals(DateStamp.launch))
+			line = category.name+": "+name+" ["+start+", ongoing]";
+		ret.add(line);
+		if (!Strings.isNullOrEmpty(description)) {
+			ret.add("\t"+description);
+		}
 	}
 
 }
