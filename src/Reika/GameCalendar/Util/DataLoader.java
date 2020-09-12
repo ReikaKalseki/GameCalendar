@@ -20,6 +20,9 @@ public class DataLoader {
 				System.err.println("Event File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
 				continue;
 			}
+			if (f.getName().contains(cat.name)) {
+				System.err.println("File '"+f+"' has redundant naming!");
+			}
 			try {
 				Highlight h = parseEvent(cat, f);
 				ret.addEvent(h);
@@ -36,6 +39,9 @@ public class DataLoader {
 			if (f.length() == 0) {
 				System.err.println("Period File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
 				continue;
+			}
+			if (f.getName().contains(cat.name)) {
+				System.err.println("File '"+f+"' has redundant naming!");
 			}
 			try {
 				TimeSpan ts = parsePeriod(cat, f);

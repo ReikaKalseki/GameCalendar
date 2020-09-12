@@ -73,27 +73,25 @@ public class Timeline {
 		sections.get(sections.size()-1).setEndTime(latest);
 		Collections.sort(sections);
 
-		if (false) {
-			ArrayList<CalendarEvent> check = new ArrayList();
-			check.addAll(periods);
-			check.addAll(events);
-			boolean flag = false;
-			Collections.sort(check, new Comparator<CalendarEvent>(){
-				@Override
-				public int compare(CalendarEvent o1, CalendarEvent o2) {
-					return o1.category.compareTo(SortingMode.ALPHA, o2.category);
-				}
-			});
-			for (CalendarEvent t : check) {
-				if (t.getScreenshotFile() == null) {
-					System.out.println("Calendar Item "+t.category.name+"\\"+t.name+" ["+t.getFullDateString()+"] has no screenshot!");
-					flag = true;
-				}
+		ArrayList<CalendarEvent> check = new ArrayList();
+		check.addAll(periods);
+		check.addAll(events);
+		boolean flag = false;
+		Collections.sort(check, new Comparator<CalendarEvent>(){
+			@Override
+			public int compare(CalendarEvent o1, CalendarEvent o2) {
+				return o1.category.compareTo(SortingMode.ALPHA, o2.category);
 			}
-			if (flag) {
-				Platform.exit();
-				System.exit(0);
+		});
+		for (CalendarEvent t : check) {
+			if (t.getScreenshotFile() == null) {
+				System.out.println("Calendar Item "+t.category.name+"\\"+t.name+" ["+t.getFullDateString()+"] has no screenshot!");
+				flag = true;
 			}
+		}
+		if (flag && false) {
+			Platform.exit();
+			System.exit(0);
 		}
 	}
 
