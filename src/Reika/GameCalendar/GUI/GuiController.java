@@ -35,6 +35,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.SplitPane.Divider;
@@ -118,6 +119,9 @@ public class GuiController implements EventHandler<ActionEvent> {
 
 	@FXML
 	private VBox rightmostColumn;
+
+	@FXML
+	private ScrollPane imageScroller;
 
 	@FXML
 	Label status;
@@ -240,6 +244,8 @@ public class GuiController implements EventHandler<ActionEvent> {
 
 		descriptionPane.setEditable(false);
 		descriptionPane.wrapTextProperty().set(true);
+
+		imageScroller.setFitToWidth(true);
 
 		this.setImages(null);
 
@@ -495,7 +501,7 @@ if (o instanceof ChoiceBox) {
 				ttl.setCollapsible(false);
 				imageContainer.getChildren().add(ttl);
 				imageContainer.setMargin(ttl, new Insets(4, 0, 0, 0));
-				Tooltip.install(v, new Tooltip("Click to open"));
+				Tooltip.install(v, new Tooltip("Click to open\n"+e.getScreenshotFile().getAbsolutePath()));
 				v.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
