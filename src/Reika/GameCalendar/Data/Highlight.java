@@ -1,5 +1,6 @@
 package Reika.GameCalendar.Data;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.lwjglx.debug.joptsimple.internal.Strings;
@@ -10,8 +11,8 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 
 	public final DateStamp time;
 
-	public Highlight(ActivityCategory a, DateStamp t, String n, String desc) {
-		super(a, n, desc);
+	public Highlight(File f, ActivityCategory a, DateStamp t, String n, String desc) {
+		super(f, a, n, desc);
 		time = t;
 	}
 

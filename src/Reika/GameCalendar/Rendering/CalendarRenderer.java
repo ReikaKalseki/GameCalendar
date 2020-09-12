@@ -32,6 +32,7 @@ import Reika.GameCalendar.Util.DoublePoint;
 import Reika.GameCalendar.Util.DoublePolygon;
 import Reika.GameCalendar.Util.GLFunctions.BlendMode;
 
+import javafx.application.HostServices;
 import javafx.application.Platform;
 
 public class CalendarRenderer {
@@ -603,6 +604,14 @@ public class CalendarRenderer {
 			JFXWindow.getGUI().setScreenshots(li);
 		}
 		Labelling.instance.calculateDescriptions(li);
+	}
+
+	public void openSelectedFiles(HostServices host) {
+		for (CalendarItem ci : selectedObjects) {
+			for (CalendarEvent ce : ci.getItems(true)) {
+				ce.openFile(host);
+			}
+		}
 	}
 
 	public void clearSelection() {

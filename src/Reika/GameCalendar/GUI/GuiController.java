@@ -1,5 +1,6 @@
 package Reika.GameCalendar.GUI;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -110,6 +112,12 @@ public class GuiController implements EventHandler<ActionEvent> {
 
 	@FXML
 	private Button reloadFiles;
+
+	@FXML
+	private Button openFiles;
+
+	@FXML
+	private Button videoExport;
 
 	@FXML
 	private VBox imageContainer;
@@ -246,6 +254,8 @@ public class GuiController implements EventHandler<ActionEvent> {
 		descriptionPane.wrapTextProperty().set(true);
 
 		imageScroller.setFitToWidth(true);
+		ScrollBar descScroll = (ScrollBar)descriptionPane.lookup(".scroll-bar:vertical");
+		descScroll.setMinWidth(12);
 
 		this.setImages(null);
 
@@ -379,43 +389,8 @@ public class GuiController implements EventHandler<ActionEvent> {
 		String id = allNodes.get(o).fxID;
 		this.update(id);
 
-		/*
-if (o instanceof ToggleGroup) {
-	ToggleGroup tg = (ToggleGroup)event.getSource();
-}
-
-if (o instanceof ChoiceBox) {
-	ChoiceBox b = (ChoiceBox)o;
-	NodeWrapper nw = allNodes.get(b);
-	switch(nw.fxID) {
-		case "namespaces":
-			String n = (String)b.getSelectionModel().getSelectedItem();
-			this.load(Namespace.findNamespace(n));
-			break;
-	}
-}*/
 		if (o instanceof Button) {
-			this.onButtonClick(id);
-		}
-	}
-
-	private void onButtonClick(String fxID) {
-		switch(fxID) {
-			case "catNone":
-				catList.getSelectionModel().clearSelection();
-				break;
-			case "catAll":
-				catList.getSelectionModel().selectAll();
-				break;
-			case "catFlip":
-				HashSet<Integer> li = new HashSet(catList.getSelectionModel().getSelectedIndices());
-				catList.getSelectionModel().clearSelection();
-				List<String> li2 = catList.getItems();
-				for (int i = 0; i < li2.size(); i++) {
-					if (!li.contains(i))
-						catList.getSelectionModel().select(i);
-				}
-				break;
+			GuiElement.getByID(id).onButtonClick(this);
 		}
 	}
 
@@ -494,18 +469,28 @@ if (o instanceof ChoiceBox) {
 				v.setFitHeight(180-1);
 				//Tooltip.install(v, new Tooltip(e.name));
 				TitledPane ttl = new TitledPane();
-				ttl.setText(e.name);
+				ttl.setText(e.category.name+": "+e.name);
 				ttl.setContent(v);
 				ttl.setExpanded(true);
 				ttl.setAnimated(false);
 				ttl.setCollapsible(false);
 				imageContainer.getChildren().add(ttl);
 				imageContainer.setMargin(ttl, new Insets(4, 0, 0, 0));
-				Tooltip.install(v, new Tooltip("Click to open\n"+e.getScreenshotFile().getAbsolutePath()));
+				Tooltip.install(v, new Tooltip("Click to open:\n\n"+e.getScreenshotFile().getAbsolutePath()));
 				v.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
-						host.showDocument(e.getScreenshotFile().getAbsolutePath());
+						if (false) {
+							try {
+								Runtime.getRuntime().exec("explorer.exe /select," + e.getScreenshotFile().getAbsolutePath());
+							}
+							catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						else {
+							host.showDocument(e.getScreenshotFile().getAbsolutePath());
+						}
 					}
 				});
 				ttl.toFront();
@@ -522,6 +507,8 @@ if (o instanceof ChoiceBox) {
 		SELNONE("catNone"),
 		INVERTSEL("catFlip"),
 		RELOAD("reloadFiles"),
+		OPENFILE("openFiles"),
+		MAKEVIDEO("videoExport"),
 		HOLIDAYS("importantDates"),
 		HIGHLIGHTS("highlights"),
 		TODAY("currentDate"),
@@ -599,6 +586,35 @@ if (o instanceof ChoiceBox) {
 
 		public boolean isStringSelected(String s) {
 			return JFXWindow.getGUI().isListEntrySelected(this, s);
+		}
+
+		private void onButtonClick(GuiController c) {
+			switch(this) {
+				case SELNONE:
+					c.catList.getSelectionModel().clearSelection();
+					break;
+				case SELALL:
+					c.catList.getSelectionModel().selectAll();
+					break;
+				case INVERTSEL:
+					HashSet<Integer> li = new HashSet(c.catList.getSelectionModel().getSelectedIndices());
+					c.catList.getSelectionModel().clearSelection();
+					List<String> li2 = c.catList.getItems();
+					for (int i = 0; i < li2.size(); i++) {
+						if (!li.contains(i))
+							c.catList.getSelectionModel().select(i);
+					}
+					break;
+				case RELOAD:
+					break;
+				case OPENFILE:
+					Main.getCalendarRenderer().openSelectedFiles(c.host);
+					break;
+				case MAKEVIDEO:
+					break;
+				default:
+					break;
+			}
 		}
 
 		static {

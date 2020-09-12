@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import Reika.GameCalendar.Util.DateStamp;
 
+import javafx.application.HostServices;
 import javafx.scene.image.Image;
 
 public abstract class CalendarEvent {
@@ -15,6 +16,7 @@ public abstract class CalendarEvent {
 	public final String description;
 
 	public final ActivityCategory category;
+	private final File sourceFile;
 
 	private boolean isMemorable;
 
@@ -22,7 +24,8 @@ public abstract class CalendarEvent {
 
 	private Image screenshotData;
 
-	public CalendarEvent(ActivityCategory a, String n, String desc) {
+	public CalendarEvent(File f, ActivityCategory a, String n, String desc) {
+		sourceFile = f;
 		if (a == null)
 			throw new IllegalArgumentException("Null category for '"+n+"'!");
 		category = a;
@@ -71,5 +74,9 @@ public abstract class CalendarEvent {
 	public abstract String getFullDateString();
 
 	public abstract void generateDescriptionText(ArrayList<String> ret);
+
+	public final void openFile(HostServices host) {
+		host.showDocument(sourceFile.getAbsolutePath());
+	}
 
 }

@@ -1,5 +1,6 @@
 package Reika.GameCalendar.Data;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -16,8 +17,8 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 
 	public boolean isContinuous = true;
 
-	public TimeSpan(ActivityCategory a, DateStamp s, DateStamp e, String n, String desc) {
-		super(a, n, desc);
+	public TimeSpan(File f, ActivityCategory a, DateStamp s, DateStamp e, String n, String desc) {
+		super(f, a, n, desc);
 		start = s;
 		end = e;
 		if (start.compareTo(end) >= 0) {
@@ -51,6 +52,7 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 		return start.toString()+" - "+end.toString();
 	}
 
+	@Override
 	public void generateDescriptionText(ArrayList<String> ret) {
 		String line = category.name+": "+name+" ["+start+" - "+end+"]";
 		if (end.equals(DateStamp.launch))

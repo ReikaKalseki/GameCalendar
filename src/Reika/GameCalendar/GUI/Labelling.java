@@ -4,12 +4,9 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
-
-import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
@@ -131,6 +128,7 @@ public class Labelling implements Runnable {
 				int over = descriptionSize-8;
 				sz -= over*1;
 			}
+			sz = Math.max(sz, 10);
 			area.setFont(new Font(f.getFamily(), sz));
 			descriptionChanged = false;
 		}
@@ -157,6 +155,7 @@ public class Labelling implements Runnable {
 				if (i < li.size()-1)
 					desc.add("");
 			}
+			/*
 			if (desc.size() >= 12) {
 				Iterator<String> it = desc.iterator();
 				while (it.hasNext()) {
@@ -165,7 +164,7 @@ public class Labelling implements Runnable {
 						it.remove();
 					}
 				}
-			}
+			}*/
 			descriptions = this.lineBreakStringList(desc);
 			descriptionSize = desc.size();
 		}
