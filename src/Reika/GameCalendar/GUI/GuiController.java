@@ -26,6 +26,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -39,6 +40,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextArea;
@@ -96,6 +98,9 @@ public class GuiController implements EventHandler<ActionEvent> {
 	private CheckBox memorable;
 
 	@FXML
+	private CheckBox mergeArcs;
+
+	@FXML
 	private CheckBox selectHighlightsInSection;
 
 	@FXML
@@ -118,6 +123,9 @@ public class GuiController implements EventHandler<ActionEvent> {
 
 	@FXML
 	private Button videoExport;
+
+	@FXML
+	private VBox optionsContainer;
 
 	@FXML
 	private VBox imageContainer;
@@ -261,8 +269,22 @@ public class GuiController implements EventHandler<ActionEvent> {
 
 		this.setImages(null);
 
+		rightmostColumn.setFillWidth(true);
+
 		imageContainer.setPadding(Insets.EMPTY);
 		screenshotsTitled.setPadding(Insets.EMPTY);
+
+		for (Node n : optionsContainer.getChildrenUnmodifiable()) {
+			if (n instanceof Separator) {
+				/*
+				Region line = (Region)n.lookup(".line");
+				line.setPadding(Insets.EMPTY);
+				((Separator)n).setPadding(Insets.EMPTY);
+				 */
+				((Separator)n).setValignment(VPos.CENTER);
+			}
+		}
+		optionsContainer.setSpacing(8);
 
 		//this.update();
 	}
@@ -526,6 +548,7 @@ public class GuiController implements EventHandler<ActionEvent> {
 		READING("readingWeek"),
 		SUMMER("summerBreak"),
 		MEMORABLE("memorable"),
+		ARCMERGE("mergeArcs"),
 		HIGHLIGHTSINSECTION("selectHighlightsInSection"),
 		SECTIONSWITHHIGHLIGHT("selectSectionsWithHighlight"),
 		CATEGORIES("catList"),

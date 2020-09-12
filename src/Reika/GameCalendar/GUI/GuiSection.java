@@ -25,6 +25,7 @@ public class GuiSection implements CalendarItem {
 	public final GuiSection previous;
 
 	public boolean skipRender;
+	public DateStamp renderedEnd;
 
 	public GuiSection(Section s, int idx, GuiSection prev) {
 		section = s;

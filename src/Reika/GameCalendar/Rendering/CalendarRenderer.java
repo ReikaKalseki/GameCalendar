@@ -156,6 +156,7 @@ public class CalendarRenderer {
 		for (GuiSection s : sections) {
 			s.polygon = null;
 			s.skipRender = false;
+			s.renderedEnd = s.section.getEnd();
 		}
 		for (GuiSection s : sections) {
 			if (s.skipRender)
@@ -168,12 +169,15 @@ public class CalendarRenderer {
 			double a2 = s.angleEnd;
 			DateStamp end = s.section.getEnd();
 			GuiSection g2 = s.getNext();
+			GuiSection g2b = s;
 			while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
 				g2.skipRender = true;
 				a2 = g2.angleEnd;
 				end = g2.section.getEnd();
+				g2b = g2;
 				g2 = g2.getNext();
 			}
+			s.renderedEnd = g2b.section.getEnd();
 			int i1 = years.indexOf(s.section.startTime.year);
 			int i2 = years.indexOf(end.year);
 			double r1a = INNER_RADIUS+i1*arcThickness;
@@ -576,7 +580,7 @@ public class CalendarRenderer {
 						selectedObjects.add(s);
 						if (GuiElement.HIGHLIGHTSINSECTION.isChecked()) {
 							for (GuiHighlight h : events.values()) {
-								if (h.time.isBetween(s.section.startTime, s.section.getEnd())) {
+								if (h.time.isBetween(s.section.startTime, s.renderedEnd)) {
 									selectedObjects.add(h);
 								}
 							}

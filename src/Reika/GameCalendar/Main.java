@@ -43,6 +43,12 @@ MORE
 	//checkboxes to show:
 	//to merge all category arcs together so it just shows game->game ("show subsections")
 
+	//FIX: the "arc extension" rendering trick does not expand the arcs "zones of containment" for the "select highlights within"
+	//eg: FCE 2019 arc does not naturally include the FF completion due to being split by other categories's toggling splitting the section
+	//give GuiSection a "fake end" variable?
+
+	//fix: the arc click zone thing
+
 	//ability to reload data
 
 	//"export as movie" functionality!!!!!!!!!!!********************************************************

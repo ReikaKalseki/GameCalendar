@@ -128,7 +128,7 @@ public class Labelling implements Runnable {
 				int over = descriptionSize-8;
 				sz -= over*1;
 			}
-			sz = Math.max(sz, 10);
+			sz = Math.max(sz, 11);
 			area.setFont(new Font(f.getFamily(), sz));
 			descriptionChanged = false;
 		}
