@@ -58,6 +58,7 @@ public class CalendarRenderer {
 	public final double arcThicknessHalfFraction = 0.35;
 
 	private final Collection<CalendarItem> selectedObjects = new HashSet();
+	private final Collection<CalendarItem> selectedObjectsCache = new ArrayList();
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
@@ -85,7 +86,7 @@ public class CalendarRenderer {
 		return Collections.unmodifiableList(years);
 	}
 
-	public void draw(int sw, int sh) {
+	public synchronized void draw(int sw, int sh) {
 		double t = System.currentTimeMillis();
 		GL11.glLineWidth(2);
 		GL11.glDepthMask(false);
@@ -495,7 +496,7 @@ public class CalendarRenderer {
 		return Math.toRadians(-a+90);
 	}
 
-	public void handleMouse(double x, double y) {
+	public synchronized void handleMouse(double x, double y) {
 		//int mx = Mouse.getX();
 		//int my = Mouse.getY();
 		/*
@@ -617,5 +618,17 @@ public class CalendarRenderer {
 	public void clearSelection() {
 		selectedObjects.clear();
 		Labelling.instance.calculateDescriptions(null);
+	}
+
+	public void preserveSelection() {
+		selectedObjectsCache.clear();
+		selectedObjectsCache.addAll(selectedObjects);
+	}
+
+	public void restoreSelection() {
+		selectedObjects.clear();
+		selectedObjects.addAll(selectedObjectsCache);
+		selectedObjectsCache.clear();
+		this.calculateDescriptions();
 	}
 }

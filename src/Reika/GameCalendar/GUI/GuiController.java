@@ -145,6 +145,8 @@ public class GuiController implements EventHandler<ActionEvent> {
 	private final HashMap<String, NodeWrapper> buttons = new HashMap();
 	private final HashMap<String, NodeWrapper> listSelects = new HashMap();
 
+	private boolean reloadCategories = true;
+
 	@FXML
 	public void initialize() {
 		this.addWrapperHooks(this.getAllNodes());
@@ -396,13 +398,18 @@ public class GuiController implements EventHandler<ActionEvent> {
 
 	void update(String fxID) {
 		GuiElement gui = fxID != null ? GuiElement.getByID(fxID) : null;
-		if (gui == null || gui.reloadCategoriesOnClick()) {
-			List<String> e = catList.getSelectionModel().getSelectedItems();
-			//catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
-			//catList.getSelectionModel().clearSelection();
-			if (e != null && !e.isEmpty()) {
-
+		if (gui == GuiElement.SORTORDER) {
+			Main.getCalendarRenderer().preserveSelection();
+		}
+		if (reloadCategories && (gui == null || gui.reloadCategoriesOnClick())) {
+			reloadCategories = false;
+			ArrayList<String> e = new ArrayList(catList.getSelectionModel().getSelectedItems());
+			catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
+			catList.getSelectionModel().clearSelection();
+			for (String s : e) {
+				catList.getSelectionModel().select(s);
 			}
+			reloadCategories = true;
 		}
 		if (gui != null && gui.reloadTexts() && !gui.resetRenderer()) {
 			StatusHandler.postStatus("Reloading descriptions", 200);
@@ -413,6 +420,9 @@ public class GuiController implements EventHandler<ActionEvent> {
 			Main.getCalendarRenderer().clearSelection();
 			Labelling.instance.init(calendarOverlay);
 			this.setImages(null);
+		}
+		if (gui == GuiElement.SORTORDER) {
+			Main.getCalendarRenderer().restoreSelection();
 		}
 	}
 

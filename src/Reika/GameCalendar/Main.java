@@ -43,11 +43,7 @@ MORE
 	//checkboxes to show:
 	//to merge all category arcs together so it just shows game->game ("show subsections")
 
-	//fix the sorting order thing
-	//also fix: when has too many (>=3) screenshots to fit (eg first half of october 2015 with the "select highlights too" option on
-
 	//ability to reload data
-	//"open definition file(s)" button? -> how? each section is many files
 
 	//"export as movie" functionality!!!!!!!!!!!********************************************************
 
