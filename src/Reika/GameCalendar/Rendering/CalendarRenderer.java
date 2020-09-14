@@ -164,9 +164,11 @@ public class CalendarRenderer {
 				continue;
 			if (s.section.isEmpty())
 				continue;
+			if (limit != null && s.section.startTime.compareTo(limit) >= 0)
+				continue;
 			if (s.getActiveCategories().isEmpty())
 				continue;
-			this.drawSectionArc(s, wf, t);
+			this.drawSectionArc(s, wf, t, limit);
 		}
 
 		GL11.glLineWidth(2);
@@ -184,6 +186,8 @@ public class CalendarRenderer {
 			ArrayList<GuiHighlight> memorable = new ArrayList();
 			for (GuiHighlight h : events.values()) {
 				if (h.getActiveCategories().isEmpty())
+					continue;
+				if (limit != null && h.time.compareTo(limit) >= 0)
 					continue;
 				double a = h.time.getAngle();
 				int i = years.indexOf(h.time.year);
@@ -296,7 +300,7 @@ public class CalendarRenderer {
 		Platform.runLater(Labelling.instance);
 	}
 
-	private void drawSectionArc(GuiSection s, double wf, double t) {
+	private void drawSectionArc(GuiSection s, double wf, double t, DateStamp limit) {
 		double a1 = s.angleStart;
 		double a2 = s.angleEnd;
 		DateStamp end = s.section.getEnd();
@@ -310,6 +314,11 @@ public class CalendarRenderer {
 			g2 = g2.getNext();
 		}
 		s.renderedEnd = g2b.section.getEnd();
+		if (limit != null && end.compareTo(limit) > 0) {
+			end = limit;
+			s.renderedEnd = end;
+			a2 = end.getAngle();
+		}
 		int i1 = years.indexOf(s.section.startTime.year);
 		int i2 = years.indexOf(end.year);
 		double r1a = INNER_RADIUS+i1*arcThickness;

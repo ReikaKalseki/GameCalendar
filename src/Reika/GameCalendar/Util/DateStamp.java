@@ -97,4 +97,12 @@ public class DateStamp implements Comparable<DateStamp> {
 	public boolean isBetween(DateStamp start, DateStamp end) {
 		return this.compareTo(start) >= 0 && this.compareTo(end) <= 0;
 	}
+
+	public static DateStamp fromDayOfYear(int year, int day) {
+		calendar.set(Calendar.DAY_OF_YEAR, day);
+		calendar.set(Calendar.YEAR, year);
+		int month = calendar.get(Calendar.MONTH);
+		int daym = calendar.get(Calendar.DAY_OF_MONTH);
+		return new DateStamp(year, Month.of(month+1), daym);
+	}
 }
