@@ -33,14 +33,14 @@ public abstract class CalendarEvent {
 		description = desc;
 	}
 
-	public CalendarEvent setScreenshot(File f) {
+	public final CalendarEvent setScreenshot(File f) {
 		if (!f.exists())
 			throw new IllegalArgumentException("Screenshot "+f.getAbsolutePath()+" does not exist!");
 		screenshot = f;
 		return this;
 	}
 
-	public CalendarEvent setMemorable() {
+	public final CalendarEvent setMemorable() {
 		isMemorable = true;
 		return this;
 	}
@@ -54,7 +54,7 @@ public abstract class CalendarEvent {
 
 	public abstract int getColor();
 
-	public Image getScreenshot() {
+	public final Image getScreenshot() {
 		if (screenshot != null && screenshotData == null) {
 			try(InputStream in = new FileInputStream(screenshot)) {
 				screenshotData = new Image(in);
@@ -67,7 +67,7 @@ public abstract class CalendarEvent {
 		return screenshotData;
 	}
 
-	public File getScreenshotFile() {
+	public final File getScreenshotFile() {
 		return screenshot;
 	}
 
@@ -77,6 +77,10 @@ public abstract class CalendarEvent {
 
 	public final void openFile(HostServices host) {
 		host.showDocument(sourceFile.getAbsolutePath());
+	}
+
+	public final boolean isMemorable() {
+		return isMemorable;
 	}
 
 }

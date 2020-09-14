@@ -20,21 +20,9 @@ split the p2 map dev into maps?
 ALL THE SCREENSHOTS
 
 ALL THE "MEMORABLE" FLAGS
--2018 stellaris,
-giant 2016 Civ V continents
-2015 tour server (first half)
-2015 elite
-2016 AND 2018 sagA/colonia trips
-2018 CivV vs china
-1.6 SSP
-1.1 survival world
-space engineers intro and 2017 planet save
-bobmods 0.11, 0.14
-late 2015 factorio
+bobmods 0.11
 shortlife server?
-2018 factorio?
 2015 PeTI
-2015 portal map making
 MORE
 
 	 */

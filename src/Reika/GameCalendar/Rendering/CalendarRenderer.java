@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -165,84 +166,10 @@ public class CalendarRenderer {
 				continue;
 			if (s.getActiveCategories().isEmpty())
 				continue;
-			double a1 = s.angleStart;
-			double a2 = s.angleEnd;
-			DateStamp end = s.section.getEnd();
-			GuiSection g2 = s.getNext();
-			GuiSection g2b = s;
-			while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
-				g2.skipRender = true;
-				a2 = g2.angleEnd;
-				end = g2.section.getEnd();
-				g2b = g2;
-				g2 = g2.getNext();
-			}
-			s.renderedEnd = g2b.section.getEnd();
-			int i1 = years.indexOf(s.section.startTime.year);
-			int i2 = years.indexOf(end.year);
-			double r1a = INNER_RADIUS+i1*arcThickness;
-			double r1b = INNER_RADIUS+(i1+1)*arcThickness;
-			double r2a = INNER_RADIUS+i2*arcThickness;
-			double r2b = INNER_RADIUS+(i2+1)*arcThickness;
-			while (a1 > a2) { //across a new year
-				a2 += 360;
-				r2b -= arcThickness;
-			}
-			ArrayList<DoublePoint> pointsInner = new ArrayList();
-			ArrayList<DoublePoint> pointsOuter = new ArrayList();
-			int colorstep = 2;//Math.max(4, 6-i2/2);
-			for (double a = a1; a < a2; a += 0.5) {
-				double ang = this.getGuiAngle(a);
-				double r1 = r1a;
-				double r2 = r2b;
-				double ra = r1+(r2-r1)*(a/360D)-arcThickness*arcThicknessHalfFraction*wf;
-				double rb = r1+(r2-r1)*(a/360D)+arcThickness*arcThicknessHalfFraction*wf;
-				double xa = ra*Math.cos(ang);
-				double ya = ra*Math.sin(ang);
-				double xb = rb*Math.cos(ang);
-				double yb = rb*Math.sin(ang);
-				pointsInner.add(new DoublePoint(xa, ya));
-				pointsOuter.add(new DoublePoint(xb, yb));
-			}
-			if (pointsInner.isEmpty()) {
-				continue;
-			}
-			s.polygon = new DoublePolygon();
-			ArrayList<DoublePoint> points = new ArrayList();
-			for (int i = 0; i < pointsInner.size(); i++) {
-				points.add(pointsInner.get(i));
-				points.add(pointsOuter.get(i));
-			}
-			GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
-			int clr = 0xffffff;
-			int i = 0;
-			for (DoublePoint p : points) {
-				clr = this.getSectionColorAtIndex(s, i/colorstep);
-				float r = Colors.HextoColorMultiplier(clr, 0);
-				float g = Colors.HextoColorMultiplier(clr, 1);
-				float b = Colors.HextoColorMultiplier(clr, 2);
-				GL11.glColor4f(r, g, b, 1);
-				GL11.glVertex2d(p.x, p.y);
-				i++;
-			}
-			GL11.glEnd();
-			points.clear();
-			points.addAll(pointsInner);
-			Collections.reverse(pointsOuter);
-			points.addAll(pointsOuter);
-			boolean sel = selectedObjects.contains(s);
-			if (sel) {
-				GL11.glColor4f(0, 0, 0, 1);
-				GL11.glBegin(GL11.GL_LINE_LOOP);
-			}
-			for (DoublePoint p : points) {
-				if (sel)
-					GL11.glVertex2d(p.x, p.y);
-				s.polygon.addPoint(p.x, p.y);
-			}
-			if (sel)
-				GL11.glEnd();
+			this.drawSectionArc(s, wf, t);
 		}
+
+		GL11.glLineWidth(2);
 
 		for (GuiHighlight h : events.values()) {
 			h.position = null;
@@ -317,6 +244,10 @@ public class CalendarRenderer {
 			}
 		}
 
+		this.updateLabels(sw, sh);
+	}
+
+	private void updateLabels(int sw, int sh) {
 		DFXInputHandler dfx = JFXWindow.getGUI().getMouseHandler();
 		double mx = dfx.getMouseX(false);
 		double my = dfx.getMouseY(false);
@@ -343,6 +274,126 @@ public class CalendarRenderer {
 
 		Labelling.instance.setRenderParams(sw, sh, this);
 		Platform.runLater(Labelling.instance);
+	}
+
+	private void drawSectionArc(GuiSection s, double wf, double t) {
+		double a1 = s.angleStart;
+		double a2 = s.angleEnd;
+		DateStamp end = s.section.getEnd();
+		GuiSection g2 = s.getNext();
+		GuiSection g2b = s;
+		while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
+			g2.skipRender = true;
+			a2 = g2.angleEnd;
+			end = g2.section.getEnd();
+			g2b = g2;
+			g2 = g2.getNext();
+		}
+		s.renderedEnd = g2b.section.getEnd();
+		int i1 = years.indexOf(s.section.startTime.year);
+		int i2 = years.indexOf(end.year);
+		double r1a = INNER_RADIUS+i1*arcThickness;
+		double r1b = INNER_RADIUS+(i1+1)*arcThickness;
+		double r2a = INNER_RADIUS+i2*arcThickness;
+		double r2b = INNER_RADIUS+(i2+1)*arcThickness;
+		while (a1 > a2) { //across a new year
+			a2 += 360;
+			r2b -= arcThickness;
+		}
+		ArrayList<DoublePoint> pointsInner = new ArrayList();
+		ArrayList<DoublePoint> pointsOuter = new ArrayList();
+		LinkedList<DoublePoint> pointsInnerWide = new LinkedList();
+		LinkedList<DoublePoint> pointsOuterWide = new LinkedList();
+		int colorstep = 2;//Math.max(4, 6-i2/2);
+		for (double a = a1; a < a2; a += 0.5) {
+			double ang = this.getGuiAngle(a);
+			double r1 = r1a;
+			double r2 = r2b;
+
+			double ra = r1+(r2-r1)*(a/360D)-arcThickness*arcThicknessHalfFraction*wf;
+			double rb = r1+(r2-r1)*(a/360D)+arcThickness*arcThicknessHalfFraction*wf;
+
+			double ra2 = ra-arcThickness*arcThicknessHalfFraction*wf*0.25;
+			double rb2 = rb+arcThickness*arcThicknessHalfFraction*wf*0.25;
+
+			double xa = ra*Math.cos(ang);
+			double ya = ra*Math.sin(ang);
+			double xb = rb*Math.cos(ang);
+			double yb = rb*Math.sin(ang);
+
+			double xa2 = ra2*Math.cos(ang);
+			double ya2 = ra2*Math.sin(ang);
+			double xb2 = rb2*Math.cos(ang);
+			double yb2 = rb2*Math.sin(ang);
+
+			pointsInner.add(new DoublePoint(xa, ya));
+			pointsOuter.add(new DoublePoint(xb, yb));
+			pointsInnerWide.addLast(new DoublePoint(xa2, ya2));
+			pointsOuterWide.addFirst(new DoublePoint(xb2, yb2));
+		}
+		if (pointsInner.isEmpty()) {
+			return;
+		}
+		s.polygon = new DoublePolygon();
+		ArrayList<DoublePoint> points = new ArrayList();
+		ArrayList<DoublePoint> pointsWide = new ArrayList();
+		for (int i = 0; i < pointsInner.size(); i++) {
+			points.add(pointsInner.get(i));
+			points.add(pointsOuter.get(i));
+		}
+		pointsWide.addAll(pointsInnerWide);
+		pointsWide.addAll(pointsOuterWide);
+		GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+		int clr = 0xffffff;
+		int i = 0;
+		for (DoublePoint p : points) {
+			clr = this.getSectionColorAtIndex(s, i/colorstep);
+			if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
+				//float f = (float)(0.75+0.125*Math.sin(i*0.55-t*0.027)+0.125*Math.cos(i*0.37-t*0.017));
+				//clr = Colors.mixColors(clr, 0xffffff, f);
+			}
+			float r = Colors.HextoColorMultiplier(clr, 0);
+			float g = Colors.HextoColorMultiplier(clr, 1);
+			float b = Colors.HextoColorMultiplier(clr, 2);
+			GL11.glColor4f(r, g, b, 1);
+			GL11.glVertex2d(p.x, p.y);
+			i++;
+		}
+		GL11.glEnd();
+		points.clear();
+		points.addAll(pointsInner);
+		Collections.reverse(pointsOuter);
+		points.addAll(pointsOuter);
+		boolean sel = selectedObjects.contains(s);
+		if (sel) {
+			GL11.glColor4f(0, 0, 0, 1);
+			GL11.glBegin(GL11.GL_LINE_LOOP);
+		}
+		for (int idx = 0; idx < points.size(); idx++) {
+			DoublePoint p = points.get(idx);
+			DoublePoint p2 = pointsWide.get(idx);
+			if (sel)
+				GL11.glVertex2d(p.x, p.y);
+			s.polygon.addPoint(p2.x, p2.y);
+		}
+		if (sel)
+			GL11.glEnd();
+		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
+			GL11.glLineWidth(1);
+			GL11.glEnable(GL11.GL_LINE_STIPPLE);
+			short bits = 0x7070;
+			int d = (int)((t/60D)%16);
+			short pattern = (short)((bits << d) | (bits >> (16 - d)));
+			GL11.glLineStipple(4, pattern);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glBegin(GL11.GL_LINE_LOOP);
+			for (DoublePoint p : pointsWide) {
+				GL11.glVertex2d(p.x, p.y);
+			}
+			GL11.glEnd();
+			GL11.glDisable(GL11.GL_LINE_STIPPLE);
+			GL11.glLineWidth(2);
+		}
 	}
 
 	private void drawTimeWedge(double t, DateStamp d1, DateStamp d2, int c1, int c2) {

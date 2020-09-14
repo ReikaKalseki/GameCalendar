@@ -27,12 +27,18 @@ public class GuiSection implements CalendarItem {
 	public boolean skipRender;
 	public DateStamp renderedEnd;
 
+	private boolean memorable = false;
+
 	public GuiSection(Section s, int idx, GuiSection prev) {
 		section = s;
 		index = idx;
 		previous = prev;
 		if (prev != null)
 			prev.next = this;
+
+		for (TimeSpan t : s.getSpans()) {
+			memorable |= t.isMemorable();
+		}
 
 		angleStart = s.startTime.getAngle();
 		angleEnd = s.getEnd().getAngle();
@@ -85,6 +91,18 @@ public class GuiSection implements CalendarItem {
 	@Override
 	public List<? extends CalendarEvent> getItems(boolean activeOnly) {
 		return activeOnly ? this.getActiveSpans() : section.getSpans();
+	}
+
+	public boolean isMemorable(boolean activeOnly) {
+		return activeOnly ? this.anyActiveMemorable() : memorable;
+	}
+
+	private boolean anyActiveMemorable() {
+		for (TimeSpan t : this.getActiveSpans()) {
+			if (t.isMemorable())
+				return true;
+		}
+		return false;
 	}
 
 }

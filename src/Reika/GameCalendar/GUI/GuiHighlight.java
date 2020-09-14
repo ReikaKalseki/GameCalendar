@@ -17,6 +17,8 @@ public class GuiHighlight implements CalendarItem {
 	private final ArrayList<Highlight> events = new ArrayList();
 	public final DateStamp time;
 
+	private boolean memorable = false;
+
 	public DoublePoint position;
 
 	public GuiHighlight(Highlight... h) {
@@ -32,6 +34,7 @@ public class GuiHighlight implements CalendarItem {
 		if (!time.equals(s.time))
 			throw new IllegalArgumentException("You cannot group highlights of different days!");
 		events.add(s);
+		memorable |= s.isMemorable();
 	}
 
 	@Override
@@ -64,6 +67,18 @@ public class GuiHighlight implements CalendarItem {
 			}
 		}
 		return li;
+	}
+
+	public boolean isMemorable(boolean activeOnly) {
+		return activeOnly ? this.anyActiveMemorable() : memorable;
+	}
+
+	private boolean anyActiveMemorable() {
+		for (Highlight t : this.getActiveEvents()) {
+			if (t.isMemorable())
+				return true;
+		}
+		return false;
 	}
 
 }
