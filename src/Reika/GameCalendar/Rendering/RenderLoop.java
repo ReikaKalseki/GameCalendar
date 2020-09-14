@@ -1,6 +1,7 @@
 package Reika.GameCalendar.Rendering;
 
 import java.nio.ByteBuffer;
+import java.time.Month;
 
 import org.eclipse.fx.drift.DriftFXSurface;
 import org.eclipse.fx.drift.GLRenderer;
@@ -22,6 +23,7 @@ import Reika.GameCalendar.Main;
 import Reika.GameCalendar.GUI.GLFWInputHandler;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
+import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.GLFunctions;
 
 public class RenderLoop extends Thread {
@@ -210,7 +212,7 @@ public class RenderLoop extends Thread {
 		GL11.glViewport(0, 0, x, y);
 		GLFW.glfwSwapBuffers(contextID);
 		GLFW.glfwPollEvents();
-		Main.getCalendarRenderer().draw(x, y);
+		Main.getCalendarRenderer().draw(x, y, new DateStamp(2019, Month.OCTOBER, 12));
 	}
 
 	public void close() {

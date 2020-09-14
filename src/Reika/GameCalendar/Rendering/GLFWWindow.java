@@ -9,6 +9,7 @@ import com.google.common.base.Throwables;
 
 import Reika.GameCalendar.Main;
 
+@Deprecated
 public class GLFWWindow {
 
 	public static final String PROGRAM_TITLE = "Game Calendar";
@@ -115,7 +116,7 @@ public class GLFWWindow {
 	}
 
 	private void drawGUI() {
-		Main.getCalendarRenderer().draw(screenSizeX, screenSizeY);
+		Main.getCalendarRenderer().draw(screenSizeX, screenSizeY, null);
 		Main.getCalendarRenderer().handleMouse(screenSizeX, screenSizeY);
 	}
 	/*

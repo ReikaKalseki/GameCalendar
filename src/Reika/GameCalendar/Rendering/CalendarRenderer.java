@@ -87,7 +87,7 @@ public class CalendarRenderer {
 		return Collections.unmodifiableList(years);
 	}
 
-	public synchronized void draw(int sw, int sh) {
+	public synchronized void draw(int sw, int sh, DateStamp limit) {
 		double t = System.currentTimeMillis();
 		GL11.glLineWidth(2);
 		GL11.glDepthMask(false);

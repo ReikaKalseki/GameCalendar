@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.lwjglx.debug.joptsimple.internal.Strings;
+
 import Reika.GameCalendar.Util.DateStamp;
 
 import javafx.application.HostServices;
@@ -73,8 +75,6 @@ public abstract class CalendarEvent {
 
 	public abstract String getFullDateString();
 
-	public abstract void generateDescriptionText(ArrayList<String> ret);
-
 	public final void openFile(HostServices host) {
 		host.showDocument(sourceFile.getAbsolutePath());
 	}
@@ -82,5 +82,28 @@ public abstract class CalendarEvent {
 	public final boolean isMemorable() {
 		return isMemorable;
 	}
+
+	public final void generateDescriptionText(ArrayList<String> ret) {
+		DateStamp start = this.getFirstDate();
+		DateStamp end = this.getLastDate();
+		String line = null;
+		if (start.equals(end)) {
+			line = category.name+": "+name+" ["+start+"]";
+		}
+		else {
+			line = category.name+": "+name+" ["+start+" - "+end+"]";
+			if (end.equals(DateStamp.launch))
+				line = category.name+": "+name+" ["+start+", ongoing]";
+		}
+		if (this.isMemorable())
+			line = line+" (Highly Memorable)";
+		ret.add(line);
+		if (!Strings.isNullOrEmpty(description)) {
+			ret.add("\t"+description);
+		}
+	}
+
+	protected abstract DateStamp getFirstDate();
+	protected abstract DateStamp getLastDate();
 
 }
