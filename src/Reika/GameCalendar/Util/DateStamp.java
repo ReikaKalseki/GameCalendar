@@ -105,4 +105,15 @@ public class DateStamp implements Comparable<DateStamp> {
 		int daym = calendar.get(Calendar.DAY_OF_MONTH);
 		return new DateStamp(year, Month.of(month+1), daym);
 	}
+
+	public DateStamp nextDay() {
+		if (month == Month.DECEMBER && day == 31)
+			return new DateStamp(year+1, Month.JANUARY, 1);
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month.ordinal());
+		int dayd = calendar.get(Calendar.DAY_OF_YEAR);
+		calendar.set(Calendar.DAY_OF_YEAR, dayd+1);
+		return new DateStamp(year, Month.of(calendar.get(Calendar.MONTH)+1), calendar.get(Calendar.DAY_OF_MONTH));
+	}
 }

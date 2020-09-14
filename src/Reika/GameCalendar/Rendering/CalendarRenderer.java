@@ -55,6 +55,8 @@ public class CalendarRenderer {
 	private final HashMap<DateStamp, GuiHighlight> events = new HashMap();
 	private final ArrayList<Integer> years;
 
+	public DateStamp limit = null;
+
 	public final double arcThickness;
 	public final double arcThicknessHalfFraction = 0.35;
 
@@ -87,7 +89,7 @@ public class CalendarRenderer {
 		return Collections.unmodifiableList(years);
 	}
 
-	public synchronized void draw(int sw, int sh, DateStamp limit) {
+	public synchronized void draw(int sw, int sh) {
 		double t = System.currentTimeMillis();
 		GL11.glLineWidth(2);
 		GL11.glDepthMask(false);
@@ -134,10 +136,11 @@ public class CalendarRenderer {
 		GL11.glVertex2d(0, 0);
 		GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+arcThickness*arcThicknessHalfFraction);
 		GL11.glEnd();
-		if (GuiElement.TODAY.isChecked()) {
+		if (limit != null || GuiElement.TODAY.isChecked()) {
 			GL11.glLineWidth(3);
 			GL11.glBegin(GL11.GL_LINES);
-			double lang = DateStamp.launch.getAngle();
+			DateStamp d = limit != null ? limit : DateStamp.launch;
+			double lang = d.getAngle();
 			double dayang = this.getGuiAngle(lang);
 			double r1 = INNER_RADIUS;
 			double r2 = r1+arcThickness;

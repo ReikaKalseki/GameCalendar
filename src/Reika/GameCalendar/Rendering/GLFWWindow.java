@@ -116,7 +116,7 @@ public class GLFWWindow {
 	}
 
 	private void drawGUI() {
-		Main.getCalendarRenderer().draw(screenSizeX, screenSizeY, null);
+		Main.getCalendarRenderer().draw(screenSizeX, screenSizeY);
 		Main.getCalendarRenderer().handleMouse(screenSizeX, screenSizeY);
 	}
 	/*

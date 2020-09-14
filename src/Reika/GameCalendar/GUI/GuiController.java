@@ -16,6 +16,7 @@ import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 import Reika.GameCalendar.Data.CalendarEvent;
+import Reika.GameCalendar.Rendering.VideoRenderer;
 import Reika.GameCalendar.Util.Colors;
 
 import javafx.application.HostServices;
@@ -409,6 +410,9 @@ public class GuiController implements EventHandler<ActionEvent> {
 
 	public void handle(ActionEvent event) {
 
+		if (VideoRenderer.instance.isRendering())
+			return;
+
 		Object o = event.getSource();
 		String id = allNodes.get(o).fxID;
 		this.update(id);
@@ -646,6 +650,7 @@ public class GuiController implements EventHandler<ActionEvent> {
 					Main.getCalendarRenderer().openSelectedFiles(c.host);
 					break;
 				case MAKEVIDEO:
+					VideoRenderer.instance.startRendering(Main.getCalendarRenderer());
 					break;
 				default:
 					break;

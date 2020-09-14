@@ -92,10 +92,12 @@ public class RenderLoop extends Thread {
 
 				this.renderLoop();
 
-				long post = System.currentTimeMillis();
-				long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);
-				if (sleep > 0) {
-					Thread.sleep(sleep);
+				if (!VideoRenderer.instance.isRendering()) {
+					long post = System.currentTimeMillis();
+					long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);
+					if (sleep > 0) {
+						Thread.sleep(sleep);
+					}
 				}
 			}
 			catch (InterruptedException e) {
@@ -161,6 +163,10 @@ public class RenderLoop extends Thread {
 		msaaBuffer.sendTo(intermediate);
 		GLFunctions.printGLErrors("Framebuffer copy to intermediate");
 
+		if (VideoRenderer.instance.isRendering()) {
+			VideoRenderer.instance.addFrame(intermediate);
+		}
+
 		RenderTarget target = chain.acquire();
 
 		int tex = GLRenderer.getGLTextureId(target);
@@ -210,7 +216,7 @@ public class RenderLoop extends Thread {
 		GL11.glViewport(0, 0, x, y);
 		GLFW.glfwSwapBuffers(contextID);
 		GLFW.glfwPollEvents();
-		Main.getCalendarRenderer().draw(x, y, null);
+		Main.getCalendarRenderer().draw(x, y);
 	}
 
 	public void close() {
