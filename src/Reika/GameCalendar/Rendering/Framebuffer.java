@@ -211,33 +211,41 @@ public class Framebuffer {
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
 	}
 
+	public BufferedImage toImage() {
+		return this.toImage(width, height);
+	}
+
+	/** For rendering into an image that is of a larger size. */
+	public BufferedImage toImage(int imageWidth, int imageHeight) {
+		int len = width * height;
+
+		IntBuffer pixelBuffer = BufferUtils.createIntBuffer(len);
+		int[] pixelValues = new int[len];
+
+		GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+		GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixelBuffer);
+
+		pixelBuffer.get(pixelValues);
+		GLFunctions.flipPixelArray(pixelValues, width, height);
+
+		BufferedImage img = new BufferedImage(imageWidth, imageHeight, 1);
+		int ow = (imageWidth-width)/2;
+		int oh = (imageHeight-height)/2;
+		for (int i = 0; i < height; ++i) {
+			for (int k = 0; k < width; ++k) {
+				img.setRGB(k+ow, i+oh, pixelValues[i*width+k]);
+			}
+		}
+		return img;
+	}
+
 	public String saveAsFile(File f) {
 		try {
-			int k = width * height;
-
-			IntBuffer pixelBuffer = BufferUtils.createIntBuffer(k);
-			int[] pixelValues = new int[k];
-
-			GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
-			GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-			GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixelBuffer);
-
-			pixelBuffer.get(pixelValues);
-			GLFunctions.flipPixelArray(pixelValues, width, height);
-			BufferedImage bufferedimage = null;
-
-			bufferedimage = new BufferedImage(width, height, 1);
-
-			for (int i1 = 0; i1 < height; ++i1) {
-				for (int j1 = 0; j1 < width; ++j1) {
-					bufferedimage.setRGB(j1, i1, pixelValues[i1 * width + j1]);
-				}
-			}
-
 			f.getParentFile().mkdirs();
-			ImageIO.write(bufferedimage, "png", f);
+			ImageIO.write(this.toImage(), "png", f);
 			return f.getAbsolutePath();
 		}
 		catch (Exception e) {

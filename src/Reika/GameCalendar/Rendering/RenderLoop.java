@@ -207,15 +207,12 @@ public class RenderLoop extends Thread {
 		GLFunctions.printGLErrors("DFX Framebuffer unbind");
 
 		chain.present(target);
-		//Thread.sleep(16);
 	}
 
 	private void render(int x, int y) throws InterruptedException {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glViewport(0, 0, x, y);
-		GLFW.glfwSwapBuffers(contextID);
-		GLFW.glfwPollEvents();
 		Main.getCalendarRenderer().draw(x, y);
 	}
 

@@ -722,17 +722,17 @@ public class CalendarRenderer {
 		}
 	}
 
-	public void clearSelection() {
+	public synchronized void clearSelection() {
 		selectedObjects.clear();
 		Labelling.instance.calculateDescriptions(null);
 	}
 
-	public void preserveSelection() {
+	public synchronized void preserveSelection() {
 		selectedObjectsCache.clear();
 		selectedObjectsCache.addAll(selectedObjects);
 	}
 
-	public void restoreSelection() {
+	public synchronized void restoreSelection() {
 		selectedObjects.clear();
 		selectedObjects.addAll(selectedObjectsCache);
 		selectedObjectsCache.clear();

@@ -10,6 +10,8 @@ import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 import Reika.GameCalendar.Rendering.RenderLoop;
 
+import javafx.application.Platform;
+
 public class Main {
 	/*
 	DO NOT FORGET:
@@ -52,6 +54,7 @@ MORE
 			System.out.println("Thread encountered an uncaught exception:");
 			System.out.println(t.toString());
 			e.printStackTrace();
+			Platform.exit();
 		}
 
 	};
