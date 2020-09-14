@@ -17,7 +17,19 @@ split the p2 map dev into maps?
 
 2020 and probably other years PeTI
 
+///figure out what minecraft you were doing in late april 2012
+///and from aug 22 to sep 10
+ // AND SPLIT OUT THE FIRST ESCAPECRAFT ITERATION
+  // and the bc world looks like it starts at the same time as ethanoil - that cannot be right->the former is likely too late
+   //big gap at jun 17 to jul 15 2013!
+	 * and sep 6 to 19 too
+	 * and nov 20 to 29
+	 * sep 23 to oct 4 2014
+	 * may 4 to 13 2015
+
 ALL THE SCREENSHOTS
+
+early-on rainforest server map reset?
 
 ALL THE "MEMORABLE" FLAGS
 bobmods 0.11
@@ -30,10 +42,6 @@ MORE
 	//TODO:
 	//checkboxes to show:
 	//to merge all category arcs together so it just shows game->game ("show subsections")
-
-	//fix: the arc click zone thing
-
-	//ability to reload data
 
 	//"export as movie" functionality!!!!!!!!!!!********************************************************
 
@@ -56,6 +64,21 @@ MORE
 
 	public static void main(String[] args) {
 		Thread.setDefaultUncaughtExceptionHandler(defaultErrorHandler);
+
+		load();
+
+		renderer = new RenderLoop();
+		renderer.start();
+		JFXWindow.create();
+
+		//WavefrontObjDemoStandalone.main(args);
+		//window.create();
+		renderer.close();
+		System.out.print("Exiting program");
+		System.exit(0);
+	}
+
+	public static void load() {
 		timeline = new Timeline();
 		File f = new File("Data");
 		for (File in : f.listFiles()) {
@@ -70,21 +93,7 @@ MORE
 		}
 		timeline.prepare();
 		gui = new CalendarRenderer(timeline);
-
-		renderer = new RenderLoop();
-		renderer.start();
-		JFXWindow.create();
-
-		//WavefrontObjDemoStandalone.main(args);
-		//window.create();
-		renderer.close();
-		System.out.print("Exiting program");
-		System.exit(0);
 	}
-	/*
-	public static Timeline getTimeline() {
-		return timeline;
-	}*/
 
 	public static CalendarRenderer getCalendarRenderer() {
 		return gui;

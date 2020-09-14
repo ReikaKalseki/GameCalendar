@@ -181,6 +181,7 @@ public class CalendarRenderer {
 			GL11.glPointSize(8);
 			GL11.glColor4f(0, 0, 0, 1);
 			GL11.glBegin(GL11.GL_POINTS);
+			ArrayList<GuiHighlight> memorable = new ArrayList();
 			for (GuiHighlight h : events.values()) {
 				if (h.getActiveCategories().isEmpty())
 					continue;
@@ -194,9 +195,26 @@ public class CalendarRenderer {
 				double y = r*Math.sin(ang);
 				h.position = new DoublePoint(x, y);
 				GL11.glVertex2d(x, y);
+				if (GuiElement.MEMORABLE.isChecked() && h.isMemorable(true)) {
+					memorable.add(h);
+				}
 			}
 			GL11.glEnd();
-			GL11.glPopMatrix();
+
+			if (!memorable.isEmpty()) {
+				double d = 1/80D;
+				GL11.glLineWidth(1);
+				GL11.glColor4f(1, 1, 1, 1);
+				GL11.glBegin(GL11.GL_LINES);
+				for (GuiHighlight h : memorable) {
+					GL11.glVertex2d(h.position.x, h.position.y-d);
+					GL11.glVertex2d(h.position.x, h.position.y+d);
+					GL11.glVertex2d(h.position.x-d, h.position.y);
+					GL11.glVertex2d(h.position.x+d, h.position.y);
+				}
+				GL11.glEnd();
+				GL11.glLineWidth(2);
+			}
 
 			for (CalendarItem ci : selectedObjects) {
 				if (ci instanceof GuiHighlight) {
@@ -211,6 +229,8 @@ public class CalendarRenderer {
 					GL11.glEnd();
 				}
 			}
+
+			GL11.glPopMatrix();
 		}
 
 		if (GuiElement.XMAS.isChecked()) {
@@ -300,6 +320,7 @@ public class CalendarRenderer {
 			a2 += 360;
 			r2b -= arcThickness;
 		}
+		ArrayList<DoublePoint> pointsCenterline = new ArrayList();
 		ArrayList<DoublePoint> pointsInner = new ArrayList();
 		ArrayList<DoublePoint> pointsOuter = new ArrayList();
 		LinkedList<DoublePoint> pointsInnerWide = new LinkedList();
@@ -310,8 +331,10 @@ public class CalendarRenderer {
 			double r1 = r1a;
 			double r2 = r2b;
 
-			double ra = r1+(r2-r1)*(a/360D)-arcThickness*arcThicknessHalfFraction*wf;
-			double rb = r1+(r2-r1)*(a/360D)+arcThickness*arcThicknessHalfFraction*wf;
+			double r0 = r1+(r2-r1)*(a/360D);
+
+			double ra = r0-arcThickness*arcThicknessHalfFraction*wf;
+			double rb = r0+arcThickness*arcThicknessHalfFraction*wf;
 
 			double ra2 = ra-arcThickness*arcThicknessHalfFraction*wf*0.25;
 			double rb2 = rb+arcThickness*arcThicknessHalfFraction*wf*0.25;
@@ -326,10 +349,15 @@ public class CalendarRenderer {
 			double xb2 = rb2*Math.cos(ang);
 			double yb2 = rb2*Math.sin(ang);
 
+			double x0 = r0*Math.cos(ang);
+			double y0 = r0*Math.sin(ang);
+
 			pointsInner.add(new DoublePoint(xa, ya));
 			pointsOuter.add(new DoublePoint(xb, yb));
 			pointsInnerWide.addLast(new DoublePoint(xa2, ya2));
 			pointsOuterWide.addFirst(new DoublePoint(xb2, yb2));
+
+			pointsCenterline.add(new DoublePoint(x0, y0));
 		}
 		if (pointsInner.isEmpty()) {
 			return;
@@ -379,17 +407,29 @@ public class CalendarRenderer {
 		if (sel)
 			GL11.glEnd();
 		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
-			GL11.glLineWidth(1);
+			GL11.glLineWidth(12);
 			GL11.glEnable(GL11.GL_LINE_STIPPLE);
 			short bits = 0x7070;
 			int d = (int)((t/60D)%16);
-			short pattern = (short)((bits << d) | (bits >> (16 - d)));
-			GL11.glLineStipple(4, pattern);
+			short pattern = bits;//(short)((bits << d) | (bits >> (16 - d)));
+			GL11.glLineStipple(1, pattern);
 			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glBegin(GL11.GL_LINE_STRIP);
+			for (int idx = 0; idx < pointsCenterline.size(); idx++) {
+				DoublePoint p = pointsCenterline.get(idx);
+				clr = this.getSectionColorAtIndex(s, idx);
+				clr = Colors.mixColors(clr, 0xffffff, 0.6F);
+				float r = Colors.HextoColorMultiplier(clr, 0);
+				float g = Colors.HextoColorMultiplier(clr, 1);
+				float b = Colors.HextoColorMultiplier(clr, 2);
+				GL11.glColor4f(r, g, b, 1);
+				GL11.glVertex2d(p.x, p.y);
+			}
+			/*
 			GL11.glBegin(GL11.GL_LINE_LOOP);
 			for (DoublePoint p : pointsWide) {
 				GL11.glVertex2d(p.x, p.y);
-			}
+			}*/
 			GL11.glEnd();
 			GL11.glDisable(GL11.GL_LINE_STIPPLE);
 			GL11.glLineWidth(2);

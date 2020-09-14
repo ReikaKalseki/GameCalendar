@@ -639,6 +639,8 @@ public class GuiController implements EventHandler<ActionEvent> {
 					}
 					break;
 				case RELOAD:
+					StatusHandler.postStatus("Loading files", 500, false);
+					Main.load();
 					break;
 				case OPENFILE:
 					Main.getCalendarRenderer().openSelectedFiles(c.host);

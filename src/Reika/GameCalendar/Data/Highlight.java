@@ -39,6 +39,8 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 	@Override
 	public void generateDescriptionText(ArrayList<String> ret) {
 		String line = category.name+": "+name+" ["+time+"]";
+		if (this.isMemorable())
+			line = line+" (Highly Memorable)";
 		ret.add(line);
 		if (!Strings.isNullOrEmpty(description)) {
 			ret.add("\t"+description);

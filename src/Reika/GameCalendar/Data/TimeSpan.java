@@ -57,6 +57,8 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 		String line = category.name+": "+name+" ["+start+" - "+end+"]";
 		if (end.equals(DateStamp.launch))
 			line = category.name+": "+name+" ["+start+", ongoing]";
+		if (this.isMemorable())
+			line = line+" (Highly Memorable)";
 		ret.add(line);
 		if (!Strings.isNullOrEmpty(description)) {
 			ret.add("\t"+description);
