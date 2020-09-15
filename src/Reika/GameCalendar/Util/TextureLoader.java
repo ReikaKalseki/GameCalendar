@@ -64,6 +64,7 @@ public class TextureLoader {
 		imageData.position(0).limit(aint.length);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, j, k, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, imageData);
 		imageData.clear();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 	}
 
 	public long getTotalBytesLoaded() {

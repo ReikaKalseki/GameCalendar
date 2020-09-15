@@ -21,6 +21,7 @@ public class Timeline {
 	private final HashSet<Integer> years = new HashSet();
 
 	private final ArrayList<Section> sections = new ArrayList();
+	private final ArrayList<Section> sectionsByCategory = new ArrayList();
 
 	private DateStamp earliest;
 	private DateStamp latest;

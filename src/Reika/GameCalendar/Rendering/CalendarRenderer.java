@@ -41,7 +41,7 @@ public class CalendarRenderer {
 	private static final double INNER_RADIUS = 0.2;
 	private static final double MAX_THICKNESS = 0.75;
 
-	private static final Comparator<CalendarEvent> eventSorter = new Comparator<CalendarEvent>() {
+	public static final Comparator<CalendarEvent> eventSorter = new Comparator<CalendarEvent>() {
 		@Override
 		public int compare(CalendarEvent o1, CalendarEvent o2) {
 			int dc = o1.getDescriptiveDate().compareTo(o2.getDescriptiveDate());
@@ -604,57 +604,6 @@ public class CalendarRenderer {
 	}
 
 	public synchronized void handleMouse(double x, double y) {
-		//int mx = Mouse.getX();
-		//int my = Mouse.getY();
-		/*
-		ArrayList<DoublePoint> points = new ArrayList();
-		points.add(new DoublePoint(-0.25, -0.25));
-		points.add(new DoublePoint(-0.35, 0.15));
-		points.add(new DoublePoint(0.05, 0.25));
-		points.add(new DoublePoint(-0.1, -0.3));
-		Polygon poly = new Polygon();
-		Collections.reverse(points);
-		GL11.glBegin(GL11.GL_TRIANGLE_FAN);
-		GL11.glColor4f(0, 0, 1, 1);
-		for (DoublePoint p : points) {
-			GL11.glVertex2d(p.x, p.y);
-			int lx = (int)((p.x*size.width+size.width)/2D);
-			int ly = (int)((p.y*size.height+size.height)/2D);
-			poly.addPoint(lx, ly);
-		}
-		GL11.glEnd();
-		int d = 2;
-		GL11.glPointSize(1F);
-		GL11.glBegin(GL11.GL_POINTS);
-		for (int i = 0; i < size.width; i += d) {
-			for (int k = 0; k < size.height; k += d) {
-				double px = ((i/(double)size.width)-0.5)*2;
-				double py = ((k/(double)size.height)-0.5)*2;
-				if (poly.contains(i, k)) {
-					GL11.glColor4f(0, 1, 0, 1);
-				}
-				else {
-					GL11.glColor4f(1, 0, 0, 1);
-				}
-				GL11.glVertex2d(px, py);
-			}
-		}
-		GL11.glEnd();
-		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
-			System.out.println(mx+","+my);
-		if (poly.contains(mx, my)) {
-			GL11.glColor4f(0, 0, 0, 1);
-			GL11.glBegin(GL11.GL_LINES);
-			GL11.glVertex2d(0, 0);
-			GL11.glVertex2d(1, 1);
-			GL11.glEnd();
-		}
-		 */
-		/*
-		if (Mouse.isButtonDown(0)) {
-			selectedSection = null;
-			//System.out.println(mx+","+my);
-		}*/
 		selectedObjects.clear();
 		if (GuiElement.HIGHLIGHTS.isChecked()) {
 			double d = 1/50D;
@@ -664,10 +613,9 @@ public class CalendarRenderer {
 						//System.out.println(mx+","+my+" > "+s.section);
 						selectedObjects.add(h);
 						if (GuiElement.SECTIONSWITHHIGHLIGHT.isChecked()) {
-							for (GuiSection s : sections) {
-								if (h.time.isBetween(s.section.startTime, s.section.getEnd())) {
-									selectedObjects.add(s);
-								}
+							GuiSection s = this.getSectionAt(h.time);
+							if (s != null) {
+								selectedObjects.add(s);
 							}
 						}
 						break;
@@ -737,5 +685,24 @@ public class CalendarRenderer {
 		selectedObjects.addAll(selectedObjectsCache);
 		selectedObjectsCache.clear();
 		this.calculateDescriptions();
+	}
+
+	public GuiSection getSectionAt(DateStamp date) {
+		for (GuiSection s : sections) {
+			if (date.isBetween(s.section.startTime, s.section.getEnd())) {
+				return s;
+			}
+		}
+		return null;
+	}
+
+	public ArrayList<GuiHighlight> getHighlightsInSection(GuiSection s) {
+		ArrayList<GuiHighlight> ret = new ArrayList();
+		for (GuiHighlight h : events.values()) {
+			if (h.time.isBetween(s.section.startTime, s.renderedEnd)) {
+				ret.add(h);
+			}
+		}
+		return ret;
 	}
 }

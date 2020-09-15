@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
 import Reika.GameCalendar.Util.GLFunctions;
+import Reika.GameCalendar.Util.TextureLoader;
 
 public class Framebuffer {
 
@@ -212,9 +213,22 @@ public class Framebuffer {
 	}
 
 	public void loadImage(BufferedImage img) {
-		--
+		TextureLoader.instance.loadImageOntoTexture(img, textureID, true);
 	}
-
+	/*
+	public void loadFXImage(Image img) {
+		if (isMultisampled) {
+			this.bind(false);
+			GLFunctions.printGLErrors("Framebuffer bind");
+			GLFunctions.renderJFXImage(img, width, height);
+			GLFunctions.printGLErrors("Image Draw");
+			this.unbind();
+		}
+		else {
+			?
+		}
+	}
+	 */
 	public BufferedImage toImage() {
 		return this.toImage(width, height, 0, 0);
 	}
@@ -228,6 +242,12 @@ public class Framebuffer {
 
 	/** For rendering into an image that is of a larger size. */
 	public BufferedImage toImage(int imageWidth, int imageHeight, int offsetX, int offsetY) {
+		BufferedImage img = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+		this.writeIntoImage(img, offsetX, offsetY);
+		return img;
+	}
+
+	public void writeIntoImage(BufferedImage img, int x, int y) {
 		int len = width * height;
 
 		IntBuffer pixelBuffer = BufferUtils.createIntBuffer(len);
@@ -241,14 +261,11 @@ public class Framebuffer {
 
 		pixelBuffer.get(pixelValues);
 		GLFunctions.flipPixelArray(pixelValues, width, height);
-
-		BufferedImage img = new BufferedImage(imageWidth, imageHeight, 1);
 		for (int i = 0; i < height; ++i) {
 			for (int k = 0; k < width; ++k) {
-				img.setRGB(k+offsetX, i+offsetY, pixelValues[i*width+k]);
+				img.setRGB(k+x, i+y, pixelValues[i*width+k]);
 			}
 		}
-		return img;
 	}
 
 	public String saveAsFile(File f) {
