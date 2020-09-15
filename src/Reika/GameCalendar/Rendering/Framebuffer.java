@@ -211,12 +211,23 @@ public class Framebuffer {
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
 	}
 
+	public void loadImage(BufferedImage img) {
+		--
+	}
+
 	public BufferedImage toImage() {
-		return this.toImage(width, height);
+		return this.toImage(width, height, 0, 0);
+	}
+
+	/** For rendering into an image that is of a larger size, autocentered on the canvas. */
+	public BufferedImage toImage(int imageWidth, int imageHeight) {
+		int ow = (imageWidth-width)/2;
+		int oh = (imageHeight-height)/2;
+		return this.toImage(imageWidth, imageHeight, ow, oh);
 	}
 
 	/** For rendering into an image that is of a larger size. */
-	public BufferedImage toImage(int imageWidth, int imageHeight) {
+	public BufferedImage toImage(int imageWidth, int imageHeight, int offsetX, int offsetY) {
 		int len = width * height;
 
 		IntBuffer pixelBuffer = BufferUtils.createIntBuffer(len);
@@ -232,11 +243,9 @@ public class Framebuffer {
 		GLFunctions.flipPixelArray(pixelValues, width, height);
 
 		BufferedImage img = new BufferedImage(imageWidth, imageHeight, 1);
-		int ow = (imageWidth-width)/2;
-		int oh = (imageHeight-height)/2;
 		for (int i = 0; i < height; ++i) {
 			for (int k = 0; k < width; ++k) {
-				img.setRGB(k+ow, i+oh, pixelValues[i*width+k]);
+				img.setRGB(k+offsetX, i+offsetY, pixelValues[i*width+k]);
 			}
 		}
 		return img;
