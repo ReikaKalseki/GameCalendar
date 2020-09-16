@@ -213,7 +213,7 @@ public class Framebuffer {
 	}
 
 	public void loadImage(BufferedImage img) {
-		TextureLoader.instance.loadImageOntoTexture(img, textureID, true);
+		TextureLoader.instance.loadImageOntoTexture(img, textureID, true, isMultisampled);
 	}
 	/*
 	public void loadFXImage(Image img) {

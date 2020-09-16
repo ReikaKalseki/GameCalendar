@@ -28,20 +28,16 @@ public class TextureLoader {
 	}
 
 	/** Copy the supplied image onto a newly-allocated OpenGL texture, returning the allocated texture ID */
-	public int allocateAndSetupTexture(BufferedImage buf, boolean clampEdge) {
+	public int allocateAndSetupTexture(BufferedImage buf, boolean clampEdge, boolean niceFiltering) {
 		int i = GL11.glGenTextures();
-		this.loadImageOntoTexture(buf, i, clampEdge);
+		this.loadImageOntoTexture(buf, i, clampEdge, niceFiltering);
 		return i;
 	}
 
-	public void loadImageOntoTexture(BufferedImage buf, int texID, boolean clampEdge) {
-		this.setupTextureExt(buf, texID, clampEdge);
-	}
-
-	private void setupTextureExt(BufferedImage buf, int texID, boolean clampEdge) {
+	public void loadImageOntoTexture(BufferedImage buf, int texID, boolean clampEdge, boolean niceFiltering) {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, niceFiltering ? GL11.GL_LINEAR : GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, niceFiltering ? GL11.GL_LINEAR : GL11.GL_NEAREST);
 
 		if (clampEdge) {
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);

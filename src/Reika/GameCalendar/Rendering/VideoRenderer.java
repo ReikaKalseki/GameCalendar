@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.imageio.ImageIO;
+
 import org.jcodec.api.awt.AWTSequenceEncoder;
 
 import Reika.GameCalendar.Main;
@@ -70,7 +72,8 @@ public class VideoRenderer {
 		ArrayList<File> li = this.getCurrentScreenshots();
 		for (int i = 0; i < li.size(); i++) {
 			File img = li.get(i);
-			screenshotsMSAA.loadImage(img);
+			BufferedImage data = this.getOrLoadImage(img);
+			screenshotsMSAA.loadImage(data);
 			screenshotsMSAA.sendTo(screenshotHolder);
 			int ox = SCREENSHOT_WIDTH*(i%2);
 			int oy = SCREENSHOT_HEIGHT*(i/2);
@@ -95,6 +98,10 @@ public class VideoRenderer {
 		else {
 			renderer.limit = renderer.limit.nextDay();
 		}
+	}
+
+	private BufferedImage getOrLoadImage(File img) {
+		return ImageIO.read(img);
 	}
 
 	private void finish() {
