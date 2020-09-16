@@ -48,17 +48,20 @@ public class TextureLoader {
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		}
 
-		int j = buf.getWidth();
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+
+		int w = buf.getWidth();
 		int k = buf.getHeight();
 
-		int[] aint = new int[j * k];
-		buf.getRGB(0, 0, j, k, aint, 0, j);
+		int[] aint = new int[w * k];
+		buf.getRGB(0, 0, w, k, aint, 0, w);
 
 		IntBuffer imageData = IntBuffer.allocate(aint.length);
 		imageData.put(aint);
 		totalBytesLoaded += aint.length*4;
 		imageData.position(0).limit(aint.length);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, j, k, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, imageData);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, w, k, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, imageData);
+		GLFunctions.printGLErrors("Texture load");
 		imageData.clear();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 	}

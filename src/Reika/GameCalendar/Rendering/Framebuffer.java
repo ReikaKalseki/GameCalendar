@@ -3,13 +3,10 @@ package Reika.GameCalendar.Rendering;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
@@ -202,17 +199,29 @@ public class Framebuffer {
 	}
 
 	public void sendTo(Framebuffer other) {
+		if (other.width != width || other.height != height)
+			throw new IllegalArgumentException("You cannot plainly send onto a different sized buffer! You need to provide origin X and Y!");
 		this.sendTo(other.bufferID);
 	}
 
+	public void sendTo(Framebuffer other, int dx, int dy) {
+		this.sendTo(other.bufferID, dx, dy);
+	}
+
 	public void sendTo(int otherBuffer) {
+		this.sendTo(otherBuffer, 0, 0);
+	}
+
+	public void sendTo(int otherBuffer, int dx, int dy) {
 		GL32.glBindFramebuffer(GL32.GL_DRAW_FRAMEBUFFER, otherBuffer);
 		GL32.glBindFramebuffer(GL32.GL_READ_FRAMEBUFFER, bufferID);
-		GL32.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
+		GL32.glBlitFramebuffer(0, 0, width, height, dx, dy, dx+width, dy+height, GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
 		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
 	}
 
 	public void loadImage(BufferedImage img) {
+		if (img.getWidth() != width || img.getHeight() != height)
+			throw new IllegalArgumentException("Tried to load a wrongly-sized image onto a framebuffer");
 		TextureLoader.instance.loadImageOntoTexture(img, textureID, true, isMultisampled);
 	}
 	/*
@@ -248,24 +257,7 @@ public class Framebuffer {
 	}
 
 	public void writeIntoImage(BufferedImage img, int x, int y) {
-		int len = width * height;
-
-		IntBuffer pixelBuffer = BufferUtils.createIntBuffer(len);
-		int[] pixelValues = new int[len];
-
-		GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
-		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-		GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixelBuffer);
-
-		pixelBuffer.get(pixelValues);
-		GLFunctions.flipPixelArray(pixelValues, width, height);
-		for (int i = 0; i < height; ++i) {
-			for (int k = 0; k < width; ++k) {
-				img.setRGB(k+x, i+y, pixelValues[i*width+k]);
-			}
-		}
+		GLFunctions.writeTextureToImage(img, x, y, width, height, textureID);
 	}
 
 	public String saveAsFile(File f) {

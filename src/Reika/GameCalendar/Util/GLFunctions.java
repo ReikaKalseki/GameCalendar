@@ -1,10 +1,13 @@
 package Reika.GameCalendar.Util;
 
+import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL30;
 
 public class GLFunctions {
@@ -76,4 +79,50 @@ public class GLFunctions {
 	public static void renderJFXImage(Image img, int width, int height) {
 		?
 	}*/
+
+	/** With the window from [0, to size, top left origin] */
+	public static void drawTextureAsQuadScreenCoords(int tex, int x, int y, int w, int h, int screenWidth, int screenHeight) {
+		double rx = x/(double)screenWidth;
+		double ry = y/(double)screenHeight;
+		double rw = w/(double)screenWidth;
+		double rh = h/(double)screenHeight;
+		drawTextureAsQuadGLCoords(tex, rx*2-1, 1-ry*2, rw*2, -rh*2);
+	}
+
+	/** With the window from [-1 to +1], bottom left origin */
+	public static void drawTextureAsQuadGLCoords(int tex, double x, double y, double w, double h) {
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(0, 1);
+		GL11.glVertex2d(x, y);
+		GL11.glTexCoord2f(0, 0);
+		GL11.glVertex2d(x, y+h);
+		GL11.glTexCoord2f(1, 0);
+		GL11.glVertex2d(x+w, y+h);
+		GL11.glTexCoord2f(1, 1);
+		GL11.glVertex2d(x+w, y);
+		GL11.glEnd();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+	}
+
+	public static void writeTextureToImage(BufferedImage img, int x, int y, int width, int height, int tex) {
+		int len = width * height;
+
+		IntBuffer pixelBuffer = BufferUtils.createIntBuffer(len);
+		int[] pixelValues = new int[len];
+
+		GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
+		GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixelBuffer);
+
+		pixelBuffer.get(pixelValues);
+		GLFunctions.flipPixelArray(pixelValues, width, height);
+		for (int i = 0; i < height; ++i) {
+			for (int k = 0; k < width; ++k) {
+				img.setRGB(k+x, i+y, pixelValues[i*width+k]);
+			}
+		}
+	}
 }

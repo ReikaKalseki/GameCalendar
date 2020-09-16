@@ -143,9 +143,16 @@ public class CalendarRenderer {
 			double lang = d.getAngle();
 			double dayang = this.getGuiAngle(lang);
 			double r1 = INNER_RADIUS;
+			if (limit != null) {
+				int i = years.indexOf(limit.year);
+				r1 = INNER_RADIUS+i*arcThickness;
+			}
 			double r2 = r1+arcThickness;
 			double ri = (r1+(r2-r1)*(lang/360D))-arcThickness*arcThicknessHalfFraction+0.002;
 			double ro = ri+arcThickness*years.size()-arcThickness*arcThicknessHalfFraction+0.005;//ri+ty*tf*2;
+			if (limit != null) {
+				ro = ri+arcThickness*arcThicknessHalfFraction*2;
+			}
 			double dx1 = ri*Math.cos(dayang);
 			double dy1 = ri*Math.sin(dayang);
 			double dx2 = ro*Math.cos(dayang);

@@ -45,6 +45,8 @@ MORE
 	//checkboxes to show:
 	//to merge all category arcs together so it just shows game->game ("show subsections")
 
+	//fix: being able to click or change the calendar renderer during video prep
+
 	//"export as movie" functionality!!!!!!!!!!!********************************************************
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
