@@ -7,8 +7,6 @@ import java.nio.IntBuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
-import javafx.scene.image.Image;
-
 public class GLFunctions {
 
 	public static void bindFramebuffer(int id) {
@@ -74,8 +72,8 @@ public class GLFunctions {
 			return this == ADDITIVE || this == ADDITIVE2 || this == ADDITIVEDARK;
 		}
 	}
-
+	/*
 	public static void renderJFXImage(Image img, int width, int height) {
 		?
-	}
+	}*/
 }

@@ -16,8 +16,6 @@ import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.StatusHandler;
 
-import javafx.scene.image.Image;
-
 public class VideoRenderer {
 
 	public static final VideoRenderer instance = new VideoRenderer();
@@ -69,10 +67,10 @@ public class VideoRenderer {
 	public void addFrame(Framebuffer calendar) {
 		BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		calendar.writeIntoImage(frame, 0, 0);
-		ArrayList<Image> li = this.getCurrentScreenshots();
+		ArrayList<File> li = this.getCurrentScreenshots();
 		for (int i = 0; i < li.size(); i++) {
-			Image img = li.get(i);
-			screenshotsMSAA.loadFXImage(img);
+			File img = li.get(i);
+			screenshotsMSAA.loadImage(img);
 			screenshotsMSAA.sendTo(screenshotHolder);
 			int ox = SCREENSHOT_WIDTH*(i%2);
 			int oy = SCREENSHOT_HEIGHT*(i/2);
@@ -112,8 +110,8 @@ public class VideoRenderer {
 		isRendering = false;
 	}
 
-	private ArrayList<Image> getCurrentScreenshots() {
-		ArrayList<Image> ret = new ArrayList();
+	private ArrayList<File> getCurrentScreenshots() {
+		ArrayList<File> ret = new ArrayList();
 		GuiSection s = renderer.getSectionAt(renderer.limit);
 		if (s != null) {
 			ArrayList<CalendarEvent> li = new ArrayList();
@@ -124,7 +122,7 @@ public class VideoRenderer {
 			}
 			Collections.sort(li, CalendarRenderer.eventSorter);
 			for (CalendarEvent e : li) {
-				Image img = e.getScreenshot();
+				File img = e.getScreenshotFile();
 				ret.add(img);
 			}
 		}
