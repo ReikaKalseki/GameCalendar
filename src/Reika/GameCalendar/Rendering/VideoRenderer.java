@@ -111,12 +111,13 @@ public class VideoRenderer {
 			for (int i = 0; i < n; i++)
 				encoder.encodeNativeFrame(p);
 			//encoder.encodeImage(frame);
+
 			/*
-			if (!usedImages.isEmpty() && renderer.limit.day%4 == 0) {
+			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
 				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
 				f.getParentFile().mkdirs();
 				ImageIO.write(frame, "png", f);
-				if (renderer.limit.year >= 2012)
+				if (renderer.limit.year >= 2017)
 					throw new RuntimeException("End");
 			}
 			 */
