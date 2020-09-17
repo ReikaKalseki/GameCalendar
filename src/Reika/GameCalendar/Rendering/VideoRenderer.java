@@ -13,6 +13,8 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 
 import org.jcodec.api.awt.AWTSequenceEncoder;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Main;
@@ -44,6 +46,8 @@ public class VideoRenderer {
 	private final HashMap<String, Integer> usedScreenshotSlots = new HashMap();
 	private final HashSet<Integer> freeScreenshotSlots = new HashSet();
 
+	private HashSet<String> lastScreenshots = null;
+
 	private VideoRenderer() {
 
 	}
@@ -60,7 +64,7 @@ public class VideoRenderer {
 
 	private void init() {
 		try {
-			encoder = AWTSequenceEncoder.createSequenceEncoder(new File("E:/videotest22b.mp4"), 60);
+			encoder = AWTSequenceEncoder.createSequenceEncoder(new File("E:/videotest22.mp4"), 60);
 			if (renderedOutput == null)
 				renderedOutput = new Framebuffer(VIDEO_WIDTH, VIDEO_HEIGHT);
 
@@ -80,23 +84,34 @@ public class VideoRenderer {
 	}
 
 	public void addFrame(Framebuffer calendar) {
-		if (encoder == null)
-			this.init();
-
-		GL11.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-
-		BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
-		HashSet<String> usedImages = new HashSet();
-		ArrayList<File> li = this.getCurrentScreenshots();
-		for (int i = 0; i < li.size(); i++) {
-			File img = li.get(i);
-			this.drawScreenshot(img, i, usedImages);
-		}
-		this.cleanImageCache(usedImages);
-		renderedOutput.writeIntoImage(frame, 0, 0);
-		calendar.writeIntoImage(frame, 0, 0);
 		try {
+			if (encoder == null)
+				this.init();
+
+			GL11.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+			renderedOutput.clear(1, 1, 1);
+
+			BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
+			HashSet<String> usedImages = new HashSet();
+			ArrayList<File> li = this.getCurrentScreenshots();
+			for (int i = 0; i < li.size(); i++) {
+				File img = li.get(i);
+				this.drawScreenshot(img, i, usedImages);
+			}
+			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
+			this.cleanImageCache(usedImages);
+			renderedOutput.writeIntoImage(frame, 0, 0);
+			calendar.writeIntoImage(frame, 0, 0);
+			HashSet<String> newEntries = new HashSet(usedImages);
+			if (lastScreenshots != null)
+				newEntries.removeAll(lastScreenshots);
+			lastScreenshots = usedImages;
+			Picture p = AWTUtil.fromBufferedImageRGB(frame);
+			int n = !newEntries.isEmpty() ? 5 : 1;
+			for (int i = 0; i < n; i++)
+				encoder.encodeNativeFrame(p);
 			//encoder.encodeImage(frame);
+			/*
 			if (!usedImages.isEmpty() && renderer.limit.day%4 == 0) {
 				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
 				f.getParentFile().mkdirs();
@@ -104,19 +119,20 @@ public class VideoRenderer {
 				if (renderer.limit.year >= 2012)
 					throw new RuntimeException("End");
 			}
+			 */
+
+			if (renderer.limit.compareTo(time.getEnd()) >= 0) {
+				this.finish();
+			}
+			else {
+				//for (int i = 0; i < 1; i++)
+				renderer.limit = renderer.limit.nextDay();
+			}
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			StatusHandler.postStatus("Video frame construction failed.", 2500, false);
-			this.end();
-		}
-
-		if (renderer.limit.compareTo(time.getEnd()) >= 0) {
 			this.finish();
-		}
-		else {
-			for (int i = 0; i < 1; i++)
-				renderer.limit = renderer.limit.nextDay();
 		}
 	}
 
@@ -128,6 +144,7 @@ public class VideoRenderer {
 				int gl = usedScreenshotSlots.remove(s);
 				freeScreenshotSlots.add(gl);
 				it.remove();
+				System.out.println("Removed screenshot "+s+" bound to GL ID "+gl);
 			}
 		}
 	}
@@ -183,7 +200,13 @@ public class VideoRenderer {
 			freeScreenshotSlots.remove(id);
 			get = id;
 			usedScreenshotSlots.put(p, get);
-			TextureLoader.instance.loadImageOntoTexture(data, id, true, true);
+			try {
+				TextureLoader.instance.loadImageOntoTexture(data, id, true, true);
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Could not load texture "+p, e);
+			}
+			System.out.println("Assigned image from "+p+" onto GL ID "+id);
 		}
 		return get.intValue();
 	}
@@ -198,6 +221,7 @@ public class VideoRenderer {
 				throw new RuntimeException("Could not load screenshot file for video construction", e);
 			}
 			imageCache.put(p, data);
+			System.out.println("Loaded image data from "+p);
 		}
 		return data;
 	}
@@ -222,6 +246,7 @@ public class VideoRenderer {
 			GL11.glDeleteTextures(id);
 		usedScreenshotSlots.clear();
 		freeScreenshotSlots.clear();
+		lastScreenshots = null;
 		isRendering = false;
 		renderer.limit = null;
 		renderer = null;
@@ -233,19 +258,25 @@ public class VideoRenderer {
 	private ArrayList<File> getCurrentScreenshots() {
 		ArrayList<File> ret = new ArrayList();
 		GuiSection s = renderer.getSectionAt(renderer.limit);
-		if (s != null) {
-			ArrayList<CalendarEvent> li = new ArrayList();
+		ArrayList<CalendarEvent> li = new ArrayList();
+		if (s != null && !s.section.isEmpty()) {
 			li.addAll(s.getItems(false));
 			Collection<GuiHighlight> c = renderer.getHighlightsInSection(s);
 			for (GuiHighlight h : c) {
 				li.addAll(h.getItems(false));
 			}
-			Collections.sort(li, CalendarRenderer.eventSorter);
-			for (CalendarEvent e : li) {
-				File img = e.getScreenshotFile();
-				if (img != null)
-					ret.add(img);
+		}
+		else {
+			GuiHighlight h = renderer.getHighlightAtDate(renderer.limit);
+			if (h != null) {
+				li.addAll(h.getItems(false));
 			}
+		}
+		Collections.sort(li, CalendarRenderer.eventSorter);
+		for (CalendarEvent e : li) {
+			File img = e.getScreenshotFile();
+			if (img != null)
+				ret.add(img);
 		}
 		return ret;
 	}

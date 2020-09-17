@@ -45,7 +45,9 @@ MORE
 	//checkboxes to show:
 	//to merge all category arcs together so it just shows game->game ("show subsections")
 
-	//fix: being able to click or change the calendar renderer during video prep
+	//video renderer needs to see category titles as they appear or disappear (with color legend)
+	//and it needs the description text, but due to space issues only add the new stuff, and pause
+	//speaking of pausing, should pause whenever a highlight happens or a new section (timespan) starts
 
 	//"export as movie" functionality!!!!!!!!!!!********************************************************
 

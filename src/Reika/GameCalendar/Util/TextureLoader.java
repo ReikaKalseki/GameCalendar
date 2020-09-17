@@ -37,6 +37,14 @@ public class TextureLoader {
 	}
 
 	public void loadImageOntoTexture(BufferedImage buf, int texID, boolean clampEdge, boolean niceFiltering) {
+		int w = buf.getWidth();
+		int k = buf.getHeight();
+
+		int[] aint = new int[w * k];
+
+		if (aint.length > imageData.capacity())
+			throw new RuntimeException("Tried to load an image larger than the buffer allows!");
+
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, niceFiltering ? GL11.GL_LINEAR : GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, niceFiltering ? GL11.GL_LINEAR : GL11.GL_NEAREST);
@@ -52,12 +60,7 @@ public class TextureLoader {
 
 		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 
-		int w = buf.getWidth();
-		int k = buf.getHeight();
-
-		int[] aint = new int[w * k];
 		buf.getRGB(0, 0, w, k, aint, 0, w);
-
 
 		imageData.put(aint);
 		totalBytesLoaded += aint.length*4;

@@ -191,8 +191,12 @@ public class Framebuffer {
 	}
 
 	public void clear() {
+		this.clear(0, 0, 0);
+	}
+
+	public void clear(float red, float green, float blue) {
 		this.bind(true);
-		GL11.glClearColor(0, 0, 0, 1);
+		GL11.glClearColor(red, green, blue, 1);
 		GL11.glClearDepth(1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		this.unbind();

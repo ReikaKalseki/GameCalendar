@@ -282,28 +282,33 @@ public class CalendarRenderer {
 	}
 
 	private void updateLabels(int sw, int sh) {
-		DFXInputHandler dfx = JFXWindow.getGUI().getMouseHandler();
-		double mx = dfx.getMouseX(false);
-		double my = dfx.getMouseY(false);
-		double r0 = Math.sqrt(mx*mx+my*my);
-		if (r0 >= INNER_RADIUS-arcThickness*arcThicknessHalfFraction && r0 <= INNER_RADIUS+arcThickness*(years.size()+1)) {
-			double ang = (Math.toDegrees(Math.atan2(mx, my))+360)%360;
-			double r = r0-ang*arcThickness/360;
-			int idx = (int)Math.floor(ang*12/360);
-			Month m = Month.of(1+idx);
-			double frac = (ang-idx*360/12)/(360/12);
-			int yearidx = (int)Math.round((r-INNER_RADIUS)/(arcThickness));//(int)Math.round((r-INNER_RADIUS)*0.5*years.size()/(MAX_THICKNESS-INNER_RADIUS));
-			if (r0 >= INNER_RADIUS-arcThickness*arcThicknessHalfFraction && yearidx >= 0 && yearidx < years.size()) {
-				int year = years.get(yearidx);
-				int day = (int)Math.ceil(frac*m.length(DateStamp.isLeapYear(year)));
-				Labelling.instance.tooltipString = m.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+day+", "+year;
+		if (VideoRenderer.instance.isRendering()) {
+			Labelling.instance.tooltipString = null;
+		}
+		else {
+			DFXInputHandler dfx = JFXWindow.getGUI().getMouseHandler();
+			double mx = dfx.getMouseX(false);
+			double my = dfx.getMouseY(false);
+			double r0 = Math.sqrt(mx*mx+my*my);
+			if (r0 >= INNER_RADIUS-arcThickness*arcThicknessHalfFraction && r0 <= INNER_RADIUS+arcThickness*(years.size()+1)) {
+				double ang = (Math.toDegrees(Math.atan2(mx, my))+360)%360;
+				double r = r0-ang*arcThickness/360;
+				int idx = (int)Math.floor(ang*12/360);
+				Month m = Month.of(1+idx);
+				double frac = (ang-idx*360/12)/(360/12);
+				int yearidx = (int)Math.round((r-INNER_RADIUS)/(arcThickness));//(int)Math.round((r-INNER_RADIUS)*0.5*years.size()/(MAX_THICKNESS-INNER_RADIUS));
+				if (r0 >= INNER_RADIUS-arcThickness*arcThicknessHalfFraction && yearidx >= 0 && yearidx < years.size()) {
+					int year = years.get(yearidx);
+					int day = (int)Math.ceil(frac*m.length(DateStamp.isLeapYear(year)));
+					Labelling.instance.tooltipString = m.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+day+", "+year;
+				}
+				else {
+					Labelling.instance.tooltipString = null;
+				}
 			}
 			else {
 				Labelling.instance.tooltipString = null;
 			}
-		}
-		else {
-			Labelling.instance.tooltipString = null;
 		}
 
 		Labelling.instance.setRenderParams(sw, sh, this);
@@ -611,6 +616,8 @@ public class CalendarRenderer {
 	}
 
 	public synchronized void handleMouse(double x, double y) {
+		if (VideoRenderer.instance.isRendering())
+			return;
 		selectedObjects.clear();
 		if (GuiElement.HIGHLIGHTS.isChecked()) {
 			double d = 1/50D;
@@ -711,5 +718,9 @@ public class CalendarRenderer {
 			}
 		}
 		return ret;
+	}
+
+	public GuiHighlight getHighlightAtDate(DateStamp date) {
+		return events.get(date);
 	}
 }
