@@ -93,13 +93,15 @@ public class GLFunctions {
 	public static void drawTextureAsQuadGLCoords(int tex, double x, double y, double w, double h) {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
 		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(0, 1);
+		int v = h < 0 ? 1 : 0;
+		int dv = 1-v;
+		GL11.glTexCoord2f(0, dv);
 		GL11.glVertex2d(x, y);
-		GL11.glTexCoord2f(0, 0);
+		GL11.glTexCoord2f(0, v);
 		GL11.glVertex2d(x, y+h);
-		GL11.glTexCoord2f(1, 0);
+		GL11.glTexCoord2f(1, v);
 		GL11.glVertex2d(x+w, y+h);
-		GL11.glTexCoord2f(1, 1);
+		GL11.glTexCoord2f(1, dv);
 		GL11.glVertex2d(x+w, y);
 		GL11.glEnd();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);

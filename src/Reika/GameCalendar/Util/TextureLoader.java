@@ -19,6 +19,8 @@ public class TextureLoader {
 
 	public static final TextureLoader instance = new TextureLoader();
 
+	private final IntBuffer imageData = GLFunctions.createDirectIntBuffer(2048*2048);
+
 	/** Stores the image data for the texture during loading. */
 	private long totalBytesLoaded = 0;
 	private int boundTexture;
@@ -56,7 +58,7 @@ public class TextureLoader {
 		int[] aint = new int[w * k];
 		buf.getRGB(0, 0, w, k, aint, 0, w);
 
-		IntBuffer imageData = IntBuffer.allocate(aint.length);
+
 		imageData.put(aint);
 		totalBytesLoaded += aint.length*4;
 		imageData.position(0).limit(aint.length);

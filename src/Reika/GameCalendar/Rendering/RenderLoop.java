@@ -209,6 +209,8 @@ public class RenderLoop extends Thread {
 		chain.present(target);
 	}
 
+	boolean loaded = false;
+
 	private void render(int x, int y) throws InterruptedException {
 		GL11.glClearColor(1, 1, 1, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
