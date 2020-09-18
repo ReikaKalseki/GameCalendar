@@ -643,7 +643,7 @@ public class CalendarRenderer {
 					if (s.polygon.contains(x, y)) {
 						//System.out.println(mx+","+my+" > "+s.section);
 						selectedObjects.add(s);
-						if (GuiElement.HIGHLIGHTSINSECTION.isChecked()) {
+						if (GuiElement.HIGHLIGHTS.isChecked() && GuiElement.HIGHLIGHTSINSECTION.isChecked()) {
 							for (GuiHighlight h : events.values()) {
 								if (h.time.isBetween(s.section.startTime, s.renderedEnd)) {
 									selectedObjects.add(h);

@@ -115,4 +115,14 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 		}
 	}
 
+	@Override
+	public final int hashCode() {
+		return name.hashCode();
+	}
+
+	@Override
+	public final boolean equals(Object o) {
+		return o instanceof ActivityCategory && ((ActivityCategory)o).name.equals(name);
+	}
+
 }

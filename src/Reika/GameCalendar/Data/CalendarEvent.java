@@ -106,4 +106,14 @@ public abstract class CalendarEvent {
 	protected abstract DateStamp getFirstDate();
 	protected abstract DateStamp getLastDate();
 
+	@Override
+	public final int hashCode() {
+		return name.hashCode() ^ category.hashCode();
+	}
+
+	@Override
+	public final boolean equals(Object o) {
+		return o.getClass() == this.getClass() && ((CalendarEvent)o).name.equals(name) && ((CalendarEvent)o).category.equals(category);
+	}
+
 }

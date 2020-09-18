@@ -267,7 +267,7 @@ public class Framebuffer {
 		GLFunctions.writeTextureToImage(img, x, y, width, height, textureID);
 	}
 
-	public void writeIntoImage(BufferedImage img, int x, int y, boolean flipBuffers) {
+	public void writeIntoImage(BufferedImage img, int x, int y) {
 		this.bind(false);
 		GL30.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
 		GLFunctions.printGLErrors("Print to image - bind");
@@ -284,7 +284,7 @@ public class Framebuffer {
 				int r = buffer.get(idx) & 0xFF;
 				int g = buffer.get(idx + 1) & 0xFF;
 				int b = buffer.get(idx + 2) & 0xFF;
-				img.setRGB(dx, height - (dy + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
+				img.setRGB(dx, height - (dy + 1), (r << 16) | (g << 8) | b);
 			}
 		}
 

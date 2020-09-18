@@ -68,7 +68,7 @@ public class VideoRenderer {
 	private final HashMap<String, Integer> usedScreenshotSlots = new HashMap();
 	private final HashSet<Integer> freeScreenshotSlots = new HashSet();
 
-	private HashSet<String> lastScreenshots = null;
+	private HashSet<CalendarEvent> lastItems = null;
 
 	private VideoRenderer() {
 
@@ -114,7 +114,6 @@ public class VideoRenderer {
 			}
 
 			isInitialized = true;
-			bufFlip = false;
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -137,19 +136,20 @@ public class VideoRenderer {
 
 			BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 			HashSet<String> usedImages = new HashSet();
-			ArrayList<File> li = this.getCurrentScreenshots();
+			ArrayList<CalendarEvent> li = this.getCurrentItems();
 			for (int i = 0; i < li.size(); i++) {
-				File img = li.get(i);
-				this.drawScreenshot(img, i, usedImages);
+				File img = li.get(i).getScreenshotFile();
+				if (img != null)
+					usedImages.add(this.drawScreenshot(img, i));
 			}
 			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
 			this.cleanImageCache(usedImages);
 			renderedOutput.writeIntoImage(frame, 0, 0);
 			calendar.writeIntoImage(frame, 0, 0);
-			HashSet<String> newEntries = new HashSet(usedImages);
-			if (lastScreenshots != null)
-				newEntries.removeAll(lastScreenshots);
-			lastScreenshots = usedImages;
+			HashSet<CalendarEvent> newEntries = new HashSet(li);
+			if (lastItems != null)
+				newEntries.removeAll(lastItems);
+			lastItems = new HashSet(li);
 			int n = !newEntries.isEmpty() ? 30 : 1;
 			if (pathToFFMPEG != null) {
 				for (int i = 0; i < n; i++)
@@ -200,9 +200,8 @@ public class VideoRenderer {
 		}
 	}
 
-	private void drawScreenshot(File img, int i, HashSet<String> usedImages) {
+	private String drawScreenshot(File img, int i) {
 		String p = img.getAbsolutePath();
-		usedImages.add(p);
 		BufferedImage data = this.getOrLoadImage(p, img);
 		int gl = this.getOrCreateGLTexture(p, data);
 		GLFunctions.printGLErrors("Screenshot data load");
@@ -240,6 +239,7 @@ public class VideoRenderer {
 		}
 		throw new RuntimeException("tried");
 		 */
+		return p;
 	}
 
 	private int getOrCreateGLTexture(String p, BufferedImage data) {
@@ -306,7 +306,7 @@ public class VideoRenderer {
 			GL11.glDeleteTextures(id);
 		usedScreenshotSlots.clear();
 		freeScreenshotSlots.clear();
-		lastScreenshots = null;
+		lastItems = null;
 		isRendering = false;
 		renderer.limit = null;
 		renderer = null;
@@ -318,7 +318,7 @@ public class VideoRenderer {
 		renderedOutput.clear();
 	}
 
-	private ArrayList<File> getCurrentScreenshots() {
+	private ArrayList<CalendarEvent> getCurrentItems() {
 		ArrayList<File> ret = new ArrayList();
 		GuiSection s = renderer.getSectionAt(renderer.limit);
 		ArrayList<CalendarEvent> li = new ArrayList();
@@ -336,12 +336,7 @@ public class VideoRenderer {
 		}
 		//}
 		Collections.sort(li, CalendarRenderer.eventSorter);
-		for (CalendarEvent e : li) {
-			File img = e.getScreenshotFile();
-			if (img != null)
-				ret.add(img);
-		}
-		return ret;
+		return li;
 	}
 
 	private static List<String> getFFMPEGArgs(File f) {
@@ -398,6 +393,16 @@ public class VideoRenderer {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private static class EmbeddedEvent {
+
+		private final CalendarEvent event;
+
+		private EmbeddedEvent(CalendarEvent ce) {
+			event = ce;
+		}
+
 	}
 
 }
