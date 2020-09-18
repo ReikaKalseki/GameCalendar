@@ -18,7 +18,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -67,8 +66,8 @@ public class VideoRenderer {
 	private final HashMap<String, BufferedImage> imageCache = new HashMap();
 	private final HashMap<String, Integer> usedScreenshotSlots = new HashMap();
 	private final HashSet<Integer> freeScreenshotSlots = new HashSet();
-
-	private HashSet<CalendarEvent> lastItems = null;
+	private final ArrayList<EmbeddedEvent> currentItems = new ArrayList();
+	private final EmbeddedEvent[] currentImages = new EmbeddedEvent[8];
 
 	private VideoRenderer() {
 
@@ -137,19 +136,39 @@ public class VideoRenderer {
 			BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 			HashSet<String> usedImages = new HashSet();
 			ArrayList<CalendarEvent> li = this.getCurrentItems();
-			for (int i = 0; i < li.size(); i++) {
-				File img = li.get(i).getScreenshotFile();
-				if (img != null)
-					usedImages.add(this.drawScreenshot(img, i));
+
+			ArrayList<EmbeddedEvent> toRemove = new ArrayList();
+
+			HashSet<CalendarEvent> newEntries = new HashSet(li);
+			for (EmbeddedEvent e : currentItems) {
+				if (li.contains(e.event)) {
+					e.age++;
+					newEntries.remove(e.event);
+				}
+				else {
+					toRemove.add(e);
+				}
+			}
+			for (EmbeddedEvent e : toRemove) {
+				currentItems.remove(e);
+				if (e.slotIndex >= 0)
+					currentImages[e.slotIndex] = null;
+			}
+			for (CalendarEvent e : newEntries) {
+				int i = e.getScreenshotFile() != null ? this.getFirstFreeImageSlot() : -1;
+				EmbeddedEvent ee = new EmbeddedEvent(e, i);
+				if (i >= 0)
+					currentImages[i] = ee;
+				currentItems.add(ee);
+			}
+			for (EmbeddedEvent e : currentItems) {
+				if (e.hasImage())
+					usedImages.add(this.drawScreenshot(e));
 			}
 			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
 			this.cleanImageCache(usedImages);
 			renderedOutput.writeIntoImage(frame, 0, 0);
-			calendar.writeIntoImage(frame, 0, 0);
-			HashSet<CalendarEvent> newEntries = new HashSet(li);
-			if (lastItems != null)
-				newEntries.removeAll(lastItems);
-			lastItems = new HashSet(li);
+			calendar.writeIntoImage(frame, 0, 0);;
 			int n = !newEntries.isEmpty() ? 30 : 1;
 			if (pathToFFMPEG != null) {
 				for (int i = 0; i < n; i++)
@@ -187,6 +206,14 @@ public class VideoRenderer {
 		}
 	}
 
+	private int getFirstFreeImageSlot() {
+		for (int i = 0; i < currentImages.length; i++) {
+			if (currentImages[i] == null)
+				return i;
+		}
+		throw new RuntimeException("Exhausted image slots!");
+	}
+
 	private void cleanImageCache(HashSet<String> usedImages) {
 		Iterator<String> it = imageCache.keySet().iterator();
 		while (it.hasNext()) {
@@ -200,13 +227,14 @@ public class VideoRenderer {
 		}
 	}
 
-	private String drawScreenshot(File img, int i) {
+	private String drawScreenshot(EmbeddedEvent e) {
+		File img = e.event.getScreenshotFile();
 		String p = img.getAbsolutePath();
 		BufferedImage data = this.getOrLoadImage(p, img);
 		int gl = this.getOrCreateGLTexture(p, data);
 		GLFunctions.printGLErrors("Screenshot data load");
-		int ox = SCREENSHOT_WIDTH*(i%2);
-		int oy = SCREENSHOT_HEIGHT*(i/2);
+		int ox = SCREENSHOT_WIDTH*(e.slotIndex%2);
+		int oy = SCREENSHOT_HEIGHT*(e.slotIndex/2);
 		int x = CALENDAR_SIZE+ox;
 		int y = oy;
 		GL11.glPushMatrix();
@@ -306,7 +334,10 @@ public class VideoRenderer {
 			GL11.glDeleteTextures(id);
 		usedScreenshotSlots.clear();
 		freeScreenshotSlots.clear();
-		lastItems = null;
+		currentItems.clear();
+		for (int i = 0; i < currentImages.length; i++) {
+			currentImages[i] = null;
+		}
 		isRendering = false;
 		renderer.limit = null;
 		renderer = null;
@@ -335,7 +366,6 @@ public class VideoRenderer {
 			li.addAll(h.getItems(false));
 		}
 		//}
-		Collections.sort(li, CalendarRenderer.eventSorter);
 		return li;
 	}
 
@@ -395,12 +425,25 @@ public class VideoRenderer {
 		}
 	}
 
-	private static class EmbeddedEvent {
+	private static class EmbeddedEvent implements Comparable<EmbeddedEvent> {
 
 		private final CalendarEvent event;
+		private final int slotIndex;
 
-		private EmbeddedEvent(CalendarEvent ce) {
+		private int age = 0;
+
+		private EmbeddedEvent(CalendarEvent ce, int idx) {
 			event = ce;
+			slotIndex = idx;
+		}
+
+		@Override
+		public int compareTo(EmbeddedEvent o) {
+			return CalendarRenderer.eventSorter.compare(event, o.event);
+		}
+
+		public boolean hasImage() {
+			return event.getScreenshotFile() != null;
 		}
 
 	}
