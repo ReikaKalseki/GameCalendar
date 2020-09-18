@@ -1,13 +1,12 @@
 package Reika.GameCalendar.Rendering;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
 import java.io.File;
 import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
@@ -264,55 +263,34 @@ public class Framebuffer {
 		return img;
 	}
 
-	private void loadPBOs() {
-		pboIds = new int[2];
-		GL30.glGenBuffers(pboIds);
-
-		int length = width*height*3;
-		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[0]);
-		GL30.glBufferData(GL30.GL_PIXEL_PACK_BUFFER, length, GL30.GL_STREAM_READ);
-		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[1]);
-		GL30.glBufferData(GL30.GL_PIXEL_PACK_BUFFER, length, GL30.GL_STREAM_READ);
-
-		//GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
-
-		GLFunctions.printGLErrors("Framebuffer PBO load");
-	}
-
 	public void writeIntoImageSlow(BufferedImage img, int x, int y) {
 		GLFunctions.writeTextureToImage(img, x, y, width, height, textureID);
 	}
 
 	public void writeIntoImage(BufferedImage img, int x, int y, boolean flipBuffers) {
-		if (pboIds == null)
-			this.loadPBOs();
+		this.bind(false);
+		GL30.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
+		GLFunctions.printGLErrors("Print to image - bind");
+		int bpp = 4; // Assuming a 32-bit display with a byte each for red, green, blue, and alpha.
+		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
+		GL30.glReadPixels(0, 0, width, height, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, buffer);
+		GLFunctions.printGLErrors("Print to image - read");
 
-		GL30.glReadBuffer(bufferID);
-		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[flipBuffers ? 1 : 0]);
-		GLFunctions.printGLErrors("Write into image - buffer setup 1");
-		//GL42.glGetFramebufferParamater(bufferID, GL42.GL_IMPLEMENTATION_COLOR_READ_FORMAT);
-		GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
-		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-		GL30.glReadPixels(0, 0, width, height, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, 0);
-		GLFunctions.printGLErrors("Write into image - pixel read");
-		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[flipBuffers ? 0 : 1]);
-		GLFunctions.printGLErrors("Write into image - buffer setup 2");
-
-		ByteBuffer data = GL30.glMapBuffer(GL30.GL_PIXEL_PACK_BUFFER, GL30.GL_READ_ONLY);
-		GLFunctions.printGLErrors("Write into image - buffer map");
-		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-		byte[] arr = new byte[data.limit()];
-		data.get(arr);
-		temp.setData(Raster.createRaster(temp.getSampleModel(), new DataBufferByte(arr, arr.length), null));
-		for (int i = 0; i < width; i++) {
-			for (int k = 0; k < height; k++) {
-				img.setRGB(i+x, k+y, temp.getRGB(i, k));
+		for(int i = 0; i < width; i++) {
+			for(int k = 0; k < height; k++) {
+				int dx = x+i;
+				int dy = y+k;
+				int idx = (x + (width * y)) * bpp;
+				int r = buffer.get(idx) & 0xFF;
+				int g = buffer.get(idx + 1) & 0xFF;
+				int b = buffer.get(idx + 2) & 0xFF;
+				img.setRGB(dx, height - (dy + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
 			}
 		}
 
-		GL30.glUnmapBuffer(GL30.GL_PIXEL_PACK_BUFFER);
-		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
-		GLFunctions.printGLErrors("Write into image - end");
+		GL30.glReadBuffer(0);
+		this.unbind();
+		GLFunctions.printGLErrors("Print to image - unbind");
 	}
 
 	public String saveAsFile(File f) {

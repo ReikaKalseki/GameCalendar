@@ -179,8 +179,8 @@ public class VideoRenderer {
 				this.finish();
 			}
 			else {
-				//for (int i = 0; i < 1; i++)
-				renderer.limit = renderer.limit.nextDay();
+				for (int i = 0; i < 500; i++)
+					renderer.limit = renderer.limit.nextDay();
 			}
 		}
 		catch (Exception e) {

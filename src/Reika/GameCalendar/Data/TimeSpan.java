@@ -12,15 +12,17 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 	public final DateStamp start;
 	public final DateStamp end;
 
-	public boolean isContinuous = true;
-
 	public TimeSpan(File f, ActivityCategory a, DateStamp s, DateStamp e, String n, String desc) {
 		super(f, a, n, desc);
 		start = s;
 		end = e;
-		if (start.compareTo(end) >= 0) {
+		if (start.compareTo(end) >= 0 && !this.isOngoing()) {
 			throw new IllegalArgumentException("Span ("+s+" > "+e+") is zero or negative!");
 		}
+	}
+
+	public boolean isOngoing() {
+		return end.equals(DateStamp.launch);
 	}
 
 	public int lengthInDays() {

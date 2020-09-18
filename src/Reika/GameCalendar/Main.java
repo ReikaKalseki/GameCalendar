@@ -17,27 +17,13 @@ public class Main {
 	DO NOT FORGET:
 split the p2 map dev into maps?
 
-2020 and probably other years PeTI
-
-///figure out what minecraft you were doing in late april 2012
-///and from aug 22 to sep 10
- // AND SPLIT OUT THE FIRST ESCAPECRAFT ITERATION
-  // and the bc world looks like it starts at the same time as ethanoil - that cannot be right->the former is likely too late
-   //big gap at jun 17 to jul 15 2013!
-	 * and sep 6 to 19 too
-	 * and nov 20 to 29
-	 * sep 23 to oct 4 2014
-	 * may 4 to 13 2015
+other years PeTI
 
 ALL THE SCREENSHOTS
 
-early-on rainforest server map reset?
+highlight: early-on rainforest server map reset?
 
-ALL THE "MEMORABLE" FLAGS
-bobmods 0.11
-shortlife server?
-2015 PeTI
-MORE
+MORE "MEMORABLE" FLAGS
 
 	 */
 
