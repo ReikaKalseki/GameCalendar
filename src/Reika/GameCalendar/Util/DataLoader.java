@@ -103,6 +103,11 @@ public class DataLoader {
 		}
 		String n = f.getName().substring(0, f.getName().length()-4);
 		ret.put("name", n);
+		String oops = ret.get("screenshots");
+		if (oops != null) {
+			System.err.println("File "+f.getAbsolutePath()+" contains a typo: 'screenshots' instead of 'screenshot'!");
+			ret.put("screenshot", oops);
+		}
 		return ret;
 	}
 

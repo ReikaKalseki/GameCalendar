@@ -33,7 +33,6 @@ MORE "MEMORABLE" FLAGS
 
 	//video renderer needs to see category titles as they appear or disappear (with color legend)
 	//and it needs the description text, but due to space issues only add the new stuff, and pause
-	//speaking of pausing, should pause whenever a highlight happens or a new section (timespan) starts
 
 	//"export as movie" functionality!!!!!!!!!!!********************************************************
 

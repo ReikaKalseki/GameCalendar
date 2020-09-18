@@ -168,11 +168,11 @@ public class VideoRenderer {
 			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
 			this.cleanImageCache(usedImages);
 			renderedOutput.writeIntoImage(frame, 0, 0);
-			calendar.writeIntoImage(frame, 0, 0);;
+			calendar.writeIntoImage(frame, 0, 0);
 			int n = !newEntries.isEmpty() ? 30 : 1;
 			if (pathToFFMPEG != null) {
 				for (int i = 0; i < n; i++)
-					ffmpegDataLine.write(bufferize(frame));
+					;//ffmpegDataLine.write(bufferize(frame));
 			}
 			else {
 				Picture p = AWTUtil.fromBufferedImageRGB(frame);
@@ -181,22 +181,21 @@ public class VideoRenderer {
 				//encoder.encodeImage(frame);
 			}
 
-			/*
+
 			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
 				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
 				f.getParentFile().mkdirs();
 				ImageIO.write(frame, "png", f);
-				if (renderer.limit.year >= 2017)
+				if (renderer.limit.year >= 2012)
 					throw new RuntimeException("End");
 			}
-			 */
 
 			if (renderer.limit.compareTo(time.getEnd()) >= 0) {
 				this.finish();
 			}
 			else {
-				for (int i = 0; i < 500; i++)
-					renderer.limit = renderer.limit.nextDay();
+				//for (int i = 0; i < 500; i++)
+				renderer.limit = renderer.limit.nextDay();
 			}
 		}
 		catch (Exception e) {
@@ -242,7 +241,8 @@ public class VideoRenderer {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glColor4f(1, 1, 1, 1);
+		float f = e.age >= 5 ? 1 : (e.age+1)/5F;
+		GL11.glColor4f(1, 1, 1, f);
 		GLFunctions.printGLErrors("Draw prepare");
 		renderedOutput.bind(false);
 		GLFunctions.printGLErrors("FB bind");
@@ -256,17 +256,6 @@ public class VideoRenderer {
 		GLFunctions.printGLErrors("attrib reset");
 		GL11.glPopMatrix();
 		GLFunctions.printGLErrors("Matrix pop");
-		/*
-		GLFunctions.writeTextureToImage(data, x, y, SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT, gl);
-		try {
-			ImageIO.write(data, "png", new File("E:/videoscreenshot.png"));
-		}
-		catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException("tried and failed", e);
-		}
-		throw new RuntimeException("tried");
-		 */
 		return p;
 	}
 

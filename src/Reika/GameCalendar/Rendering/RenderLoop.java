@@ -163,6 +163,8 @@ public class RenderLoop extends Thread {
 		msaaBuffer.sendTo(intermediate);
 		GLFunctions.printGLErrors("Framebuffer copy to intermediate");
 
+		GL11.glFlush();
+
 		if (VideoRenderer.instance.isRendering()) {
 			VideoRenderer.instance.addFrame(intermediate);
 		}
@@ -208,8 +210,6 @@ public class RenderLoop extends Thread {
 
 		chain.present(target);
 	}
-
-	boolean loaded = false;
 
 	private void render(int x, int y) throws InterruptedException {
 		GL11.glClearColor(1, 1, 1, 1);
