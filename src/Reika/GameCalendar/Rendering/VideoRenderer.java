@@ -18,7 +18,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,7 +69,6 @@ public class VideoRenderer {
 	private final HashSet<Integer> freeScreenshotSlots = new HashSet();
 
 	private HashSet<String> lastScreenshots = null;
-	private boolean bufFlip = false;
 
 	private VideoRenderer() {
 
@@ -146,9 +144,8 @@ public class VideoRenderer {
 			}
 			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
 			this.cleanImageCache(usedImages);
-			renderedOutput.writeIntoImage(frame, 0, 0, bufFlip);
-			calendar.writeIntoImage(frame, 0, 0, bufFlip);
-			bufFlip = !bufFlip;
+			renderedOutput.writeIntoImage(frame, 0, 0);
+			calendar.writeIntoImage(frame, 0, 0);
 			HashSet<String> newEntries = new HashSet(usedImages);
 			if (lastScreenshots != null)
 				newEntries.removeAll(lastScreenshots);
@@ -326,18 +323,18 @@ public class VideoRenderer {
 		GuiSection s = renderer.getSectionAt(renderer.limit);
 		ArrayList<CalendarEvent> li = new ArrayList();
 		if (s != null && !s.section.isEmpty()) {
-			li.addAll(s.getItems(false));
+			li.addAll(s.getItems(false));/*
 			Collection<GuiHighlight> c = renderer.getHighlightsInSection(s);
 			for (GuiHighlight h : c) {
 				li.addAll(h.getItems(false));
-			}
+			}*/
 		}
-		else {
-			GuiHighlight h = renderer.getHighlightAtDate(renderer.limit);
-			if (h != null) {
-				li.addAll(h.getItems(false));
-			}
+		//else {
+		GuiHighlight h = renderer.getHighlightAtDate(renderer.limit);
+		if (h != null) {
+			li.addAll(h.getItems(false));
 		}
+		//}
 		Collections.sort(li, CalendarRenderer.eventSorter);
 		for (CalendarEvent e : li) {
 			File img = e.getScreenshotFile();
