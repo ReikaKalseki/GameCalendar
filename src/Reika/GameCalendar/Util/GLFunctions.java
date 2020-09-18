@@ -22,11 +22,14 @@ public class GLFunctions {
 
 	public static void printGLErrors(String section) {
 		int error = GL11.glGetError();
+		boolean flag = false;
 		while (error != GL11.GL_NO_ERROR) {
+			flag = true;
 			System.out.println("GL Error in "+section+": "+error);
-			Thread.dumpStack();
 			error = GL11.glGetError();
 		}
+		if (flag)
+			Thread.dumpStack();
 	}
 
 	public static void flipPixelArray(int[] data, int width, int height) {
@@ -109,7 +112,6 @@ public class GLFunctions {
 
 	public static void writeTextureToImage(BufferedImage img, int x, int y, int width, int height, int tex) {
 		int len = width * height;
-
 		IntBuffer pixelBuffer = BufferUtils.createIntBuffer(len);
 		int[] pixelValues = new int[len];
 
@@ -121,9 +123,9 @@ public class GLFunctions {
 
 		pixelBuffer.get(pixelValues);
 		GLFunctions.flipPixelArray(pixelValues, width, height);
-		for (int i = 0; i < height; ++i) {
-			for (int k = 0; k < width; ++k) {
-				img.setRGB(k+x, i+y, pixelValues[i*width+k]);
+		for (int k = 0; k < height; k++) {
+			for (int i = 0; i < width; i++) {
+				img.setRGB(i+x, k+y, pixelValues[k*width+i]);
 			}
 		}
 	}

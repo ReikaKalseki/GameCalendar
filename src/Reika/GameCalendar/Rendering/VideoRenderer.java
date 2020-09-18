@@ -1,17 +1,33 @@
 package Reika.GameCalendar.Rendering;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferShort;
+import java.awt.image.DataBufferUShort;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.IOUtils;
 import org.jcodec.api.awt.AWTSequenceEncoder;
 import org.jcodec.common.model.Picture;
 import org.jcodec.scale.AWTUtil;
@@ -36,17 +52,25 @@ public class VideoRenderer {
 	private static final int VIDEO_WIDTH = 1760;
 	private static final int VIDEO_HEIGHT = 1080;
 
+	public static String pathToFFMPEG = "E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe";
+
+	private boolean isInitialized = false;
 	private boolean isRendering;
 	private CalendarRenderer renderer;
 	private Timeline time;
-	private AWTSequenceEncoder encoder;
 	private Framebuffer renderedOutput;
+
+	private AWTSequenceEncoder encoder;
+
+	private Process process;
+	private WritableByteChannel ffmpegDataLine;
 
 	private final HashMap<String, BufferedImage> imageCache = new HashMap();
 	private final HashMap<String, Integer> usedScreenshotSlots = new HashMap();
 	private final HashSet<Integer> freeScreenshotSlots = new HashSet();
 
 	private HashSet<String> lastScreenshots = null;
+	private boolean bufFlip = false;
 
 	private VideoRenderer() {
 
@@ -64,13 +88,35 @@ public class VideoRenderer {
 
 	private void init() {
 		try {
-			encoder = AWTSequenceEncoder.createSequenceEncoder(new File("E:/videotest22.mp4"), 60);
+			File f = new File("videotest.mp4");
+			if (f.exists())
+				f.delete();
+
+			if (pathToFFMPEG != null) {
+				List<String> command = this.getFFMPEGArgs(f);
+				command.add(0, pathToFFMPEG);
+
+				process = new ProcessBuilder(command).directory(f.getParentFile()).start();
+
+				OutputStream exportLogOut = new FileOutputStream("videoexportffmpeg.log");
+				new StreamPipe(process.getInputStream(), exportLogOut).start();
+				new StreamPipe(process.getErrorStream(), exportLogOut).start();
+
+				OutputStream o = process.getOutputStream();
+				ffmpegDataLine = Channels.newChannel(o);
+			}
+			else {
+				encoder = AWTSequenceEncoder.createSequenceEncoder(f, 60);
+			}
 			if (renderedOutput == null)
 				renderedOutput = new Framebuffer(VIDEO_WIDTH, VIDEO_HEIGHT);
 
 			for (int i = 0; i < 8; i++) {
 				freeScreenshotSlots.add(GL11.glGenTextures());
 			}
+
+			isInitialized = true;
+			bufFlip = false;
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -85,7 +131,7 @@ public class VideoRenderer {
 
 	public void addFrame(Framebuffer calendar) {
 		try {
-			if (encoder == null)
+			if (!isInitialized)
 				this.init();
 
 			GL11.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
@@ -100,17 +146,24 @@ public class VideoRenderer {
 			}
 			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
 			this.cleanImageCache(usedImages);
-			renderedOutput.writeIntoImage(frame, 0, 0);
-			calendar.writeIntoImage(frame, 0, 0);
+			renderedOutput.writeIntoImage(frame, 0, 0, bufFlip);
+			calendar.writeIntoImage(frame, 0, 0, bufFlip);
+			bufFlip = !bufFlip;
 			HashSet<String> newEntries = new HashSet(usedImages);
 			if (lastScreenshots != null)
 				newEntries.removeAll(lastScreenshots);
 			lastScreenshots = usedImages;
-			Picture p = AWTUtil.fromBufferedImageRGB(frame);
-			int n = !newEntries.isEmpty() ? 5 : 1;
-			for (int i = 0; i < n; i++)
-				encoder.encodeNativeFrame(p);
-			//encoder.encodeImage(frame);
+			int n = !newEntries.isEmpty() ? 30 : 1;
+			if (pathToFFMPEG != null) {
+				for (int i = 0; i < n; i++)
+					ffmpegDataLine.write(bufferize(frame));
+			}
+			else {
+				Picture p = AWTUtil.fromBufferedImageRGB(frame);
+				for (int i = 0; i < n; i++)
+					encoder.encodeNativeFrame(p);
+				//encoder.encodeImage(frame);
+			}
 
 			/*
 			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
@@ -229,10 +282,19 @@ public class VideoRenderer {
 
 	private void finish() {
 		try {
-			encoder.finish();
+			if (pathToFFMPEG != null) {
+				ffmpegDataLine.close();
+				int code = process.waitFor();
+				if (code != 0) {
+					throw new RuntimeException("Process encountered error code: "+code);
+				}
+			}
+			else {
+				encoder.finish();
+			}
 			StatusHandler.postStatus("Video completion succeeded.", 2500, false);
 		}
-		catch(Exception e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			StatusHandler.postStatus("Video completion failed.", 2500, false);
 		}
@@ -253,6 +315,9 @@ public class VideoRenderer {
 		renderer = null;
 		time = null;
 		encoder = null;
+		ffmpegDataLine = null;
+		process = null;
+		isInitialized = false;
 		renderedOutput.clear();
 	}
 
@@ -280,6 +345,62 @@ public class VideoRenderer {
 				ret.add(img);
 		}
 		return ret;
+	}
+
+	private static List<String> getFFMPEGArgs(File f) {
+		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt rgb24 -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r 25 -i pipe: -c:v libx264").split(" ")));
+		parts.add("\""+f.getAbsolutePath()+"\"");
+		return parts;
+	}
+
+	private static ByteBuffer bufferize(BufferedImage img) {
+		ByteBuffer byteBuffer;
+		DataBuffer dataBuffer = img.getRaster().getDataBuffer();
+
+		if (dataBuffer instanceof DataBufferByte) {
+			byte[] pixelData = ((DataBufferByte) dataBuffer).getData();
+			byteBuffer = ByteBuffer.wrap(pixelData);
+		}
+		else if (dataBuffer instanceof DataBufferUShort) {
+			short[] pixelData = ((DataBufferUShort) dataBuffer).getData();
+			byteBuffer = ByteBuffer.allocate(pixelData.length * 2);
+			byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+		}
+		else if (dataBuffer instanceof DataBufferShort) {
+			short[] pixelData = ((DataBufferShort) dataBuffer).getData();
+			byteBuffer = ByteBuffer.allocate(pixelData.length * 2);
+			byteBuffer.asShortBuffer().put(ShortBuffer.wrap(pixelData));
+		}
+		else if (dataBuffer instanceof DataBufferInt) {
+			int[] pixelData = ((DataBufferInt) dataBuffer).getData();
+			byteBuffer = ByteBuffer.allocate(pixelData.length * 4);
+			byteBuffer.asIntBuffer().put(IntBuffer.wrap(pixelData));
+		}
+		else {
+			throw new IllegalArgumentException("Not implemented for data buffer type: " + dataBuffer.getClass());
+		}
+		return byteBuffer;
+	}
+
+	private static class StreamPipe extends Thread {
+
+		private InputStream inputStream;
+		private OutputStream outputStream;
+
+		public StreamPipe(InputStream in, OutputStream out) {
+			inputStream = in;
+			outputStream = out;
+		}
+
+		@Override
+		public void run() {
+			try {
+				IOUtils.copy(inputStream, outputStream);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
