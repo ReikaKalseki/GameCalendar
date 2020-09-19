@@ -21,8 +21,6 @@ other years PeTI
 
 ALL THE SCREENSHOTS
 
-highlight: early-on rainforest server map reset?
-
 MORE "MEMORABLE" FLAGS
 
 -see if can ge tthe "first RC" images off the laptop -- might have other modding images too

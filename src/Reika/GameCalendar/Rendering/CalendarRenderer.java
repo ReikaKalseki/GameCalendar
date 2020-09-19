@@ -628,11 +628,11 @@ public class CalendarRenderer {
 						selectedObjects.add(h);
 						if (GuiElement.SECTIONSWITHHIGHLIGHT.isChecked()) {
 							GuiSection s = this.getSectionAt(h.time);
-							if (s != null) {
+							if (s != null && !selectedObjects.contains(s)) {
 								selectedObjects.add(s);
 							}
 						}
-						break;
+						//break;
 					}
 				}
 			}
