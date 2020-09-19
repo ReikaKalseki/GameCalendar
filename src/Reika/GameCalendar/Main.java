@@ -15,8 +15,6 @@ import javafx.application.Platform;
 public class Main {
 	/*
 	DO NOT FORGET:
-split the p2 map dev into maps?
-
 other years PeTI
 
 ALL THE SCREENSHOTS

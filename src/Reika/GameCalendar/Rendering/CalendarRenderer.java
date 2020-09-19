@@ -628,7 +628,7 @@ public class CalendarRenderer {
 						selectedObjects.add(h);
 						if (GuiElement.SECTIONSWITHHIGHLIGHT.isChecked()) {
 							GuiSection s = this.getSectionAt(h.time);
-							if (s != null && !selectedObjects.contains(s)) {
+							if (s != null && !s.getActiveCategories().isEmpty() && !selectedObjects.contains(s)) {
 								selectedObjects.add(s);
 							}
 						}
@@ -645,7 +645,7 @@ public class CalendarRenderer {
 						selectedObjects.add(s);
 						if (GuiElement.HIGHLIGHTS.isChecked() && GuiElement.HIGHLIGHTSINSECTION.isChecked()) {
 							for (GuiHighlight h : events.values()) {
-								if (h.time.isBetween(s.section.startTime, s.renderedEnd)) {
+								if (h.time.isBetween(s.section.startTime, s.renderedEnd) && !h.getActiveCategories().isEmpty()) {
 									selectedObjects.add(h);
 								}
 							}
