@@ -321,7 +321,7 @@ public class CalendarRenderer {
 		DateStamp end = s.section.getEnd();
 		GuiSection g2 = s.getNext();
 		GuiSection g2b = s;
-		while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
+		while (g2 != null && this.shouldMerge(s, g2)) {
 			g2.skipRender = true;
 			a2 = g2.angleEnd;
 			end = g2.section.getEnd();
@@ -458,6 +458,21 @@ public class CalendarRenderer {
 			GL11.glDisable(GL11.GL_LINE_STIPPLE);
 			GL11.glLineWidth(2);
 		}
+	}
+
+	private boolean shouldMerge(GuiSection g1, GuiSection g2) {
+		if (GuiElement.ARCMERGE.isChecked()) {
+			GuiSection g0 = g1;
+			GuiSection g2b = g2.getNext();
+			while (g2b != null && g2.getActiveCategories().isEmpty()) {
+				g1 = g2;
+				g2 = g2b;
+				g2b = g2.getNext();
+			}
+			if (g1.getActiveCategories().equals(g2.getActiveCategories()) && g1.renderedEnd.countDaysAfter(g2.section.startTime) <= 9)
+				return true;
+		}
+		return g2.getActiveSpans().equals(g1.getActiveSpans());
 	}
 
 	private void drawTimeWedge(double t, DateStamp d1, DateStamp d2, int c1, int c2) {
