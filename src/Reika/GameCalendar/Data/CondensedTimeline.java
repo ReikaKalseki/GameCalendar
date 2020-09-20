@@ -3,18 +3,16 @@ package Reika.GameCalendar.Data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
-import Reika.GameCalendar.GUI.CalendarItem;
-import Reika.GameCalendar.GUI.CalendarSection;
-import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.Util.DateStamp;
 
 public class CondensedTimeline {
 
 	private final HashMap<ActivityCategory, CondensedSection> lastSections = new HashMap();
 	private final ArrayList<CondensedSection> sections = new ArrayList();
+
+	private final Timeline assembled;
 
 	public CondensedTimeline(Timeline t, int maxGap) {
 		if (!t.isPrepared()) {
@@ -23,6 +21,12 @@ public class CondensedTimeline {
 		for (TimeSpan sp : t.getPeriods()) {
 			this.addOrMergeSection(sp, maxGap);
 		}
+		Collections.sort(sections);
+		assembled = new Timeline();
+		for (CondensedSection s : sections) {
+			assembled.addPeriod(s.getAsSpan());
+		}
+		assembled.prepare();
 	}
 
 	private void addOrMergeSection(TimeSpan s, int maxGap) {
@@ -39,59 +43,38 @@ public class CondensedTimeline {
 		last.extendTo(s);
 	}
 
-	public List<CalendarSection> getSections() {
-		return Collections.unmodifiableList(sections);
+	public List<Section> getSections() {
+		return assembled.getSections();
 	}
 
-	private static class CondensedSection extends CalendarSection implements CalendarItem {
+	private static class CondensedSection implements Comparable<CondensedSection> {
 
 		private final ActivityCategory category;
+		private final DateStamp start;
 
 		private final ArrayList<TimeSpan> spans = new ArrayList();
 
 		private DateStamp end;
-		private double angleEnd;
 
 		public CondensedSection(ActivityCategory a, DateStamp s) {
-			super(s);
+			start = s;
 			category = a;
+		}
+
+		private TimeSpan getAsSpan() {
+			return new TimeSpan(null, category, start, end, category.name, category.desc);
 		}
 
 		private void extendTo(TimeSpan s) {
 			spans.add(s);
 			if (end == null || end.compareTo(s.end) < 0) {
 				end = s.end;
-				angleEnd = end.getAngle();
 			}
 		}
 
 		@Override
-		public String getDescriptiveDate() {
-			return start.toString();
-		}
-
-		@Override
-		public HashSet<ActivityCategory> getActiveCategories() {
-			HashSet<ActivityCategory> set = new HashSet();
-			if (GuiElement.CATEGORIES.isStringSelected(category.name)) {
-				set.add(category);
-			}
-			return set;
-		}
-
-		@Override
-		public List<? extends CalendarEvent> getItems(boolean activeOnly) {
-			return !activeOnly || GuiElement.CATEGORIES.isStringSelected(category.name) ? Collections.unmodifiableList(spans) : new ArrayList();
-		}
-
-		@Override
-		public DateStamp getEnd() {
-			return end;
-		}
-
-		@Override
-		public double getEndAngle() {
-			return angleEnd;
+		public int compareTo(CondensedSection o) {
+			return start.compareTo(o.start);
 		}
 
 	}

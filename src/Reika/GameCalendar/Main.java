@@ -28,8 +28,8 @@ THE PERMIT ACQUISITION PERIOD!!
 	 */
 
 	//TODO:
-	//checkboxes to show:
-	//to merge all category arcs together so it just shows game->game ("show subsections")
+
+	//FIX: GuiSections over a year long have render bugs -> eg vanilla MC with the "merge" option on
 
 	//video renderer needs to see category titles as they appear or disappear (with color legend)
 	//and it needs the description text, but due to space issues only add the new stuff, and pause

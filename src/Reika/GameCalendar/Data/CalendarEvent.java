@@ -76,7 +76,8 @@ public abstract class CalendarEvent {
 	public abstract String getFullDateString();
 
 	public final void openFile(HostServices host) {
-		host.showDocument(sourceFile.getAbsolutePath());
+		if (sourceFile != null)
+			host.showDocument(sourceFile.getAbsolutePath());
 	}
 
 	public final boolean isMemorable() {
