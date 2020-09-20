@@ -15,6 +15,7 @@ import java.util.Locale;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.CalendarEvent;
+import Reika.GameCalendar.Data.CompoundElement;
 import Reika.GameCalendar.Data.CondensedTimeline;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.ImportantDates;
@@ -698,7 +699,11 @@ public class CalendarRenderer {
 		else {
 			for (CalendarItem ci : selectedObjects) {
 				for (CalendarEvent ce : ci.getItems(true)) {
-					li.add(ce);
+					if (ce instanceof CompoundElement) {
+						li.addAll(((CompoundElement)ce).getElements());
+					}
+					else
+						li.add(ce);
 				}
 			}
 			Collections.sort(li, eventSorter);

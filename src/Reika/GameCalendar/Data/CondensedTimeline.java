@@ -62,7 +62,7 @@ public class CondensedTimeline {
 		}
 
 		private CategoryTimeSpan getAsSpan() {
-			return new CategoryTimeSpan(null, category, start, end, category.name, category.desc);
+			return new CategoryTimeSpan(category, start, end, spans);
 		}
 
 		private void extendTo(TimeSpan s) {
@@ -75,6 +75,22 @@ public class CondensedTimeline {
 		@Override
 		public int compareTo(CondensedSection o) {
 			return start.compareTo(o.start);
+		}
+
+	}
+
+	private static class CategoryTimeSpan extends TimeSpan implements CompoundElement<TimeSpan> {
+
+		private final List<TimeSpan> spans;
+
+		public CategoryTimeSpan(ActivityCategory a, DateStamp s, DateStamp e, List<TimeSpan> li) {
+			super(null, a, s, e, a.name, a.desc);
+			spans = li;
+		}
+
+		@Override
+		public List<TimeSpan> getElements() {
+			return Collections.unmodifiableList(spans);
 		}
 
 	}

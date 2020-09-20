@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.lwjglx.debug.joptsimple.internal.Strings;
 
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.Util.DateStamp;
 
 import javafx.application.HostServices;
@@ -94,6 +95,9 @@ public abstract class CalendarEvent {
 			line = category.name+": "+name+" ["+start+" - "+end+"]";
 			if (end.equals(DateStamp.launch))
 				line = category.name+": "+name+" ["+start+", ongoing]";
+		}
+		if (GuiElement.ARCMERGE.isChecked()) {
+			line = line.substring(category.name.length()+2);
 		}
 		if (this.isMemorable())
 			line = line+" (Highly Memorable)";

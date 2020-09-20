@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import Reika.GameCalendar.Data.CalendarEvent;
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 
 import javafx.geometry.Insets;
@@ -152,7 +153,7 @@ public class Labelling implements Runnable {
 			for (int i = 0; i < li.size(); i++) {
 				CalendarEvent ci = li.get(i);
 				ci.generateDescriptionText(desc);
-				if (i < li.size()-1)
+				if (i < li.size()-1 && !GuiElement.ARCMERGE.isChecked())
 					desc.add("");
 			}
 			/*
