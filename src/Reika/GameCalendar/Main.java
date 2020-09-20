@@ -23,14 +23,11 @@ MORE "MEMORABLE" FLAGS
 
 -see if can ge tthe "first RC" images off the laptop -- might have other modding images too
 
-THE PERMIT ACQUISITION PERIOD!!
-
 	 */
 
 	//TODO:
 
 	//FIX: GuiSections over a year long have render bugs -> eg vanilla MC with the "merge" option on
-	/// same category option rendering still horribly bugged
 
 	//video renderer needs to see category titles as they appear or disappear (with color legend)
 	//and it needs the description text, but due to space issues only add the new stuff, and pause
