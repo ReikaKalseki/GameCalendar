@@ -15,6 +15,7 @@ import java.util.Locale;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.CalendarEvent;
+import Reika.GameCalendar.Data.CondensedTimeline;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.ImportantDates;
 import Reika.GameCalendar.Data.Section;
@@ -51,7 +52,10 @@ public class CalendarRenderer {
 	};
 
 	private final Timeline data;
+
 	private final ArrayList<GuiSection> sections = new ArrayList();
+	private final ArrayList<GuiSection> sectionsCondensed = new ArrayList();
+
 	private final HashMap<DateStamp, GuiHighlight> events = new HashMap();
 	private final ArrayList<Integer> years;
 
@@ -78,6 +82,12 @@ public class CalendarRenderer {
 			}
 			else
 				at.addEvent(s);
+		}
+		CondensedTimeline ct = new CondensedTimeline(t, 6);
+		li = ct.getSections();
+		for (int i = 0; i < li.size(); i++) {
+			Section s = li.get(i);
+			sectionsCondensed.add(new GuiSection(s, i, i == 0 ? null : sectionsCondensed.get(i-1)));
 		}
 		years = new ArrayList(t.getYears());
 		Collections.sort(years);
@@ -164,12 +174,13 @@ public class CalendarRenderer {
 
 		GL11.glLineWidth(2);
 		double wf = 0.8;
-		for (GuiSection s : sections) {
+		List<GuiSection> sec = this.getActiveSectionList();
+		for (GuiSection s : sec) {
 			s.polygon = null;
 			s.skipRender = false;
 			s.renderedEnd = s.section.getEnd();
 		}
-		for (GuiSection s : sections) {
+		for (GuiSection s : sec) {
 			if (s.skipRender)
 				continue;
 			if (s.section.isEmpty())
@@ -461,6 +472,7 @@ public class CalendarRenderer {
 	}
 
 	private boolean shouldMerge(GuiSection g1, GuiSection g2) {
+		/*
 		if (GuiElement.ARCMERGE.isChecked()) {
 			GuiSection g0 = g1;
 			GuiSection g2b = g2.getNext();
@@ -471,7 +483,7 @@ public class CalendarRenderer {
 			}
 			if (g1.getActiveCategories().equals(g2.getActiveCategories()) && g1.renderedEnd.countDaysAfter(g2.section.startTime) <= 9)
 				return true;
-		}
+		}*/
 		return g2.getActiveSpans().equals(g1.getActiveSpans());
 	}
 
@@ -630,6 +642,10 @@ public class CalendarRenderer {
 		return Math.toRadians(-a+90);
 	}
 
+	private List<GuiSection> getActiveSectionList() {
+		return GuiElement.ARCMERGE.isChecked() ? sectionsCondensed : sections;
+	}
+
 	public synchronized void handleMouse(double x, double y) {
 		if (VideoRenderer.instance.isRendering())
 			return;
@@ -653,7 +669,7 @@ public class CalendarRenderer {
 			}
 		}
 		if (selectedObjects.isEmpty()) {
-			for (GuiSection s : sections) {
+			for (GuiSection s : this.getActiveSectionList()) {
 				if (s.polygon != null && s.polygon.npoints > 0)	{
 					if (s.polygon.contains(x, y)) {
 						//System.out.println(mx+","+my+" > "+s.section);
@@ -717,7 +733,7 @@ public class CalendarRenderer {
 	}
 
 	public GuiSection getSectionAt(DateStamp date) {
-		for (GuiSection s : sections) {
+		for (GuiSection s : this.getActiveSectionList()) {
 			if (date.isBetween(s.section.startTime, s.section.getEnd())) {
 				return s;
 			}
