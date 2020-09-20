@@ -22,6 +22,7 @@ import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.CalendarItem;
+import Reika.GameCalendar.GUI.CalendarSection;
 import Reika.GameCalendar.GUI.DFXInputHandler;
 import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.GUI.GuiHighlight;
@@ -173,17 +174,28 @@ public class CalendarRenderer {
 			s.skipRender = false;
 			s.renderedEnd = s.section.getEnd();
 		}
-		condensed.refresh();
-		for (GuiSection s : sections) {
-			if (s.skipRender)
-				continue;
-			if (s.section.isEmpty())
-				continue;
-			if (limit != null && s.section.startTime.compareTo(limit) >= 0)
-				continue;
-			if (s.getActiveCategories().isEmpty())
-				continue;
-			this.drawSectionArc(s, wf, t, limit);
+		if (GuiElement.ARCMERGE.isChecked()) {
+			for (CalendarSection s : condensed.getSections()) {
+				s.polygon = null;
+				if (limit != null && s.start.compareTo(limit) >= 0)
+					continue;
+				if (s.getActiveCategories().isEmpty())
+					continue;
+				this.drawSectionArc(s, wf, t, limit);
+			}
+		}
+		else {
+			for (GuiSection s : sections) {
+				if (s.skipRender)
+					continue;
+				if (s.section.isEmpty())
+					continue;
+				if (limit != null && s.section.startTime.compareTo(limit) >= 0)
+					continue;
+				if (s.getActiveCategories().isEmpty())
+					continue;
+				this.drawSectionArc(s, wf, t, limit);
+			}
 		}
 
 		GL11.glLineWidth(2);
@@ -320,26 +332,29 @@ public class CalendarRenderer {
 		Platform.runLater(Labelling.instance);
 	}
 
-	private void drawSectionArc(GuiSection s, double wf, double t, DateStamp limit) {
+	private void drawSectionArc(CalendarSection s, double wf, double t, DateStamp limit) {
 		double a1 = s.angleStart;
-		double a2 = s.angleEnd;
-		DateStamp end = s.section.getEnd();
-		GuiSection g2 = s.getNext();
-		GuiSection g2b = s;
-		while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
-			g2.skipRender = true;
-			a2 = g2.angleEnd;
-			end = g2.section.getEnd();
-			g2b = g2;
-			g2 = g2.getNext();
+		double a2 = s.getEndAngle();
+		DateStamp end = s.getEnd();
+		if (s instanceof GuiSection) {
+			GuiSection gs = (GuiSection)s;
+			GuiSection g2 = gs.getNext();
+			GuiSection g2b = gs;
+			while (g2 != null && g2.getActiveSpans().equals(s.getItems(true))) {
+				g2.skipRender = true;
+				a2 = g2.angleEnd;
+				end = g2.section.getEnd();
+				g2b = g2;
+				g2 = g2.getNext();
+			}
+			gs.renderedEnd = g2b.section.getEnd();
+			if (limit != null && end.compareTo(limit) > 0) {
+				end = limit;
+				gs.renderedEnd = end;
+				a2 = end.getAngle();
+			}
 		}
-		s.renderedEnd = g2b.section.getEnd();
-		if (limit != null && end.compareTo(limit) > 0) {
-			end = limit;
-			s.renderedEnd = end;
-			a2 = end.getAngle();
-		}
-		int i1 = years.indexOf(s.section.startTime.year);
+		int i1 = years.indexOf(s.start.year);
 		int i2 = years.indexOf(end.year);
 		double r1a = INNER_RADIUS+i1*arcThickness;
 		double r1b = INNER_RADIUS+(i1+1)*arcThickness;
@@ -405,10 +420,11 @@ public class CalendarRenderer {
 		int i = 0;
 		for (DoublePoint p : points) {
 			clr = this.getSectionColorAtIndex(s, i/colorstep);
-			if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
+			/*
+			if (GuiElement.MEMORABLE.isChecked() && s instanceof GuiSection && ((GuiSection)s).isMemorable(true)) {
 				//float f = (float)(0.75+0.125*Math.sin(i*0.55-t*0.027)+0.125*Math.cos(i*0.37-t*0.017));
 				//clr = Colors.mixColors(clr, 0xffffff, f);
-			}
+			}*/
 			float r = Colors.HextoColorMultiplier(clr, 0);
 			float g = Colors.HextoColorMultiplier(clr, 1);
 			float b = Colors.HextoColorMultiplier(clr, 2);
@@ -435,7 +451,7 @@ public class CalendarRenderer {
 		}
 		if (sel)
 			GL11.glEnd();
-		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
+		if (GuiElement.MEMORABLE.isChecked() && s instanceof GuiSection && ((GuiSection)s).isMemorable(true)) {
 			GL11.glLineWidth(12);
 			GL11.glEnable(GL11.GL_LINE_STIPPLE);
 			short bits = 0x7070;
@@ -596,8 +612,8 @@ public class CalendarRenderer {
 		return (r1+(r2-r1)*(a/360D));
 	}
 
-	private int getSectionColorAtIndex(GuiSection s, int i) {
-		List<TimeSpan> li = s.getActiveSpans();
+	private int getSectionColorAtIndex(CalendarSection s, int i) {
+		List<TimeSpan> li = (List<TimeSpan>)s.getItems(true);
 		if (li.isEmpty())
 			return 0x000000;
 		/*

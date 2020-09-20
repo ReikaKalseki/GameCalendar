@@ -23,6 +23,8 @@ MORE "MEMORABLE" FLAGS
 
 -see if can ge tthe "first RC" images off the laptop -- might have other modding images too
 
+THE PERMIT ACQUISITION PERIOD!!
+
 	 */
 
 	//TODO:

@@ -39,10 +39,8 @@ public class CondensedTimeline {
 		last.extendTo(s);
 	}
 
-	public void refresh() {
-		for (CondensedSection s : sections) {
-			s.polygon = null;
-		}
+	public List<CalendarSection> getSections() {
+		return Collections.unmodifiableList(sections);
 	}
 
 	private static class CondensedSection extends CalendarSection implements CalendarItem {
@@ -61,7 +59,7 @@ public class CondensedTimeline {
 
 		private void extendTo(TimeSpan s) {
 			spans.add(s);
-			if (end.compareTo(s.end) < 0) {
+			if (end == null || end.compareTo(s.end) < 0) {
 				end = s.end;
 				angleEnd = end.getAngle();
 			}
