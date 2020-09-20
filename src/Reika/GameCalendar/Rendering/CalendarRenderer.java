@@ -15,7 +15,6 @@ import java.util.Locale;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.CalendarEvent;
-import Reika.GameCalendar.Data.CondensedTimeline;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.ImportantDates;
 import Reika.GameCalendar.Data.Section;
@@ -52,11 +51,7 @@ public class CalendarRenderer {
 	};
 
 	private final Timeline data;
-	private final CondensedTimeline condensed;
-
 	private final ArrayList<GuiSection> sections = new ArrayList();
-	private final ArrayList<GuiSection> sectionsCondensed = new ArrayList();
-
 	private final HashMap<DateStamp, GuiHighlight> events = new HashMap();
 	private final ArrayList<Integer> years;
 
@@ -70,7 +65,6 @@ public class CalendarRenderer {
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
-		condensed = new CondensedTimeline(t, 5);
 		List<Section> li = t.getSections();
 		for (int i = 0; i < li.size(); i++) {
 			Section s = li.get(i);
@@ -84,11 +78,6 @@ public class CalendarRenderer {
 			}
 			else
 				at.addEvent(s);
-		}
-		li = condensed.getSections();
-		for (int i = 0; i < li.size(); i++) {
-			Section s = li.get(i);
-			sectionsCondensed.add(new GuiSection(s, i, i == 0 ? null : sectionsCondensed.get(i-1)));
 		}
 		years = new ArrayList(t.getYears());
 		Collections.sort(years);
@@ -175,13 +164,12 @@ public class CalendarRenderer {
 
 		GL11.glLineWidth(2);
 		double wf = 0.8;
-		List<GuiSection> sec = this.getActiveSectionList();
-		for (GuiSection s : sec) {
+		for (GuiSection s : sections) {
 			s.polygon = null;
 			s.skipRender = false;
 			s.renderedEnd = s.section.getEnd();
 		}
-		for (GuiSection s : sec) {
+		for (GuiSection s : sections) {
 			if (s.skipRender)
 				continue;
 			if (s.section.isEmpty())
@@ -329,11 +317,11 @@ public class CalendarRenderer {
 
 	private void drawSectionArc(GuiSection s, double wf, double t, DateStamp limit) {
 		double a1 = s.angleStart;
-		double a2 = s.getEndAngle();
-		DateStamp end = s.getEnd();
+		double a2 = s.angleEnd;
+		DateStamp end = s.section.getEnd();
 		GuiSection g2 = s.getNext();
 		GuiSection g2b = s;
-		while (g2 != null && g2.getActiveSpans().equals(s.getItems(true))) {
+		while (g2 != null && g2.getActiveSpans().equals(s.getActiveSpans())) {
 			g2.skipRender = true;
 			a2 = g2.angleEnd;
 			end = g2.section.getEnd();
@@ -346,7 +334,7 @@ public class CalendarRenderer {
 			s.renderedEnd = end;
 			a2 = end.getAngle();
 		}
-		int i1 = years.indexOf(s.start.year);
+		int i1 = years.indexOf(s.section.startTime.year);
 		int i2 = years.indexOf(end.year);
 		double r1a = INNER_RADIUS+i1*arcThickness;
 		double r1b = INNER_RADIUS+(i1+1)*arcThickness;
@@ -412,11 +400,10 @@ public class CalendarRenderer {
 		int i = 0;
 		for (DoublePoint p : points) {
 			clr = this.getSectionColorAtIndex(s, i/colorstep);
-			/*
-			if (GuiElement.MEMORABLE.isChecked() && s instanceof GuiSection && ((GuiSection)s).isMemorable(true)) {
+			if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
 				//float f = (float)(0.75+0.125*Math.sin(i*0.55-t*0.027)+0.125*Math.cos(i*0.37-t*0.017));
 				//clr = Colors.mixColors(clr, 0xffffff, f);
-			}*/
+			}
 			float r = Colors.HextoColorMultiplier(clr, 0);
 			float g = Colors.HextoColorMultiplier(clr, 1);
 			float b = Colors.HextoColorMultiplier(clr, 2);
@@ -443,7 +430,7 @@ public class CalendarRenderer {
 		}
 		if (sel)
 			GL11.glEnd();
-		if (GuiElement.MEMORABLE.isChecked() && s instanceof GuiSection && s.isMemorable(true)) {
+		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
 			GL11.glLineWidth(12);
 			GL11.glEnable(GL11.GL_LINE_STIPPLE);
 			short bits = 0x7070;
@@ -605,7 +592,7 @@ public class CalendarRenderer {
 	}
 
 	private int getSectionColorAtIndex(GuiSection s, int i) {
-		List<TimeSpan> li = (List<TimeSpan>)s.getItems(true);
+		List<TimeSpan> li = s.getActiveSpans();
 		if (li.isEmpty())
 			return 0x000000;
 		/*
@@ -651,7 +638,7 @@ public class CalendarRenderer {
 			}
 		}
 		if (selectedObjects.isEmpty()) {
-			for (GuiSection s : this.getActiveSectionList()) {
+			for (GuiSection s : sections) {
 				if (s.polygon != null && s.polygon.npoints > 0)	{
 					if (s.polygon.contains(x, y)) {
 						//System.out.println(mx+","+my+" > "+s.section);
@@ -715,16 +702,12 @@ public class CalendarRenderer {
 	}
 
 	public GuiSection getSectionAt(DateStamp date) {
-		for (GuiSection s : this.getActiveSectionList()) {
+		for (GuiSection s : sections) {
 			if (date.isBetween(s.section.startTime, s.section.getEnd())) {
 				return s;
 			}
 		}
 		return null;
-	}
-
-	private List<GuiSection> getActiveSectionList() {
-		return GuiElement.ARCMERGE.isChecked() ? sectionsCondensed : sections;
 	}
 
 	public ArrayList<GuiHighlight> getHighlightsInSection(GuiSection s) {
