@@ -26,11 +26,16 @@ public class Timeline {
 	private DateStamp earliest;
 	private DateStamp latest;
 
+	private boolean prepared = false;
+
+	private static int screenshotFilter = 1;
+
 	public void addEvent(Highlight e) {
 		events.add(e);
 		dates.add(e.time);
 		years.add(e.time.year);
 		this.updateBounds(e.time);
+		prepared = false;
 	}
 
 	public void addPeriod(TimeSpan e) {
@@ -40,6 +45,7 @@ public class Timeline {
 		years.add(e.start.year);
 		years.add(e.end.year);
 		this.updateBounds(e.start, e.end);
+		prepared = false;
 	}
 
 	private void updateBounds(DateStamp t) {
@@ -74,25 +80,29 @@ public class Timeline {
 		sections.get(sections.size()-1).setEndTime(latest);
 		Collections.sort(sections);
 
-		ArrayList<CalendarEvent> check = new ArrayList();
-		check.addAll(periods);
-		check.addAll(events);
-		boolean flag = false;
-		Collections.sort(check, new Comparator<CalendarEvent>(){
-			@Override
-			public int compare(CalendarEvent o1, CalendarEvent o2) {
-				return o1.category.compareTo(SortingMode.ALPHA, o2.category);
+		prepared = true;
+
+		if (screenshotFilter > 0) {
+			ArrayList<CalendarEvent> check = new ArrayList();
+			check.addAll(periods);
+			check.addAll(events);
+			boolean flag = false;
+			Collections.sort(check, new Comparator<CalendarEvent>(){
+				@Override
+				public int compare(CalendarEvent o1, CalendarEvent o2) {
+					return o1.category.compareTo(SortingMode.ALPHA, o2.category);
+				}
+			});
+			for (CalendarEvent t : check) {
+				if (t.getScreenshotFile() == null) {
+					System.out.println("Calendar Item "+t.category.name+"\\"+t.name+" ["+t.getFullDateString()+"] has no screenshot!");
+					flag = true;
+				}
 			}
-		});
-		for (CalendarEvent t : check) {
-			if (t.getScreenshotFile() == null) {
-				System.out.println("Calendar Item "+t.category.name+"\\"+t.name+" ["+t.getFullDateString()+"] has no screenshot!");
-				flag = true;
+			if (flag && screenshotFilter == 2) {
+				Platform.exit();
+				System.exit(0);
 			}
-		}
-		if (flag && false) {
-			Platform.exit();
-			System.exit(0);
 		}
 	}
 
@@ -121,10 +131,6 @@ public class Timeline {
 		return Collections.unmodifiableList(sections);
 	}
 
-	public List<Highlight> getEvents() {
-		return Collections.unmodifiableList(events);
-	}
-
 	public Set<Integer> getYears() {
 		return Collections.unmodifiableSet(years);
 	}
@@ -135,6 +141,18 @@ public class Timeline {
 
 	public DateStamp getEnd() {
 		return latest;
+	}
+
+	public boolean isPrepared() {
+		return prepared;
+	}
+
+	public List<TimeSpan> getPeriods() {
+		return Collections.unmodifiableList(periods);
+	}
+
+	public List<Highlight> getEvents() {
+		return Collections.unmodifiableList(events);
 	}
 
 }

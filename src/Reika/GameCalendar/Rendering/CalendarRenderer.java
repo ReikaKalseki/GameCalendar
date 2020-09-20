@@ -15,6 +15,7 @@ import java.util.Locale;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Data.CalendarEvent;
+import Reika.GameCalendar.Data.CondensedTimeline;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.ImportantDates;
 import Reika.GameCalendar.Data.Section;
@@ -51,6 +52,8 @@ public class CalendarRenderer {
 	};
 
 	private final Timeline data;
+	private final CondensedTimeline condensed;
+
 	private final ArrayList<GuiSection> sections = new ArrayList();
 	private final HashMap<DateStamp, GuiHighlight> events = new HashMap();
 	private final ArrayList<Integer> years;
@@ -65,6 +68,7 @@ public class CalendarRenderer {
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
+		condensed = new CondensedTimeline(t, 5);
 		List<Section> li = t.getSections();
 		for (int i = 0; i < li.size(); i++) {
 			Section s = li.get(i);
@@ -169,6 +173,7 @@ public class CalendarRenderer {
 			s.skipRender = false;
 			s.renderedEnd = s.section.getEnd();
 		}
+		condensed.refresh();
 		for (GuiSection s : sections) {
 			if (s.skipRender)
 				continue;

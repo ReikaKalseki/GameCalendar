@@ -10,14 +10,11 @@ import Reika.GameCalendar.Data.Section;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.Util.DateStamp;
-import Reika.GameCalendar.Util.DoublePolygon;
 
-public class GuiSection implements CalendarItem {
+public class GuiSection extends CalendarSection {
 
 	public final Section section;
-	public DoublePolygon polygon;
 
-	public final double angleStart;
 	public final double angleEnd;
 
 	private GuiSection next;
@@ -30,6 +27,7 @@ public class GuiSection implements CalendarItem {
 	private boolean memorable = false;
 
 	public GuiSection(Section s, int idx, GuiSection prev) {
+		super(s.startTime);
 		section = s;
 		index = idx;
 		previous = prev;
@@ -40,7 +38,6 @@ public class GuiSection implements CalendarItem {
 			memorable |= t.isMemorable();
 		}
 
-		angleStart = s.startTime.getAngle();
 		angleEnd = s.getEnd().getAngle();
 
 		double ae = angleEnd;
@@ -103,6 +100,16 @@ public class GuiSection implements CalendarItem {
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public DateStamp getEnd() {
+		return section.getEnd();
+	}
+
+	@Override
+	public double getEndAngle() {
+		return angleEnd;
 	}
 
 }

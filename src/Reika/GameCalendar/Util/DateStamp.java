@@ -1,6 +1,8 @@
 package Reika.GameCalendar.Util;
 
+import java.time.LocalDate;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -115,5 +117,11 @@ public class DateStamp implements Comparable<DateStamp> {
 		int dayd = calendar.get(Calendar.DAY_OF_YEAR);
 		calendar.set(Calendar.DAY_OF_YEAR, dayd+1);
 		return new DateStamp(year, Month.of(calendar.get(Calendar.MONTH)+1), calendar.get(Calendar.DAY_OF_MONTH));
+	}
+
+	public int countDaysAfter(DateStamp date) {
+		LocalDate d1 = LocalDate.of(year, month, day);
+		LocalDate d2 = LocalDate.of(date.year, date.month, date.day);
+		return (int)ChronoUnit.DAYS.between(d1, d2);
 	}
 }
