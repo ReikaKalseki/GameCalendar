@@ -2,6 +2,7 @@ package Reika.GameCalendar.Util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,6 +19,10 @@ public class DataLoader {
 		for (File f : events.listFiles()) {
 			if (f.length() == 0) {
 				System.err.println("Event File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
+				continue;
+			}
+			if (!"text/plain".equals(Files.probeContentType(f.toPath()))) {
+				System.out.println("Skipping non-text file '"+cat.folder.getName()+"/"+f.getName()+"'");
 				continue;
 			}
 			if (f.getName().contains(cat.name)) {
@@ -38,6 +43,10 @@ public class DataLoader {
 		for (File f : ranges.listFiles()) {
 			if (f.length() == 0) {
 				System.err.println("Period File '"+cat.folder.getName()+"/"+f.getName()+"' is empty!");
+				continue;
+			}
+			if (!"text/plain".equals(Files.probeContentType(f.toPath()))) {
+				System.out.println("Skipping non-text file '"+cat.folder.getName()+"/"+f.getName()+"'");
 				continue;
 			}
 			if (f.getName().contains(cat.name)) {

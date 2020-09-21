@@ -356,6 +356,9 @@ public class CalendarRenderer {
 			a2 += 360;
 			r2b -= arcThickness;
 		}
+		int years = (int)Math.ceil(s.section.startTime.countDaysAfter(s.renderedEnd)/365D);
+		if (years > 1)
+			a2 += 360*(years-1);
 		ArrayList<DoublePoint> pointsCenterline = new ArrayList();
 		ArrayList<DoublePoint> pointsInner = new ArrayList();
 		ArrayList<DoublePoint> pointsOuter = new ArrayList();
@@ -365,7 +368,7 @@ public class CalendarRenderer {
 		for (double a = a1; a < a2; a += 0.5) {
 			double ang = this.getGuiAngle(a);
 			double r1 = r1a;
-			double r2 = r2b;
+			double r2 = r1b;
 
 			double r0 = r1+(r2-r1)*(a/360D);
 

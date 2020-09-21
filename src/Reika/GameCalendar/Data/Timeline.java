@@ -94,6 +94,8 @@ public class Timeline {
 				}
 			});
 			for (CalendarEvent t : check) {
+				if (t instanceof CompoundElement)
+					continue;
 				if (t.getScreenshotFile() == null) {
 					System.out.println("Calendar Item "+t.category.name+"\\"+t.name+" ["+t.getFullDateString()+"] has no screenshot!");
 					flag = true;

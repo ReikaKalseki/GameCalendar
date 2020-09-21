@@ -103,7 +103,6 @@ public class VideoRenderer {
 				//new StreamPipe(process.getInputStream(), exportLogOut).start();
 				//new StreamPipe(process.getErrorStream(), exportLogOut).start();
 
-
 				ffmpegDataLine = process.getOutputStream();
 			}
 			else {

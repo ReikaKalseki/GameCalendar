@@ -16,19 +16,18 @@ public class Main {
 	/*
 	DO NOT FORGET:
 other years PeTI
+2017 - nintendo erk screenshots?
+
+2015 peti highlights (ie sendificate, 12 angry tests, etc)
 
 ALL THE SCREENSHOTS
-
-MORE "MEMORABLE" FLAGS
 
 -see if can ge tthe "first RC" images off the laptop -- might have other modding images too
 
 	 */
 
 	//TODO:
-
-	//FIX: GuiSections over a year long have render bugs -> eg vanilla MC with the "merge" option on
-	//can fix by making it angle angles > 360 with increased radii
+	//maybe make a memorable "tiering" system
 
 	//video renderer needs to see category titles as they appear or disappear (with color legend)
 	//and it needs the description text, but due to space issues only add the new stuff, and pause
