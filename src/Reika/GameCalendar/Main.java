@@ -15,12 +15,6 @@ import javafx.application.Platform;
 public class Main {
 	/*
 	DO NOT FORGET:
-other years PeTI
-2017 - nintendo erk screenshots?
-
-2015 peti highlights (ie sendificate, 12 angry tests, etc)
-
-ALL THE SCREENSHOTS
 
 -see if can ge tthe "first RC" images off the laptop -- might have other modding images too
 

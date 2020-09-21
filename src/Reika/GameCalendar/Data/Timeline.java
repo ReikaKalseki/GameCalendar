@@ -28,7 +28,7 @@ public class Timeline {
 
 	private boolean prepared = false;
 
-	private static int screenshotFilter = 1;
+	private static int screenshotFilter = 0;
 
 	public void addEvent(Highlight e) {
 		events.add(e);
