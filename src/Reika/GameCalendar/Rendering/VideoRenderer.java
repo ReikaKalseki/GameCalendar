@@ -7,15 +7,13 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.DataBufferShort;
 import java.awt.image.DataBufferUShort;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,6 +47,7 @@ public class VideoRenderer {
 	private static final int SCREENSHOT_HEIGHT = 270;
 	private static final int VIDEO_WIDTH = 1760;
 	private static final int VIDEO_HEIGHT = 1080;
+	private static final int VIDEO_FPS = 40;
 
 	public static String pathToFFMPEG = "E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe";
 
@@ -61,7 +60,7 @@ public class VideoRenderer {
 	private AWTSequenceEncoder encoder;
 
 	private Process process;
-	private WritableByteChannel ffmpegDataLine;
+	private OutputStream ffmpegDataLine;
 
 	private final HashMap<String, BufferedImage> imageCache = new HashMap();
 	private final HashMap<String, Integer> usedScreenshotSlots = new HashMap();
@@ -93,14 +92,19 @@ public class VideoRenderer {
 				List<String> command = this.getFFMPEGArgs(f);
 				command.add(0, pathToFFMPEG);
 
-				process = new ProcessBuilder(command).directory(f.getParentFile()).start();
+				//command = Arrays.asList("java", "-jar", "DataDump.jar");
 
-				OutputStream exportLogOut = new FileOutputStream("videoexportffmpeg.log");
-				new StreamPipe(process.getInputStream(), exportLogOut).start();
-				new StreamPipe(process.getErrorStream(), exportLogOut).start();
+				ProcessBuilder builder = new ProcessBuilder(command);
+				builder.redirectError(Redirect.INHERIT);
+				builder.redirectInput(Redirect.INHERIT);
+				process = builder.directory(f.getParentFile()).start();
 
-				OutputStream o = process.getOutputStream();
-				ffmpegDataLine = Channels.newChannel(o);
+				//OutputStream exportLogOut = new FileOutputStream("videoexportffmpeg.log");
+				//new StreamPipe(process.getInputStream(), exportLogOut).start();
+				//new StreamPipe(process.getErrorStream(), exportLogOut).start();
+
+
+				ffmpegDataLine = process.getOutputStream();
 			}
 			else {
 				encoder = AWTSequenceEncoder.createSequenceEncoder(f, 60);
@@ -171,8 +175,12 @@ public class VideoRenderer {
 			calendar.writeIntoImage(frame, 0, 0);
 			int n = !newEntries.isEmpty() ? 30 : 1;
 			if (pathToFFMPEG != null) {
-				for (int i = 0; i < n; i++)
-					;//ffmpegDataLine.write(bufferize(frame));
+				ByteBuffer buf = bufferize(frame);
+				for (int i = 0; i < n; i++) {
+					for (int a = 0; a < buf.limit(); a++)
+						ffmpegDataLine.write(buf.get());
+					buf.rewind();
+				}
 			}
 			else {
 				Picture p = AWTUtil.fromBufferedImageRGB(frame);
@@ -359,7 +367,7 @@ public class VideoRenderer {
 	}
 
 	private static List<String> getFFMPEGArgs(File f) {
-		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt rgb24 -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r 25 -i pipe: -c:v libx264").split(" ")));
+		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i pipe: -c:v libx264").split(" ")));
 		parts.add("\""+f.getAbsolutePath()+"\"");
 		return parts;
 	}

@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
@@ -268,6 +267,7 @@ public class Framebuffer {
 	}
 
 	public void writeIntoImage(BufferedImage img, int x, int y) {
+		/*
 		this.bind(false);
 		GL30.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
 		GLFunctions.printGLErrors("Print to image - bind");
@@ -291,6 +291,8 @@ public class Framebuffer {
 		GL30.glReadBuffer(0);
 		this.unbind();
 		GLFunctions.printGLErrors("Print to image - unbind");
+		 */
+		this.writeIntoImageSlow(img, x, y);
 	}
 
 	public String saveAsFile(File f) {
