@@ -42,6 +42,7 @@ import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Timeline;
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
@@ -226,8 +227,13 @@ public class VideoRenderer {
 				this.finish();
 			}
 			else {
-				//for (int i = 0; i < 500; i++)
-				renderer.limit = renderer.limit.nextDay();
+				int nd = activeCategories.isEmpty() ? 5 : 1;
+				if (renderer.limit.year >= 2013)
+					nd = 100;
+				if (renderer.limit.year >= 2017)
+					nd = 400;
+				for (int i = 0; i < nd; i++)
+					renderer.limit = renderer.limit.nextDay();
 			}
 		}
 		catch (Exception e) {
@@ -511,7 +517,7 @@ public class VideoRenderer {
 			}*/
 		}
 		//else {
-		GuiHighlight h = renderer.getHighlightAtDate(renderer.limit);
+		GuiHighlight h = GuiElement.HIGHLIGHTS.isChecked() ? renderer.getHighlightAtDate(renderer.limit) : null;
 		if (h != null) {
 			li.addAll(h.getItems(false));
 		}

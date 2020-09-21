@@ -450,6 +450,20 @@ public class GuiController implements EventHandler<ActionEvent> {
 		if (gui == GuiElement.SORTORDER) {
 			Main.getCalendarRenderer().restoreSelection();
 		}
+		videoExport.disableProperty().set(!this.isVideoExportValid());
+		openFiles.disableProperty().set(GuiElement.ARCMERGE.isChecked());
+	}
+
+	private boolean isVideoExportValid() {
+		return !GuiElement.ARCMERGE.isChecked() && this.areAllCategoriesActive();
+	}
+
+	private boolean areAllCategoriesActive() {
+		for (String s : ActivityCategory.getNameList()) {
+			if (!GuiElement.CATEGORIES.isStringSelected(s))
+				return false;
+		}
+		return true;
 	}
 
 	static class NodeWrapper {
@@ -598,6 +612,7 @@ public class GuiController implements EventHandler<ActionEvent> {
 				case SELNONE:
 				case RELOAD:
 				case HIGHLIGHTS:
+				case ARCMERGE:
 					return true;
 				default:
 					return false;
