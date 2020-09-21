@@ -15,6 +15,10 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+*.rar
+*.zip
+*.log
+
 .settings/*
 .metadata/*
 bin/*
