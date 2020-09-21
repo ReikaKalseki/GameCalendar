@@ -185,4 +185,8 @@ public class Labelling implements Runnable {
 		return sb.toString();
 	}
 
+	public String getDescription() {
+		return descriptions;
+	}
+
 }

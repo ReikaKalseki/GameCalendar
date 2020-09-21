@@ -1,5 +1,11 @@
 package Reika.GameCalendar.Rendering;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -14,12 +20,15 @@ import java.lang.ProcessBuilder.Redirect;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 
@@ -172,12 +181,13 @@ public class VideoRenderer {
 			this.cleanImageCache(usedImages);
 			renderedOutput.writeIntoImage(frame, 0, 0);
 			calendar.writeIntoImage(frame, 0, 0);
+			this.addText(frame);
 			int n = !newEntries.isEmpty() ? 30 : 1;
 			if (pathToFFMPEG != null) {
 				ByteBuffer buf = bufferize(frame);
 				for (int i = 0; i < n; i++) {
 					for (int a = 0; a < buf.limit(); a++)
-						ffmpegDataLine.write(buf.get());
+						;//ffmpegDataLine.write(buf.get());
 					buf.rewind();
 				}
 			}
@@ -188,14 +198,13 @@ public class VideoRenderer {
 				//encoder.encodeImage(frame);
 			}
 
-
-			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
-				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
-				f.getParentFile().mkdirs();
-				ImageIO.write(frame, "png", f);
-				if (renderer.limit.year >= 2012)
-					throw new RuntimeException("End");
-			}
+			//if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
+			File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
+			f.getParentFile().mkdirs();
+			ImageIO.write(frame, "png", f);
+			if (renderer.limit.year >= 2012*0)
+				throw new RuntimeException("End");
+			//}
 
 			if (renderer.limit.compareTo(time.getEnd()) >= 0) {
 				this.finish();
@@ -209,6 +218,105 @@ public class VideoRenderer {
 			e.printStackTrace();
 			StatusHandler.postStatus("Video frame construction failed.", 2500, false);
 			this.finish();
+		}
+	}
+
+	private void addText(BufferedImage frame) {
+		Graphics2D g = (Graphics2D)frame.getGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setColor(new Color(0x000000));
+		Font f = g.getFont();
+		int size = f.getSize();
+		this.addCategoryList(g, f, size);
+		this.addDescriptionText(g, f);
+		this.addCalendarLabels(g, f, size);
+		g.dispose();
+	}
+
+	private void addCategoryList(Graphics2D g, Font f, int size) {
+
+	}
+
+	private void addDescriptionText(Graphics2D g, Font f) {
+		ArrayList<String> temp = new ArrayList();
+		for (int i = 0; i < currentItems.size(); i++) {
+			EmbeddedEvent e = currentItems.get(i);
+			e.event.generateDescriptionText(temp);
+			if (i < currentItems.size()-1)
+				temp.add("");
+		}
+		FontMetrics fm = g.getFontMetrics();
+		ArrayList<String> desc = new ArrayList();
+		int to = 8;
+		int tw = CALENDAR_SIZE-to*2-4;
+		for (String s : temp) {
+			this.addOrSplitString(fm, tw, s, desc, s.startsWith("\t"));
+		}
+		f = new Font(f.getName(), Font.PLAIN, 13);
+		g.setFont(f);
+		int ox = to;
+		int oy = CALENDAR_SIZE+16;
+		for (int i = 0; i < desc.size(); i++) {
+			String s = desc.get(i);
+			int dx = ox;
+			if (s.startsWith("\t")) {
+				dx += f.getSize()*2;
+			}
+			int dy = oy+i*18;
+			g.drawString(s, dx, dy);
+		}
+	}
+
+	private void addOrSplitString(FontMetrics fm, int tw, String s, ArrayList<String> desc, boolean indent) {
+		s = s.replace("\t", "");
+		String pre = indent ? "\t" : "";
+		int sw = fm.stringWidth(s);
+		if (sw < tw) {
+			desc.add(pre+s);
+		}
+		else {
+			int idx = s.lastIndexOf(' ');
+			String before = s.substring(0, idx);
+			while (idx > 0 && fm.stringWidth(before) >= tw) {
+				before = s.substring(0, idx);
+				idx = before.lastIndexOf(' ');
+			}
+			before = s.substring(0, idx);
+			desc.add(pre+before);
+			this.addOrSplitString(fm, tw, s.substring(idx+1), desc, indent);
+		}
+	}
+
+	private void addCalendarLabels(Graphics2D g, Font f, int size) {
+		int ox = CALENDAR_SIZE/2;
+		int oy = CALENDAR_SIZE/2;
+		FontMetrics fm = g.getFontMetrics();
+		f = new Font(f.getName(), Font.BOLD, size);
+		g.setFont(f);
+		List<Integer> years = renderer.getYears();
+		for (int i = 0; i < years.size(); i++) {
+			int year = years.get(i);
+			double r = renderer.getArcCenterlineRadiusAt(i, 0);
+			int x = ox;
+			int y = (int)(oy-r*CALENDAR_SIZE/2D);
+			x += 5;
+			y += 5;
+			g.drawString(String.valueOf(year), x, y);
+		}
+		f = new Font(f.getName(), Font.PLAIN, (int)(size*1.25));
+		g.setFont(f);
+		for (Month m : Month.values()) {
+			int idx = m.ordinal();
+			double a = 360/12D*(m.ordinal()+0.5);
+			double ang = CalendarRenderer.getGuiAngle(a);
+			//int r = CALENDAR_SIZE/2;
+			double r = CALENDAR_SIZE/2D*(renderer.getArcCenterlineRadiusAt(years.size(), a)-0.025);
+			int dx = ox+(int)(r*Math.cos(ang));
+			int dy = oy-(int)(r*Math.sin(ang));
+			String s = m.getDisplayName(TextStyle.FULL, Locale.getDefault());
+			g.setTransform(AffineTransform.getRotateInstance(Math.toRadians(a), dx, dy));
+			dx -= fm.stringWidth(s)/2;
+			g.drawString(s, dx, dy);
 		}
 	}
 

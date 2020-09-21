@@ -616,6 +616,7 @@ public class CalendarRenderer {
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 
+	/** Angle is out of 360, not radians! */
 	public double getArcCenterlineRadiusAt(int i, double a) {
 		double r1 = INNER_RADIUS+i*arcThickness;
 		double r2 = r1+arcThickness;

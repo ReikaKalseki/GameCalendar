@@ -23,6 +23,8 @@ public class Main {
 	//TODO:
 	//maybe make a memorable "tiering" system
 
+	//put DFX surface in AnchorPane to lock to 800x800
+
 	//video renderer needs to see category titles as they appear or disappear (with color legend)
 	//and it needs the description text, but due to space issues only add the new stuff, and pause
 
