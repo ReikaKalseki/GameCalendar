@@ -21,16 +21,11 @@ public class Main {
 	 */
 
 	//TODO:
-	//maybe make a memorable "tiering" system
+	//maybe make a "tiering" system for memorable
 
 	//put DFX surface in AnchorPane to lock to 800x800
 
-	//video renderer needs to see category titles as they appear or disappear (with color legend)
-	//and it needs the description text, but due to space issues only add the new stuff, and pause
-
 	//video renderer needs to force a bunch of settings before render
-
-	//"export as movie" functionality!!!!!!!!!!!********************************************************
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 

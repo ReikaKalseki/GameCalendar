@@ -42,8 +42,12 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 
 	public static void loadCategory(File in, Timeline t) throws Exception {
 		HashMap<String, String> data = DataLoader.getFileData(in.getName(), new File(in, "info.txt"));
+		String name = data.get("display");
+		if (name == null) {
+			name = in.getName();
+		}
 		int idx = data.containsKey("index") ? Integer.parseInt(data.get("index")) : 0;
-		ActivityCategory a = new ActivityCategory(in, in.getName(), data.get("desc"), Integer.parseInt(data.get("color"), 16), idx);
+		ActivityCategory a = new ActivityCategory(in, name, data.get("desc"), Integer.parseInt(data.get("color"), 16), idx);
 		a.loadFiles(t);
 		categories.put(a.name, a);
 	}

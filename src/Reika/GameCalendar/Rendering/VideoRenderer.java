@@ -39,10 +39,12 @@ import org.jcodec.scale.AWTUtil;
 import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Main;
+import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
+import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
 import Reika.GameCalendar.Util.GLFunctions;
 import Reika.GameCalendar.Util.TextureLoader;
@@ -54,7 +56,7 @@ public class VideoRenderer {
 	private static final int CALENDAR_SIZE = 800;
 	private static final int SCREENSHOT_WIDTH = 480;
 	private static final int SCREENSHOT_HEIGHT = 270;
-	private static final int VIDEO_WIDTH = 1760;
+	private static final int VIDEO_WIDTH = 1920;
 	private static final int VIDEO_HEIGHT = 1080;
 	private static final int VIDEO_FPS = 40;
 
@@ -76,6 +78,8 @@ public class VideoRenderer {
 	private final HashSet<Integer> freeScreenshotSlots = new HashSet();
 	private final ArrayList<EmbeddedEvent> currentItems = new ArrayList();
 	private final EmbeddedEvent[] currentImages = new EmbeddedEvent[8];
+	private final HashSet<ActivityCategory> activeCategories = new HashSet();
+	private ActivityEntry[] categories = null;
 
 	private VideoRenderer() {
 
@@ -122,6 +126,14 @@ public class VideoRenderer {
 
 			for (int i = 0; i < 8; i++) {
 				freeScreenshotSlots.add(GL11.glGenTextures());
+			}
+
+			List<String> li = ActivityCategory.getSortedNameList(JFXWindow.getGUI().getSortingMode());
+			categories = new ActivityEntry[li.size()];
+			for (int i = 0; i < li.size(); i++) {
+				ActivityEntry ae = new ActivityEntry(ActivityCategory.getByName(li.get(i)), i);
+				ae.isActive = false;
+				categories[ae.index] = ae;
 			}
 
 			isInitialized = true;
@@ -173,7 +185,9 @@ public class VideoRenderer {
 					currentImages[i] = ee;
 				currentItems.add(ee);
 			}
+			activeCategories.clear();
 			for (EmbeddedEvent e : currentItems) {
+				activeCategories.add(e.event.category);
 				if (e.hasImage())
 					usedImages.add(this.drawScreenshot(e));
 			}
@@ -187,7 +201,7 @@ public class VideoRenderer {
 				ByteBuffer buf = bufferize(frame);
 				for (int i = 0; i < n; i++) {
 					for (int a = 0; a < buf.limit(); a++)
-						;//ffmpegDataLine.write(buf.get());
+						ffmpegDataLine.write(buf.get());
 					buf.rewind();
 				}
 			}
@@ -198,13 +212,15 @@ public class VideoRenderer {
 				//encoder.encodeImage(frame);
 			}
 
-			//if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
+			/*
+			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
 			File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
 			f.getParentFile().mkdirs();
 			ImageIO.write(frame, "png", f);
-			if (renderer.limit.year >= 2012*0)
+			if (renderer.limit.year >= 2012)
 				throw new RuntimeException("End");
-			//}
+			}
+			 */
 
 			if (renderer.limit.compareTo(time.getEnd()) >= 0) {
 				this.finish();
@@ -234,7 +250,24 @@ public class VideoRenderer {
 	}
 
 	private void addCategoryList(Graphics2D g, Font f, int size) {
-
+		int ox = CALENDAR_SIZE+SCREENSHOT_WIDTH*2+4;
+		int oy = 8;
+		f = new Font(f.getName(), Font.BOLD, 16);
+		g.setFont(f);
+		for (ActivityEntry ae : categories) {
+			ae.isActive = activeCategories.contains(ae.category);
+			int dy = oy+40*ae.index;
+			Color c = new Color(ae.category.color);
+			if (!ae.isActive) {
+				c = c.darker().darker();
+			}
+			g.setColor(c);
+			g.fillRect(ox+1, dy+1, 18, 18);
+			g.setColor(new Color(ae.isActive ? 0 : 0x777777));
+			g.drawRect(ox+1, dy+1, 18, 18);
+			g.drawString(ae.category.name, ox+24, dy+16);
+		}
+		g.setColor(new Color(0));
 	}
 
 	private void addDescriptionText(Graphics2D g, Font f) {
@@ -294,12 +327,13 @@ public class VideoRenderer {
 		f = new Font(f.getName(), Font.BOLD, size);
 		g.setFont(f);
 		List<Integer> years = renderer.getYears();
+		AffineTransform tr = g.getTransform();
 		for (int i = 0; i < years.size(); i++) {
 			int year = years.get(i);
 			double r = renderer.getArcCenterlineRadiusAt(i, 0);
 			int x = ox;
 			int y = (int)(oy-r*CALENDAR_SIZE/2D);
-			x += 5;
+			x += 6;
 			y += 5;
 			g.drawString(String.valueOf(year), x, y);
 		}
@@ -318,6 +352,16 @@ public class VideoRenderer {
 			dx -= fm.stringWidth(s)/2;
 			g.drawString(s, dx, dy);
 		}
+
+		f = new Font(f.getName(), Font.BOLD, 16);
+		g.setFont(f);
+		g.setTransform(tr);
+		String date = renderer.limit.getFullName();
+		g.setColor(new Color(0xffffff));
+		int dw = fm.stringWidth(date);
+		g.fillRect(ox-dw*3/4+4, oy-12, dw*3/2+8, 24);
+		g.setColor(new Color(0));
+		g.drawString(date, ox-dw/2-1, oy+6);
 	}
 
 	private int getFirstFreeImageSlot() {
@@ -438,10 +482,12 @@ public class VideoRenderer {
 			GL11.glDeleteTextures(id);
 		usedScreenshotSlots.clear();
 		freeScreenshotSlots.clear();
+		activeCategories.clear();
 		currentItems.clear();
 		for (int i = 0; i < currentImages.length; i++) {
 			currentImages[i] = null;
 		}
+		categories = null;
 		isRendering = false;
 		renderer.limit = null;
 		renderer = null;
@@ -548,6 +594,20 @@ public class VideoRenderer {
 
 		public boolean hasImage() {
 			return event.getScreenshotFile() != null;
+		}
+
+	}
+
+	private static class ActivityEntry {
+
+		private final ActivityCategory category;
+		private final int index;
+
+		private boolean isActive;
+
+		private ActivityEntry(ActivityCategory a, int i) {
+			category = a;
+			index = i;
 		}
 
 	}

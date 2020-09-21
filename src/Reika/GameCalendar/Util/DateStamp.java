@@ -2,9 +2,11 @@ package Reika.GameCalendar.Util;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import Reika.GameCalendar.Main;
 
@@ -123,5 +125,9 @@ public class DateStamp implements Comparable<DateStamp> {
 		LocalDate d1 = LocalDate.of(year, month, day);
 		LocalDate d2 = LocalDate.of(date.year, date.month, date.day);
 		return (int)ChronoUnit.DAYS.between(d1, d2);
+	}
+
+	public String getFullName() {
+		return month.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+day+", "+year;
 	}
 }
