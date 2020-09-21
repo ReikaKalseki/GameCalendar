@@ -15,10 +15,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-*.rar
-*.zip
-*.log
-
 .settings/*
 .metadata/*
 bin/*
@@ -35,3 +31,12 @@ libs/*
 Game Calendar/.settings/*
 Game Calendar/bin
 Game Calendar/libs
+
+*hprof*
+*.hprof
+*hs_err_pid*
+*.rar
+*.zip
+*.log
+*.mp4
+*.jar

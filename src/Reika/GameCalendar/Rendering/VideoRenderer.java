@@ -96,7 +96,7 @@ public class VideoRenderer {
 
 				ProcessBuilder builder = new ProcessBuilder(command);
 				builder.redirectError(Redirect.INHERIT);
-				builder.redirectInput(Redirect.INHERIT);
+				builder.redirectOutput(Redirect.INHERIT);
 				process = builder.directory(f.getParentFile()).start();
 
 				//OutputStream exportLogOut = new FileOutputStream("videoexportffmpeg.log");
