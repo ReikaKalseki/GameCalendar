@@ -16,8 +16,6 @@ public class Main {
 	/*
 	DO NOT FORGET:
 
--see if can ge tthe "first RC" images off the laptop -- might have other modding images too
-
 	 */
 
 	//TODO:

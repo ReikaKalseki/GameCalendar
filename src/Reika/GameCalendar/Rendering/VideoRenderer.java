@@ -24,6 +24,8 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,6 +64,16 @@ public class VideoRenderer {
 	private static final int VIDEO_FPS = 40;
 
 	public static String pathToFFMPEG = "E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe";
+
+	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {
+
+		@Override
+		public int compare(EmbeddedEvent o1, EmbeddedEvent o2) {
+			int cat = o1.event.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.event.category);
+			return cat != 0 ? cat : CalendarRenderer.eventSorter.compare(o1.event, o2.event);
+		}
+
+	};
 
 	private boolean isInitialized = false;
 	private boolean isRendering;
@@ -197,7 +209,7 @@ public class VideoRenderer {
 			renderedOutput.writeIntoImage(frame, 0, 0);
 			calendar.writeIntoImage(frame, 0, 0);
 			this.addText(frame);
-			int n = !newEntries.isEmpty() ? 30 : 1;
+			int n = !newEntries.isEmpty() ? VIDEO_FPS*2 : 1;
 			if (pathToFFMPEG != null) {
 				ByteBuffer buf = bufferize(frame);
 				for (int i = 0; i < n; i++) {
@@ -226,14 +238,14 @@ public class VideoRenderer {
 			if (renderer.limit.compareTo(time.getEnd()) >= 0) {
 				this.finish();
 			}
-			else {
+			else {/*
 				int nd = activeCategories.isEmpty() ? 5 : 1;
 				if (renderer.limit.year >= 2013)
 					nd = 100;
 				if (renderer.limit.year >= 2017)
 					nd = 400;
-				for (int i = 0; i < nd; i++)
-					renderer.limit = renderer.limit.nextDay();
+				for (int i = 0; i < nd; i++)*/
+				renderer.limit = renderer.limit.nextDay();
 			}
 		}
 		catch (Exception e) {
@@ -269,7 +281,7 @@ public class VideoRenderer {
 			}
 			g.setColor(c);
 			g.fillRect(ox+1, dy+1, 18, 18);
-			g.setColor(new Color(ae.isActive ? 0 : 0x777777));
+			g.setColor(new Color(ae.isActive ? 0 : 0x8a8a8a));
 			g.drawRect(ox+1, dy+1, 18, 18);
 			g.drawString(ae.category.name, ox+24, dy+16);
 		}
@@ -278,10 +290,12 @@ public class VideoRenderer {
 
 	private void addDescriptionText(Graphics2D g, Font f) {
 		ArrayList<String> temp = new ArrayList();
-		for (int i = 0; i < currentItems.size(); i++) {
-			EmbeddedEvent e = currentItems.get(i);
+		ArrayList<EmbeddedEvent> li = new ArrayList(currentItems);
+		Collections.sort(li, embedByCategory);
+		for (int i = 0; i < li.size(); i++) {
+			EmbeddedEvent e = li.get(i);
 			e.event.generateDescriptionText(temp);
-			if (i < currentItems.size()-1)
+			if (i < li.size()-1)
 				temp.add("");
 		}
 		FontMetrics fm = g.getFontMetrics();
