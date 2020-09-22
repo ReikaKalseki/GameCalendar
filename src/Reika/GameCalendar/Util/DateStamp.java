@@ -127,7 +127,7 @@ public class DateStamp implements Comparable<DateStamp> {
 		return (int)ChronoUnit.DAYS.between(d1, d2);
 	}
 
-	public String getFullName() {
-		return month.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+day+", "+year;
+	public String getFullName(boolean fullMonthName) {
+		return month.getDisplayName(fullMonthName ? TextStyle.FULL : TextStyle.SHORT, Locale.getDefault())+" "+day+", "+year;
 	}
 }

@@ -89,12 +89,12 @@ public abstract class CalendarEvent {
 		DateStamp end = this.getLastDate();
 		String line = null;
 		if (start.equals(end)) {
-			line = category.name+": "+name+" ["+start+"]";
+			line = category.name+": "+name+" ["+start.getFullName(true)+"]";
 		}
 		else {
-			line = category.name+": "+name+" ["+start+" - "+end+"]";
+			line = category.name+": "+name+" ["+start.getFullName(true)+" to "+end.getFullName(true)+"]";
 			if (end.equals(DateStamp.launch))
-				line = category.name+": "+name+" ["+start+", ongoing]";
+				line = category.name+": "+name+" [Ongoing since "+start.getFullName(true)+"]";
 		}
 		if (GuiElement.ARCMERGE.isChecked()) {
 			line = line.substring(category.name.length()+2);

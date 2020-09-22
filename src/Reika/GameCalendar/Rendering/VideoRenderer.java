@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -62,6 +63,7 @@ public class VideoRenderer {
 	private static final int VIDEO_WIDTH = 1920;
 	private static final int VIDEO_HEIGHT = 1080;
 	private static final int VIDEO_FPS = 40;
+	private static final int PORT_NUMBER = 22640;
 
 	public static String pathToFFMPEG = "E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe";
 
@@ -83,7 +85,7 @@ public class VideoRenderer {
 
 	private AWTSequenceEncoder encoder;
 
-	private Process process;
+	//private Process process;
 	private OutputStream ffmpegDataLine;
 
 	private final HashMap<String, BufferedImage> imageCache = new HashMap();
@@ -123,13 +125,14 @@ public class VideoRenderer {
 				ProcessBuilder builder = new ProcessBuilder(command);
 				builder.redirectError(Redirect.INHERIT);
 				builder.redirectOutput(Redirect.INHERIT);
-				process = builder.directory(f.getParentFile()).start();
+				//process = builder.directory(f.getParentFile()).start();
 
 				//OutputStream exportLogOut = new FileOutputStream("videoexportffmpeg.log");
 				//new StreamPipe(process.getInputStream(), exportLogOut).start();
 				//new StreamPipe(process.getErrorStream(), exportLogOut).start();
 
-				ffmpegDataLine = process.getOutputStream();
+				Socket s = new Socket("localhost", PORT_NUMBER);
+				ffmpegDataLine = s.getOutputStream();
 			}
 			else {
 				encoder = AWTSequenceEncoder.createSequenceEncoder(f, 60);
@@ -151,10 +154,12 @@ public class VideoRenderer {
 
 			isInitialized = true;
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 
 			StatusHandler.postStatus("Video creation failed.", 2500, false);
+
+			this.end();
 		}
 	}
 
@@ -213,8 +218,9 @@ public class VideoRenderer {
 			if (pathToFFMPEG != null) {
 				ByteBuffer buf = bufferize(frame);
 				for (int i = 0; i < n; i++) {
-					for (int a = 0; a < buf.limit(); a++)
-						ffmpegDataLine.write(buf.get());
+					byte[] data = new byte[buf.limit()];
+					buf.get(data);
+					ffmpegDataLine.write(data);
 					buf.rewind();
 				}
 			}
@@ -376,7 +382,7 @@ public class VideoRenderer {
 		f = new Font(f.getName(), Font.BOLD, 16);
 		g.setFont(f);
 		g.setTransform(tr);
-		String date = renderer.limit.getFullName();
+		String date = renderer.limit.getFullName(false);
 		g.setColor(new Color(0xffffff));
 		int dw = fm.stringWidth(date);
 		g.fillRect(ox-dw*3/4+4, oy-12, dw*3/2+8, 24);
@@ -475,9 +481,9 @@ public class VideoRenderer {
 
 	private void finish() {
 		try {
-			if (pathToFFMPEG != null) {
+			if (pathToFFMPEG != null && ffmpegDataLine != null) {
 				ffmpegDataLine.close();
-				int code = process.waitFor();
+				int code = 0;//process.waitFor();
 				if (code != 0) {
 					throw new RuntimeException("Process encountered error code: "+code);
 				}
@@ -509,12 +515,20 @@ public class VideoRenderer {
 		}
 		categories = null;
 		isRendering = false;
-		renderer.limit = null;
+		if (renderer != null)
+			renderer.limit = null;
 		renderer = null;
 		time = null;
 		encoder = null;
+		try {
+			if (ffmpegDataLine != null)
+				ffmpegDataLine.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 		ffmpegDataLine = null;
-		process = null;
+		//process = null;
 		isInitialized = false;
 		renderedOutput.clear();
 	}
@@ -540,8 +554,8 @@ public class VideoRenderer {
 	}
 
 	private static List<String> getFFMPEGArgs(File f) {
-		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i pipe: -c:v libx264").split(" ")));
-		parts.add("\""+f.getAbsolutePath()+"\"");
+		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i tcp://localhost:"+PORT_NUMBER+"?listen -vcodec libx264").split(" ")));
+		parts.add(f.getAbsolutePath());
 		return parts;
 	}
 
