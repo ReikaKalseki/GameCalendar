@@ -249,9 +249,10 @@ public class VideoRenderer {
 				if (renderer.limit.year >= 2013)
 					nd = 100;
 				if (renderer.limit.year >= 2017)
-					nd = 400;
-				for (int i = 0; i < nd; i++)*/
-				renderer.limit = renderer.limit.nextDay();
+					nd = 400;*/
+				int nd = 1000;
+				for (int i = 0; i < nd; i++)
+					renderer.limit = renderer.limit.nextDay();
 			}
 		}
 		catch (Exception e) {
@@ -554,7 +555,7 @@ public class VideoRenderer {
 	}
 
 	private static List<String> getFFMPEGArgs(File f) {
-		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i tcp://localhost:"+PORT_NUMBER+"?listen -vcodec libx264").split(" ")));
+		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i tcp://localhost:"+PORT_NUMBER+"?listen -vcodec libx264 -vf eq=gamma="+String.valueOf(1/2.2)).split(" ")));
 		parts.add(f.getAbsolutePath());
 		return parts;
 	}
