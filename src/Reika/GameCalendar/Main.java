@@ -23,7 +23,8 @@ public class Main {
 
 	//put DFX surface in AnchorPane to lock to 800x800
 
-	//video renderer needs to force a bunch of settings before render
+	//make video rrenderer pop up a new dialog with a bunch of options like encoder, path to ffmpeg, whether to use socket or pipe,
+	//pause on new event, days per frame, etc
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 

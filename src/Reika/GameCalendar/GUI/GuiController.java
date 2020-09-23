@@ -53,6 +53,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -230,7 +231,9 @@ public class GuiController implements EventHandler<ActionEvent> {
 		mouseHandler = new DFXInputHandler(renderer);
 		calendarOverlay.setOnMouseClicked(mouseHandler);
 		calendarOverlay.setOnMouseMoved(mouseHandler);
-		renderField.setCenter(renderer);
+		AnchorPane ap = (AnchorPane)renderField.getCenter();
+		ap.getChildren().setAll(renderer);
+		renderer.setPrefSize(800, 800);
 		renderField.setPadding(new Insets(0));
 
 		Labelling.instance.init(calendarOverlay);

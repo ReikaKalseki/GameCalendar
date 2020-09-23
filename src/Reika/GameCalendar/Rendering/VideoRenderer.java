@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder.Redirect;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -85,7 +84,7 @@ public class VideoRenderer {
 
 	private AWTSequenceEncoder encoder;
 
-	//private Process process;
+	private Process process;
 	private OutputStream ffmpegDataLine;
 
 	private final HashMap<String, BufferedImage> imageCache = new HashMap();
@@ -125,14 +124,15 @@ public class VideoRenderer {
 				ProcessBuilder builder = new ProcessBuilder(command);
 				builder.redirectError(Redirect.INHERIT);
 				builder.redirectOutput(Redirect.INHERIT);
-				//process = builder.directory(f.getParentFile()).start();
+				process = builder.directory(f.getParentFile()).start();
+				ffmpegDataLine = process.getOutputStream();
 
 				//OutputStream exportLogOut = new FileOutputStream("videoexportffmpeg.log");
 				//new StreamPipe(process.getInputStream(), exportLogOut).start();
 				//new StreamPipe(process.getErrorStream(), exportLogOut).start();
 
-				Socket s = new Socket("localhost", PORT_NUMBER);
-				ffmpegDataLine = s.getOutputStream();
+				//Socket s = new Socket("localhost", PORT_NUMBER);
+				//ffmpegDataLine = s.getOutputStream();
 			}
 			else {
 				encoder = AWTSequenceEncoder.createSequenceEncoder(f, 60);
@@ -214,7 +214,7 @@ public class VideoRenderer {
 			renderedOutput.writeIntoImage(frame, 0, 0);
 			calendar.writeIntoImage(frame, 0, 0);
 			this.addText(frame);
-			int n = !newEntries.isEmpty() ? VIDEO_FPS*2 : 1;
+			int n = !newEntries.isEmpty() && false ? VIDEO_FPS*2 : 1;
 			if (pathToFFMPEG != null) {
 				ByteBuffer buf = bufferize(frame);
 				for (int i = 0; i < n; i++) {
@@ -250,7 +250,7 @@ public class VideoRenderer {
 					nd = 100;
 				if (renderer.limit.year >= 2017)
 					nd = 400;*/
-				int nd = 1000;
+				int nd = 200;
 				for (int i = 0; i < nd; i++)
 					renderer.limit = renderer.limit.nextDay();
 			}
@@ -484,7 +484,7 @@ public class VideoRenderer {
 		try {
 			if (pathToFFMPEG != null && ffmpegDataLine != null) {
 				ffmpegDataLine.close();
-				int code = 0;//process.waitFor();
+				int code = process.waitFor();
 				if (code != 0) {
 					throw new RuntimeException("Process encountered error code: "+code);
 				}
@@ -529,7 +529,7 @@ public class VideoRenderer {
 			e.printStackTrace();
 		}
 		ffmpegDataLine = null;
-		//process = null;
+		process = null;
 		isInitialized = false;
 		renderedOutput.clear();
 	}
