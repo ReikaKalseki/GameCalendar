@@ -63,6 +63,7 @@ public class VideoRenderer {
 	private static final int VIDEO_HEIGHT = 1080;
 	private static final int VIDEO_FPS = 40;
 	private static final int PORT_NUMBER = 22640;
+	private static final double GAMMA = 1.02;
 
 	public static String pathToFFMPEG = "E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe";
 
@@ -214,7 +215,7 @@ public class VideoRenderer {
 			renderedOutput.writeIntoImage(frame, 0, 0);
 			calendar.writeIntoImage(frame, 0, 0);
 			this.addText(frame);
-			int n = !newEntries.isEmpty() && false ? VIDEO_FPS*2 : 1;
+			int n = !newEntries.isEmpty() ? VIDEO_FPS*2 : 1;
 			if (pathToFFMPEG != null) {
 				ByteBuffer buf = bufferize(frame);
 				for (int i = 0; i < n; i++) {
@@ -249,10 +250,10 @@ public class VideoRenderer {
 				if (renderer.limit.year >= 2013)
 					nd = 100;
 				if (renderer.limit.year >= 2017)
-					nd = 400;*/
-				int nd = 200;
-				for (int i = 0; i < nd; i++)
-					renderer.limit = renderer.limit.nextDay();
+					nd = 400;
+				int nd = 100;
+				for (int i = 0; i < nd; i++)*/
+				renderer.limit = renderer.limit.nextDay();
 			}
 		}
 		catch (Exception e) {
@@ -555,7 +556,8 @@ public class VideoRenderer {
 	}
 
 	private static List<String> getFFMPEGArgs(File f) {
-		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i tcp://localhost:"+PORT_NUMBER+"?listen -vcodec libx264 -vf eq=gamma="+String.valueOf(1/2.2)).split(" ")));
+		//List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i tcp://localhost:"+PORT_NUMBER+"?listen -vcodec libx264 -vf eq=gamma="+String.valueOf(GAMMA)).split(" ")));
+		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i pipe: -c:v libx264 -vf eq=gamma="+String.valueOf(GAMMA)).split(" ")));
 		parts.add(f.getAbsolutePath());
 		return parts;
 	}
