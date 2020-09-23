@@ -21,10 +21,10 @@ public class Main {
 	//TODO:
 	//maybe make a "tiering" system for memorable
 
-	//put DFX surface in AnchorPane to lock to 800x800
+	//make video rrenderer pop up a new dialog with a bunch of options like encoder, path to ffmpeg,
+	//pause on new event yes/no, days per frame, etc
 
-	//make video rrenderer pop up a new dialog with a bunch of options like encoder, path to ffmpeg, whether to use socket or pipe,
-	//pause on new event, days per frame, etc
+	//status bar is a bit thick now -> see if can downsize and make the window a little smaller
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 

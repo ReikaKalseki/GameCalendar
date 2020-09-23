@@ -12,6 +12,34 @@ import org.lwjgl.opengl.GL30;
 
 public class GLFunctions {
 
+	public static enum BlendMode {
+		DEFAULT(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA),
+		ALPHA(GL11.GL_ONE, GL11.GL_SRC_ALPHA),
+		PREALPHA(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA),
+		MULTIPLY(GL11.GL_DST_COLOR, GL11.GL_ONE_MINUS_SRC_ALPHA),
+		ADDITIVE(GL11.GL_ONE, GL11.GL_ONE),
+		ADDITIVEDARK(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR),
+		OVERLAYDARK(GL11.GL_SRC_COLOR, GL11.GL_ONE),
+		ADDITIVE2(GL11.GL_SRC_ALPHA, GL11.GL_ONE),
+		INVERTEDADD(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR);
+
+		public final int sfactor;
+		public final int dfactor;
+
+		private BlendMode(int s, int d) {
+			sfactor = s;
+			dfactor = d;
+		}
+
+		public void apply() {
+			GL11.glBlendFunc(sfactor, dfactor);
+		}
+
+		public boolean isColorBlending() {
+			return this == ADDITIVE || this == ADDITIVE2 || this == ADDITIVEDARK;
+		}
+	}
+
 	public static void bindFramebuffer(int id) {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, id);
 	}
@@ -49,34 +77,6 @@ public class GLFunctions {
 
 	public static IntBuffer createDirectIntBuffer(int ints) {
 		return createDirectByteBuffer(ints << 2).asIntBuffer();
-	}
-
-	public static enum BlendMode {
-		DEFAULT(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA),
-		ALPHA(GL11.GL_ONE, GL11.GL_SRC_ALPHA),
-		PREALPHA(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA),
-		MULTIPLY(GL11.GL_DST_COLOR, GL11.GL_ONE_MINUS_SRC_ALPHA),
-		ADDITIVE(GL11.GL_ONE, GL11.GL_ONE),
-		ADDITIVEDARK(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_COLOR),
-		OVERLAYDARK(GL11.GL_SRC_COLOR, GL11.GL_ONE),
-		ADDITIVE2(GL11.GL_SRC_ALPHA, GL11.GL_ONE),
-		INVERTEDADD(GL11.GL_ONE_MINUS_DST_COLOR, GL11.GL_ONE_MINUS_SRC_COLOR);
-
-		public final int sfactor;
-		public final int dfactor;
-
-		private BlendMode(int s, int d) {
-			sfactor = s;
-			dfactor = d;
-		}
-
-		public void apply() {
-			GL11.glBlendFunc(sfactor, dfactor);
-		}
-
-		public boolean isColorBlending() {
-			return this == ADDITIVE || this == ADDITIVE2 || this == ADDITIVEDARK;
-		}
 	}
 	/*
 	public static void renderJFXImage(Image img, int width, int height) {
