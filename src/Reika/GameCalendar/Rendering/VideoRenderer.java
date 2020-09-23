@@ -83,6 +83,8 @@ public class VideoRenderer {
 	private Timeline time;
 	private Framebuffer renderedOutput;
 
+	private boolean flipBuffers = false;
+
 	private AWTSequenceEncoder encoder;
 
 	private Process process;
@@ -139,7 +141,7 @@ public class VideoRenderer {
 				encoder = AWTSequenceEncoder.createSequenceEncoder(f, 60);
 			}
 			if (renderedOutput == null)
-				renderedOutput = new Framebuffer(VIDEO_WIDTH, VIDEO_HEIGHT);
+				renderedOutput = new Framebuffer(VIDEO_WIDTH, VIDEO_HEIGHT).setClear(1, 1, 1);
 
 			for (int i = 0; i < 8; i++) {
 				freeScreenshotSlots.add(GL11.glGenTextures());
@@ -174,7 +176,7 @@ public class VideoRenderer {
 				this.init();
 
 			GL11.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-			renderedOutput.clear(1, 1, 1);
+			renderedOutput.clear();
 
 			BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 			HashSet<String> usedImages = new HashSet();
@@ -212,8 +214,9 @@ public class VideoRenderer {
 			}
 			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
 			this.cleanImageCache(usedImages);
-			renderedOutput.writeIntoImage(frame, 0, 0);
-			calendar.writeIntoImage(frame, 0, 0);
+			renderedOutput.writeIntoImage(frame, 0, 0, flipBuffers);
+			calendar.writeIntoImage(frame, 0, 0, flipBuffers);
+			flipBuffers = !flipBuffers;
 			this.addText(frame);
 			int n = !newEntries.isEmpty() ? VIDEO_FPS*2 : 1;
 			if (pathToFFMPEG != null) {
@@ -232,15 +235,13 @@ public class VideoRenderer {
 				//encoder.encodeImage(frame);
 			}
 
-			/*
 			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
-			File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
-			f.getParentFile().mkdirs();
-			ImageIO.write(frame, "png", f);
-			if (renderer.limit.year >= 2012)
-				throw new RuntimeException("End");
+				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
+				f.getParentFile().mkdirs();
+				ImageIO.write(frame, "png", f);
+				if (renderer.limit.year >= 2012)
+					throw new RuntimeException("End");
 			}
-			 */
 
 			if (renderer.limit.compareTo(time.getEnd()) >= 0) {
 				this.finish();
@@ -532,6 +533,7 @@ public class VideoRenderer {
 		ffmpegDataLine = null;
 		process = null;
 		isInitialized = false;
+		flipBuffers = false;
 		renderedOutput.clear();
 	}
 

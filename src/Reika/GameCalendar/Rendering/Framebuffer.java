@@ -23,6 +23,10 @@ public class Framebuffer {
 	private int textureID = -1;
 	private int depthBuffer = -1;
 
+	private float clearRed;
+	private float clearGreen;
+	private float clearBlue;
+
 	private int[] pboIds = null;
 
 	public Framebuffer(int w, int h) {
@@ -37,6 +41,13 @@ public class Framebuffer {
 		this.createFramebuffer();
 		this.checkFramebufferComplete();
 		GLFunctions.bindFramebuffer(0);
+	}
+
+	public Framebuffer setClear(float red, float green, float blue) {
+		clearRed = red;
+		clearGreen = green;
+		clearBlue = blue;
+		return this;
 	}
 
 	public void deleteFramebuffer() {
@@ -193,12 +204,8 @@ public class Framebuffer {
 	}
 
 	public void clear() {
-		this.clear(0, 0, 0);
-	}
-
-	public void clear(float red, float green, float blue) {
 		this.bind(true);
-		GL11.glClearColor(red, green, blue, 1);
+		GL11.glClearColor(clearRed, clearGreen, clearBlue, 1);
 		GL11.glClearDepth(1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		this.unbind();
@@ -266,7 +273,8 @@ public class Framebuffer {
 		GLFunctions.writeTextureToImage(img, x, y, width, height, textureID);
 	}
 
-	public void writeIntoImage(BufferedImage img, int x, int y) {
+	public void writeIntoImage(BufferedImage img, int x, int y, boolean flipBuffers) {
+		GL11.glFlush();
 		/*
 		this.bind(false);
 		GL30.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
@@ -292,7 +300,64 @@ public class Framebuffer {
 		this.unbind();
 		GLFunctions.printGLErrors("Print to image - unbind");
 		 */
+
 		this.writeIntoImageSlow(img, x, y);
+
+		/*
+		if (pboIds == null)
+			this.loadPBOs();
+
+		GL45.glNamedFramebufferReadBuffer(bufferID, GL30.GL_COLOR_ATTACHMENT0);
+		GLFunctions.printGLErrors("Write into image - buffer setup 1a");
+		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[flipBuffers ? 1 : 0]);
+		GLFunctions.printGLErrors("Write into image - buffer setup 1b");
+		//GL42.glGetFramebufferParamater(bufferID, GL42.GL_IMPLEMENTATION_COLOR_READ_FORMAT);
+		GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
+		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
+		GL30.glReadPixels(0, 0, width, height, GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE, 0);
+		GLFunctions.printGLErrors("Write into image - pixel read");
+		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[flipBuffers ? 0 : 1]);
+		GLFunctions.printGLErrors("Write into image - buffer setup 2");
+
+		ByteBuffer data = GL30.glMapBuffer(GL30.GL_PIXEL_PACK_BUFFER, GL30.GL_READ_ONLY);
+		/*
+		byte[] arr0 = new byte[32];
+		data.get(arr0);
+		data.rewind();
+		 *//*
+		GLFunctions.printGLErrors("Write into image - buffer map");
+		int[] arr = new int[data.limit()/4];
+		data.order(ByteOrder.BIG_ENDIAN).asIntBuffer().get(arr);
+		//int clear = Colors.RGBtoHex((int)(255*clearRed), (int)(255*clearGreen), (int)(255*clearBlue));
+		for (int i = 0; i < width; i++) {
+			for (int k = 0; k < height; k++) {
+				int idx = k*width+i;
+				int src = arr[idx];
+				//int color = Colors.mixColors(src | 0xff000000, clear, Colors.getAlpha(src));
+				img.setRGB(i+x, k+y, src);
+			}
+		}
+
+		GL30.glUnmapBuffer(GL30.GL_PIXEL_PACK_BUFFER);
+		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
+		GLFunctions.printGLErrors("Write into image - end");
+		  */
+	}
+
+	private void loadPBOs() {
+		pboIds = new int[2];
+		for (int i = 0; i < pboIds.length; i++)
+			pboIds[i] = GL30.glGenBuffers();
+
+		int length = width*height*4;
+		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[0]);
+		GL30.glBufferData(GL30.GL_PIXEL_PACK_BUFFER, length, GL30.GL_STREAM_READ);
+		GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, pboIds[1]);
+		GL30.glBufferData(GL30.GL_PIXEL_PACK_BUFFER, length, GL30.GL_STREAM_READ);
+
+		//GL30.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
+
+		GLFunctions.printGLErrors("Framebuffer PBO load");
 	}
 
 	public String saveAsFile(File f) {

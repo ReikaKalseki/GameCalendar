@@ -151,7 +151,7 @@ public class RenderLoop extends Thread {
 			msaaBuffer = new Framebuffer(width, height, true);
 
 		if (intermediate == null)
-			intermediate = new Framebuffer(width, height);
+			intermediate = new Framebuffer(width, height).setClear(1, 1, 1);
 
 		GLFunctions.printGLErrors("Pre-render");
 		msaaBuffer.bind(false);
