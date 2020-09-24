@@ -23,6 +23,7 @@ import Reika.GameCalendar.GUI.GLFWInputHandler;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
 import Reika.GameCalendar.Util.GLFunctions;
+import Reika.GameCalendar.VideoExport.VideoRenderer;
 
 public class RenderLoop extends Thread {
 

@@ -13,13 +13,13 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="root" alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.VideoExport.VideoGuiController">
    <children>
       <TitledPane animated="false" collapsible="false" text="Encoder">
          <content>
             <VBox alignment="CENTER_LEFT">
                <children>
-                  <RadioButton fx:id="jcodec" mnemonicParsing="false" text="JCodec (Built-in, but slow export and poor color accuracy)">
+                  <RadioButton fx:id="jcodec" mnemonicParsing="false" text="JCodec (Built-in, but slow to encode and has poor color accuracy)">
                      <VBox.margin>
                         <Insets bottom="3.0" top="6.0" />
                      </VBox.margin>
@@ -70,7 +70,7 @@
                               </Label>
                            </children>
                         </HBox>
-                        <Slider fx:id="pauseSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" showTickMarks="true" snapToTicks="true">
+                        <Slider fx:id="pauseSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                            <padding>
                               <Insets bottom="3.0" top="3.0" />
                            </padding>

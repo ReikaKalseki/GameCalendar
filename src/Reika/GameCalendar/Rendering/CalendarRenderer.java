@@ -34,6 +34,7 @@ import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
 import Reika.GameCalendar.Util.DoublePolygon;
 import Reika.GameCalendar.Util.GLFunctions.BlendMode;
+import Reika.GameCalendar.VideoExport.VideoRenderer;
 
 import javafx.application.HostServices;
 import javafx.application.Platform;

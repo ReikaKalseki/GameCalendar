@@ -1,4 +1,4 @@
-package Reika.GameCalendar.Rendering;
+package Reika.GameCalendar.VideoExport;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -49,6 +49,8 @@ import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
+import Reika.GameCalendar.Rendering.CalendarRenderer;
+import Reika.GameCalendar.Rendering.Framebuffer;
 import Reika.GameCalendar.Util.GLFunctions;
 import Reika.GameCalendar.Util.TextureLoader;
 
