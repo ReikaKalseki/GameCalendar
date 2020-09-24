@@ -51,6 +51,7 @@ import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 import Reika.GameCalendar.Rendering.Framebuffer;
+import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.GLFunctions;
 import Reika.GameCalendar.Util.TextureLoader;
 
@@ -67,9 +68,11 @@ public class VideoRenderer {
 	private static final int PORT_NUMBER = 22640;
 	private static final double GAMMA = 1.02;
 
-	public static String pathToFFMPEG = null;
-	public static double daysPerFrame = 1;
-	public static int pauseDuration = 2;
+	public String pathToFFMPEG = null;
+	public double daysPerFrame = 1;
+	public int pauseDuration = 2;
+	public DateStamp startDate = null;
+	public DateStamp endDate = null;
 
 	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {
 
@@ -84,7 +87,6 @@ public class VideoRenderer {
 	private boolean isInitialized = false;
 	private boolean isRendering;
 	private CalendarRenderer renderer;
-	private Timeline time;
 	private Framebuffer renderedOutput;
 
 	private boolean flipBuffers = false;
@@ -110,14 +112,19 @@ public class VideoRenderer {
 		isRendering = true;
 		renderer = data;
 
-		time = Main.getTimeline();
-		renderer.limit = time.getStart();
+		renderer.limit = startDate;
 
 		StatusHandler.postStatus("Rendering video...", 999999999);
 	}
 
 	private void init() {
 		try {
+			Timeline t = Main.getTimeline();
+			if (startDate == null || startDate.compareTo(t.getStart()) < 0)
+				throw new IllegalArgumentException("Invalid start date!");
+			if (endDate == null || endDate.compareTo(t.getEnd()) > 0)
+				throw new IllegalArgumentException("Invalid end date!");
+
 			File f = new File("videotest.mp4");
 			if (f.exists())
 				f.delete();
@@ -252,7 +259,7 @@ public class VideoRenderer {
 					throw new RuntimeException("End");
 			}
 
-			if (renderer.limit.compareTo(time.getEnd()) >= 0) {
+			if (renderer.limit.compareTo(endDate) >= 0) {
 				this.finish();
 			}
 			else {/*
@@ -530,7 +537,6 @@ public class VideoRenderer {
 		if (renderer != null)
 			renderer.limit = null;
 		renderer = null;
-		time = null;
 		encoder = null;
 		try {
 			if (ffmpegDataLine != null)

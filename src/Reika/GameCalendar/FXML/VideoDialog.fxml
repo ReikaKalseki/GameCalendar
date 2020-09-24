@@ -112,7 +112,7 @@
                               <Insets bottom="3.0" top="3.0" />
                            </padding>
                         </Label>
-                        <TextField fx:id="mpegPath1" promptText="Start Date">
+                        <TextField fx:id="startDate" promptText="Start Date">
                            <HBox.margin>
                               <Insets left="8.0" />
                            </HBox.margin>
@@ -125,7 +125,7 @@
                               <Insets left="6.0" right="6.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField fx:id="mpegPath11" promptText="End Date" />
+                        <TextField fx:id="endDate" promptText="End Date" />
                      </children>
                      <padding>
                         <Insets bottom="3.0" top="3.0" />

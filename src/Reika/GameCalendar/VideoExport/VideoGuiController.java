@@ -1,10 +1,13 @@
 package Reika.GameCalendar.VideoExport;
 
+import org.lwjglx.debug.joptsimple.internal.Strings;
+
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.GUI.ControllerBase;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.NonlinearSlider;
 import Reika.GameCalendar.Util.ArrayHelper;
+import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.MathHelper;
 
 import javafx.application.HostServices;
@@ -52,9 +55,17 @@ public class VideoGuiController extends ControllerBase {
 	@FXML
 	private Button goButton;
 
+	@FXML
+	private TextField startDate;
+
+	@FXML
+	private TextField endDate;
+
 	private ToggleGroup encoderOptions;
 
 	Stage window;
+
+	private boolean initialized = false;
 
 	private final double[] daysPerFrameOptions = {0.2, 0.5, 1, 2, 3, 4, 5, 6, 7, 15, 30};
 
@@ -72,19 +83,25 @@ public class VideoGuiController extends ControllerBase {
 		encoderOptions = new ToggleGroup();
 		jcodec.setToggleGroup(encoderOptions);
 		ffmpeg.setToggleGroup(encoderOptions);
-		jcodec.setSelected(true);
-		pauseNew.setSelected(VideoRenderer.pauseDuration > 0);
+		ffmpeg.setSelected(!Strings.isNullOrEmpty(VideoRenderer.instance.pathToFFMPEG));
+		jcodec.setSelected(!ffmpeg.isSelected());
+		pauseNew.setSelected(VideoRenderer.instance.pauseDuration > 0);
 
 		speedSlider = (Slider)JFXWindow.replaceNode(this, speedSlider, new NonlinearSlider(speedSlider, daysPerFrameOptions, true));
 
 		pauseSlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(pauseSlider, newVal.doubleValue()));
 		speedSlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(speedSlider, newVal.doubleValue()));
 
-		this.updateSlider(pauseSlider, VideoRenderer.pauseDuration);
-		this.updateSlider(speedSlider, ArrayHelper.indexOf(daysPerFrameOptions, VideoRenderer.daysPerFrame));
+		startDate.setText(Main.getTimeline().getStart().toString());
+		endDate.setText(Main.getTimeline().getEnd().toString());
 
-		if (VideoRenderer.pathToFFMPEG != null)
-			mpegPath.setText(VideoRenderer.pathToFFMPEG);
+		this.updateSlider(pauseSlider, VideoRenderer.instance.pauseDuration);
+		this.updateSlider(speedSlider, ArrayHelper.indexOf(daysPerFrameOptions, VideoRenderer.instance.daysPerFrame));
+
+		if (VideoRenderer.instance.pathToFFMPEG != null)
+			mpegPath.setText(VideoRenderer.instance.pathToFFMPEG);
+
+		initialized = true;
 	}
 
 	private void updateSlider(Slider s, double val) {
@@ -99,17 +116,25 @@ public class VideoGuiController extends ControllerBase {
 				speedText.setText(MathHelper.fractionalize(daysPerFrameOptions[(int)rounded])+" days per frame");
 				break;
 		}
+		if (initialized)
+			this.setSettings();
 	}
 
 	@Override
 	protected void onButtonClick(Object o, String id) {
-		String encoder = this.getNode((Node)encoderOptions.getSelectedToggle()).fxID;
-		VideoRenderer.pathToFFMPEG = encoder.equals("ffmpeg") ? mpegPath.getText() : null;
-		VideoRenderer.daysPerFrame = daysPerFrameOptions[(int)speedSlider.getValue()];
-		VideoRenderer.pauseDuration = pauseNew.isSelected() ? (int)pauseSlider.getValue() : 0;
+		this.setSettings();
 		//"E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe"
 		VideoRenderer.instance.startRendering(Main.getCalendarRenderer());
 		window.close();
+	}
+
+	private void setSettings() {
+		String encoder = this.getNode((Node)encoderOptions.getSelectedToggle()).fxID;
+		VideoRenderer.instance.pathToFFMPEG = encoder.equals("ffmpeg") ? mpegPath.getText() : null;
+		VideoRenderer.instance.daysPerFrame = daysPerFrameOptions[(int)speedSlider.getValue()];
+		VideoRenderer.instance.pauseDuration = pauseNew.isSelected() ? (int)pauseSlider.getValue() : 0;
+		VideoRenderer.instance.startDate = DateStamp.parse(startDate.getText());
+		VideoRenderer.instance.endDate = DateStamp.parse(endDate.getText());
 	}
 
 	@Override
@@ -118,6 +143,7 @@ public class VideoGuiController extends ControllerBase {
 
 		}
 		pauseSlider.setDisable(!pauseNew.isSelected());
+		this.setSettings();
 	}
 
 }

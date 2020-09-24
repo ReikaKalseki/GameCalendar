@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import org.lwjglx.debug.joptsimple.internal.Strings;
+
 import Reika.GameCalendar.Main;
 
 public class DateStamp implements Comparable<DateStamp> {
@@ -88,6 +90,8 @@ public class DateStamp implements Comparable<DateStamp> {
 	}
 
 	public static DateStamp parse(String s) {
+		if (Strings.isNullOrEmpty(s))
+			return null;
 		if (s.equals("<ongoing>")) {
 			return launch;
 		}
