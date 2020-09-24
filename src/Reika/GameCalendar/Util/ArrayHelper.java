@@ -10,6 +10,7 @@
 package Reika.GameCalendar.Util;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -643,5 +644,41 @@ public final class ArrayHelper {
 		E[] ret = (E[])Array.newInstance(type, array.length);
 		System.arraycopy(array, 0, ret, 0, ret.length);
 		return ret;
+	}
+
+	public static int indexOf(int[] arr, int d) {
+		return makeListFromArray(arr).indexOf(d);
+	}
+
+	public static int indexOf(double[] arr, double d) {
+		return makeListFromArray(arr).indexOf(d);
+	}
+
+	public static <E> int indexOf(E[] arr, E d) {
+		return makeListFromArray(arr).indexOf(d);
+	}
+
+	public static <E> ArrayList makeListFromArray(E[] obj) {
+		ArrayList<E> li = new ArrayList();
+		for (int i = 0; i < obj.length; i++) {
+			li.add(obj[i]);
+		}
+		return li;
+	}
+
+	public static ArrayList<Integer> makeListFromArray(int[] obj) {
+		ArrayList<Integer> li = new ArrayList();
+		for (int i = 0; i < obj.length; i++) {
+			li.add(obj[i]);
+		}
+		return li;
+	}
+
+	public static ArrayList<Double> makeListFromArray(double[] obj) {
+		ArrayList<Double> li = new ArrayList();
+		for (int i = 0; i < obj.length; i++) {
+			li.add(obj[i]);
+		}
+		return li;
 	}
 }

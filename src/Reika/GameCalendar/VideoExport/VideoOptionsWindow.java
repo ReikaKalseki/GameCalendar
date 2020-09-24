@@ -62,6 +62,7 @@ public class VideoOptionsWindow implements EventHandler<javafx.event.Event> {
 
 	public void postInit(HostServices host) {
 		controller.postInit(host);
+		controller.window = window;
 	}
 
 }

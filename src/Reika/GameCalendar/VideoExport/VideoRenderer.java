@@ -67,7 +67,9 @@ public class VideoRenderer {
 	private static final int PORT_NUMBER = 22640;
 	private static final double GAMMA = 1.02;
 
-	public static String pathToFFMPEG = "E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe";
+	public static String pathToFFMPEG = null;
+	public static double daysPerFrame = 1;
+	public static int pauseDuration = 2;
 
 	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {
 
@@ -121,6 +123,10 @@ public class VideoRenderer {
 				f.delete();
 
 			if (pathToFFMPEG != null) {
+				File exe = pathToFFMPEG.isEmpty() ? null : new File(pathToFFMPEG);
+				if (exe == null || !exe.exists())
+					throw new IllegalArgumentException(pathToFFMPEG.isEmpty() ? "FFMPEG path empty" : "No FFMPEG at '"+pathToFFMPEG+"'");
+
 				List<String> command = this.getFFMPEGArgs(f);
 				command.add(0, pathToFFMPEG);
 
@@ -162,7 +168,7 @@ public class VideoRenderer {
 		catch (Exception e) {
 			e.printStackTrace();
 
-			StatusHandler.postStatus("Video creation failed.", 2500, false);
+			StatusHandler.postStatus("Video creation failed: "+e.getLocalizedMessage(), 2500, false);
 
 			this.end();
 		}
@@ -173,10 +179,11 @@ public class VideoRenderer {
 	}
 
 	public void addFrame(Framebuffer calendar) {
+		if (!isInitialized)
+			this.init();
+		if (!isInitialized)
+			return;
 		try {
-			if (!isInitialized)
-				this.init();
-
 			GL11.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 			renderedOutput.clear();
 
@@ -220,7 +227,7 @@ public class VideoRenderer {
 			calendar.writeIntoImage(frame, 0, 0, flipBuffers);
 			flipBuffers = !flipBuffers;
 			this.addText(frame);
-			int n = !newEntries.isEmpty() ? VIDEO_FPS*2 : 1;
+			int n = !newEntries.isEmpty() && pauseDuration > 0 ? VIDEO_FPS*pauseDuration : (int)Math.max(1, 1/daysPerFrame);
 			if (pathToFFMPEG != null) {
 				ByteBuffer buf = bufferize(frame);
 				for (int i = 0; i < n; i++) {
@@ -239,8 +246,8 @@ public class VideoRenderer {
 
 			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
 				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
-				f.getParentFile().mkdirs();
-				ImageIO.write(frame, "png", f);
+				//f.getParentFile().mkdirs();
+				//ImageIO.write(frame, "png", f);
 				if (renderer.limit.year >= 2012)
 					throw new RuntimeException("End");
 			}
@@ -253,10 +260,9 @@ public class VideoRenderer {
 				if (renderer.limit.year >= 2013)
 					nd = 100;
 				if (renderer.limit.year >= 2017)
-					nd = 400;
-				int nd = 100;
-				for (int i = 0; i < nd; i++)*/
-				renderer.limit = renderer.limit.nextDay();
+					nd = 400;*/
+				for (int i = 0; i < Math.max(1, daysPerFrame); i++)
+					renderer.limit = renderer.limit.nextDay();
 			}
 		}
 		catch (Exception e) {
@@ -515,6 +521,7 @@ public class VideoRenderer {
 		freeScreenshotSlots.clear();
 		activeCategories.clear();
 		currentItems.clear();
+		imageCache.clear();
 		for (int i = 0; i < currentImages.length; i++) {
 			currentImages[i] = null;
 		}
@@ -536,7 +543,8 @@ public class VideoRenderer {
 		process = null;
 		isInitialized = false;
 		flipBuffers = false;
-		renderedOutput.clear();
+		if (renderedOutput != null)
+			renderedOutput.clear();
 	}
 
 	private ArrayList<CalendarEvent> getCurrentItems() {
