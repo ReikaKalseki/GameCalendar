@@ -251,13 +251,15 @@ public class VideoRenderer {
 				//encoder.encodeImage(frame);
 			}
 
+			/*
 			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
 				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
-				//f.getParentFile().mkdirs();
-				//ImageIO.write(frame, "png", f);
+				f.getParentFile().mkdirs();
+				ImageIO.write(frame, "png", f);
 				if (renderer.limit.year >= 2012)
 					throw new RuntimeException("End");
 			}
+			 */
 
 			if (renderer.limit.compareTo(endDate) >= 0) {
 				this.finish();

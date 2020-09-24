@@ -1,5 +1,7 @@
 package Reika.GameCalendar.VideoExport;
 
+import java.io.File;
+
 import org.lwjglx.debug.joptsimple.internal.Strings;
 
 import Reika.GameCalendar.Main;
@@ -21,6 +23,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class VideoGuiController extends ControllerBase {
@@ -54,6 +57,9 @@ public class VideoGuiController extends ControllerBase {
 
 	@FXML
 	private Button goButton;
+
+	@FXML
+	private Button loadFile;
 
 	@FXML
 	private TextField startDate;
@@ -124,8 +130,20 @@ public class VideoGuiController extends ControllerBase {
 	protected void onButtonClick(Object o, String id) {
 		this.setSettings();
 		//"E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe"
-		VideoRenderer.instance.startRendering(Main.getCalendarRenderer());
-		window.close();
+
+		switch(id) {
+			case "goButton":
+				VideoRenderer.instance.startRendering(Main.getCalendarRenderer());
+				window.close();
+				break;
+			case "loadFile":
+				FileChooser fc = new FileChooser();
+				File f = fc.showOpenDialog(window);
+				boolean valid = f != null && f.exists();
+				mpegPath.setText(valid ? f.getAbsolutePath() : null);
+				ffmpeg.setSelected(valid);
+				break;
+		}
 	}
 
 	private void setSettings() {
