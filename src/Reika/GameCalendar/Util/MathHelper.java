@@ -177,4 +177,27 @@ public class MathHelper {
 		return (int)Math.floor(d);
 	}
 
+	public static String fractionalize(double d) {
+		String ret = d >= 1 ? String.valueOf((int)d) : "1/"+(int)(1/d);
+		/*
+		switch(ret) {
+			case "1/4":
+				return "\u00BC";
+			case "1/3":
+				return "\u2153";
+			case "1/2":
+				return "\u00BD";
+			case "1/5":
+				return "\u2155";
+			case "1/6":
+				return "\u2159";
+			case "1/8":
+				return "\u215B";
+			default:
+				return ret;
+		}
+		 */
+		return ret;
+	}
+
 }

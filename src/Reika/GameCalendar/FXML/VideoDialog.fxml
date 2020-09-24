@@ -55,7 +55,7 @@
                         </CheckBox>
                         <HBox>
                            <children>
-                              <Label text="Pause duration (seconds):">
+                              <Label text="Pause duration:">
                                  <padding>
                                     <Insets bottom="3.0" top="3.0" />
                                  </padding>
@@ -70,7 +70,7 @@
                               </Label>
                            </children>
                         </HBox>
-                        <Slider fx:id="pauseSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                        <Slider fx:id="pauseSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                            <padding>
                               <Insets bottom="3.0" top="3.0" />
                            </padding>

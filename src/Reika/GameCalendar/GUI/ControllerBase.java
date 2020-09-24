@@ -223,6 +223,16 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		return allNodes.get(n);
 	}
 
+	protected final void replaceNode(Node rem, Node repl) {
+		NodeWrapper nw = allNodes.remove(rem);
+		optionNodes.remove(nw.fxID);
+		buttons.remove(nw.fxID);
+		listSelects.remove(nw.fxID);
+		NodeWrapper nw2 = new NodeWrapper(nw.fxID, repl);
+		allNodes.put(repl, nw2);
+		this.addHook(nw2);
+	}
+
 	protected static class NodeWrapper {
 
 		public final String fxID;

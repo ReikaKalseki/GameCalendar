@@ -14,6 +14,7 @@ import Reika.GameCalendar.GUI.GuiController.GuiElement;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -27,6 +28,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -193,6 +195,21 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 			ret.add(((TitledPane)p).getContent());
 		}
 		return ret;
+	}
+
+	public static Node replaceNode(ControllerBase con, Node rem, Node repl) {
+		Parent p = rem.getParent();
+		if (p instanceof Pane) {
+			ObservableList<Node> li = ((Pane)p).getChildren();
+			int idx = li.indexOf(rem);
+			li.add(idx, repl);
+			li.remove(rem);
+			con.replaceNode(rem, repl);
+			return repl;
+		}
+		else {
+			throw new IllegalArgumentException("You cannot replace nodes within non-pane nodes!");
+		}
 	}
 
 }

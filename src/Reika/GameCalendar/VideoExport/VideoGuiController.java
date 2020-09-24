@@ -2,6 +2,8 @@ package Reika.GameCalendar.VideoExport;
 
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.GUI.ControllerBase;
+import Reika.GameCalendar.GUI.JFXWindow;
+import Reika.GameCalendar.GUI.NonlinearSlider;
 import Reika.GameCalendar.Util.MathHelper;
 
 import javafx.application.HostServices;
@@ -13,7 +15,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 
 public class VideoGuiController extends ControllerBase {
 
@@ -47,7 +48,7 @@ public class VideoGuiController extends ControllerBase {
 	@FXML
 	private Button goButton;
 
-	private final int[] daysPerFrameOptions = {-5, -2, 1, 2, 3, 4, 5, 6, 7, 15, 30};
+	private final double[] daysPerFrameOptions = {0.2, 0.5, 1, 2, 3, 4, 5, 6, 7, 15, 30};
 
 	@FXML
 	@Override
@@ -60,28 +61,10 @@ public class VideoGuiController extends ControllerBase {
 	protected void postInit(HostServices host) {
 		super.postInit(host);
 
-		speedSlider.setMajorTickUnit(1);
-		speedSlider.setMinorTickCount(0);
-		speedSlider.setMin(0);
-		speedSlider.setMax(daysPerFrameOptions.length-1);
+		speedSlider = (Slider)JFXWindow.replaceNode(this, speedSlider, new NonlinearSlider(speedSlider, daysPerFrameOptions, true));
 
 		pauseSlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(pauseSlider, newVal.doubleValue()));
 		speedSlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(speedSlider, newVal.doubleValue()));
-		speedSlider.setLabelFormatter(new StringConverter<Double>() {
-
-			@Override
-			public String toString(Double val) {
-				int index = (int)Math.round(val);
-				int sp = daysPerFrameOptions[index];
-				return sp > 0 ? String.valueOf(sp) : "1/"+(-sp);
-			}
-
-			@Override
-			public Double fromString(String s) {
-				return Double.parseDouble(s);
-			}
-
-		});
 	}
 
 	private void updateSlider(Slider s, double val) {
@@ -93,8 +76,7 @@ public class VideoGuiController extends ControllerBase {
 				pauseLenText.setText(rounded+" seconds");
 				break;
 			case "speedSlider":
-				rounded = daysPerFrameOptions[(int)rounded];
-				speedText.setText(rounded+" days per frame");
+				speedText.setText(MathHelper.fractionalize(daysPerFrameOptions[(int)rounded])+" days per frame");
 				break;
 		}
 	}
