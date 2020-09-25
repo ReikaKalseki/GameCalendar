@@ -728,6 +728,15 @@ public class CalendarRenderer {
 	public synchronized void clearSelection() {
 		selectedObjects.clear();
 		Labelling.instance.calculateDescriptions(null);
+		for (GuiSection s : sections) {
+			s.clearCache();
+		}
+		for (GuiSection s : sectionsCondensed) {
+			s.clearCache();
+		}
+		for (GuiHighlight h : events.values()) {
+			h.clearCache();
+		}
 	}
 
 	public synchronized void preserveSelection() {

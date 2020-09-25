@@ -23,11 +23,13 @@ import Reika.GameCalendar.GUI.GLFWInputHandler;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
 import Reika.GameCalendar.Util.GLFunctions;
+import Reika.GameCalendar.Util.MovingAverage;
 import Reika.GameCalendar.VideoExport.VideoRenderer;
 
 public class RenderLoop extends Thread {
 
 	public static boolean enableFPS = false;
+	public static boolean sendToDFX = true;
 
 	private DriftFXSurface surface;
 	private Swapchain chain;
@@ -42,7 +44,7 @@ public class RenderLoop extends Thread {
 	private GLCapabilities glCaps;
 
 	private boolean shouldClose = false;
-	private long FPS;
+	private final MovingAverage FPS = new MovingAverage(30);
 
 	private Framebuffer msaaBuffer;
 	private Framebuffer intermediate;
@@ -96,8 +98,8 @@ public class RenderLoop extends Thread {
 				this.renderLoop();
 				long post = System.currentTimeMillis();
 				if (enableFPS) {
-					long dur = post-pre;
-					FPS = 1000/dur;
+					long dur = Math.max(1, post-pre);
+					FPS.addValue(1000/dur);
 				}
 				if (!VideoRenderer.instance.isRendering()) {
 					long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);
@@ -175,46 +177,48 @@ public class RenderLoop extends Thread {
 			VideoRenderer.instance.addFrame(intermediate);
 		}
 
-		RenderTarget target = chain.acquire();
+		if (sendToDFX) {
+			RenderTarget target = chain.acquire();
 
-		int tex = GLRenderer.getGLTextureId(target);
-		int depthTex = GL11.glGenTextures();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, depthTex);
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL32.GL_DEPTH_COMPONENT32F, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer)null);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+			int tex = GLRenderer.getGLTextureId(target);
+			int depthTex = GL11.glGenTextures();
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, depthTex);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL32.GL_DEPTH_COMPONENT32F, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer)null);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
-		int fb = GL32.glGenFramebuffers();
+			int fb = GL32.glGenFramebuffers();
 
-		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fb);
-		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, tex, 0);
-		GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, depthTex, 0);
+			GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, fb);
+			GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_COLOR_ATTACHMENT0, tex, 0);
+			GL32.glFramebufferTexture(GL32.GL_FRAMEBUFFER, GL32.GL_DEPTH_ATTACHMENT, depthTex, 0);
 
-		int status = GL32.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER);
-		switch (status) {
-			case GL32.GL_FRAMEBUFFER_COMPLETE:
-				break;
-			case GL32.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-				System.err.println("INCOMPLETE_ATTACHMENT!");
-				break;
+			int status = GL32.glCheckFramebufferStatus(GL32.GL_FRAMEBUFFER);
+			switch (status) {
+				case GL32.GL_FRAMEBUFFER_COMPLETE:
+					break;
+				case GL32.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+					System.err.println("INCOMPLETE_ATTACHMENT!");
+					break;
+			}
+
+			GLFunctions.printGLErrors("DFX Framebuffer bind");
+			//intermediate.sendTo(fb);
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+			intermediate.draw();
+			GLFunctions.printGLErrors("Framebuffer render to DFX");
+			//this.render(width, height);
+
+			GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
+			GL32.glDeleteFramebuffers(fb);
+			GL11.glDeleteTextures(depthTex);
+			GLFunctions.printGLErrors("DFX Framebuffer unbind");
+
+			chain.present(target);
 		}
-
-		GLFunctions.printGLErrors("DFX Framebuffer bind");
-		//intermediate.sendTo(fb);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		intermediate.draw();
-		GLFunctions.printGLErrors("Framebuffer render to DFX");
-		//this.render(width, height);
-
-		GL32.glBindFramebuffer(GL32.GL_FRAMEBUFFER, 0);
-		GL32.glDeleteFramebuffers(fb);
-		GL11.glDeleteTextures(depthTex);
-		GLFunctions.printGLErrors("DFX Framebuffer unbind");
-
-		chain.present(target);
 	}
 
 	private void render(int x, int y) throws InterruptedException {
@@ -231,7 +235,7 @@ public class RenderLoop extends Thread {
 	public long getFPS() {
 		if (!enableFPS)
 			throw new IllegalStateException("FPS is not enabled!");
-		return FPS;
+		return Math.round(FPS.getAverage());
 	}
 
 }

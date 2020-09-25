@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
@@ -20,6 +21,9 @@ public class GuiHighlight implements CalendarItem {
 	private boolean memorable = false;
 
 	public DoublePoint position;
+
+	private HashSet<ActivityCategory> activeCatCache = null;
+	private ArrayList<Highlight> activeEventCache = null;
 
 	public GuiHighlight(Highlight... h) {
 		if (h.length == 0)
@@ -42,15 +46,16 @@ public class GuiHighlight implements CalendarItem {
 		return events.get(0).time.toString();
 	}
 
-	//TODO cache this
-	public HashSet<ActivityCategory> getActiveCategories() {
-		HashSet<ActivityCategory> set = new HashSet();
-		for (Highlight ts : events) {
-			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name)) {
-				set.add(ts.category);
+	public synchronized Set<ActivityCategory> getActiveCategories() {
+		if (activeCatCache == null) {
+			activeCatCache = new HashSet();
+			for (Highlight ts : events) {
+				if (GuiElement.CATEGORIES.isStringSelected(ts.category.name)) {
+					activeCatCache.add(ts.category);
+				}
 			}
 		}
-		return set;
+		return Collections.unmodifiableSet(activeCatCache);
 	}
 
 	@Override
@@ -58,15 +63,16 @@ public class GuiHighlight implements CalendarItem {
 		return activeOnly ? this.getActiveEvents() : Collections.unmodifiableList(events);
 	}
 
-	//TODO cache this
-	public ArrayList<Highlight> getActiveEvents() {
-		ArrayList<Highlight> li = new ArrayList();
-		for (Highlight ts : events) {
-			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name) && ts.isPrivacyLevelVisible()) {
-				li.add(ts);
+	public synchronized List<Highlight> getActiveEvents() {
+		if (activeEventCache == null) {
+			activeEventCache = new ArrayList();
+			for (Highlight ts : events) {
+				if (GuiElement.CATEGORIES.isStringSelected(ts.category.name) && ts.isPrivacyLevelVisible()) {
+					activeEventCache.add(ts);
+				}
 			}
 		}
-		return li;
+		return Collections.unmodifiableList(activeEventCache);
 	}
 
 	public boolean isMemorable(boolean activeOnly) {
@@ -79,6 +85,11 @@ public class GuiHighlight implements CalendarItem {
 				return true;
 		}
 		return false;
+	}
+
+	public void clearCache() {
+		activeCatCache = null;
+		activeEventCache = null;
 	}
 
 }

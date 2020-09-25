@@ -50,6 +50,11 @@
          <content>
             <VBox alignment="CENTER_LEFT">
                <children>
+                  <CheckBox fx:id="copyToDFX" mnemonicParsing="false" text="Render calendar into GUI during video generation as preview (may slow export)">
+                     <VBox.margin>
+                        <Insets bottom="6.0" />
+                     </VBox.margin>
+                  </CheckBox>
                   <VBox>
                      <children>
                         <CheckBox fx:id="pauseNew" mnemonicParsing="false" text="Pause timelapse on new event/period">

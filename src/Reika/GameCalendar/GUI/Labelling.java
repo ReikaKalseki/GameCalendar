@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
+import Reika.GameCalendar.Rendering.RenderLoop;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -37,6 +39,8 @@ public class Labelling implements Runnable {
 	private Label tooltip;
 	private final HashMap<Month, Label> monthTexts = new HashMap();
 	private final HashMap<Integer, Label> yearTexts = new HashMap();
+
+	private Label fps;
 
 	public String tooltipString;
 
@@ -90,6 +94,12 @@ public class Labelling implements Runnable {
 			f = Font.font(f.getFamily(), FontWeight.BOLD, f.getSize()*1.25);
 			tooltip.setFont(f);
 			field.getChildren().add(tooltip);
+
+			fps = new Label();
+			f = fps.getFont();
+			f = Font.font(f.getFamily(), FontWeight.NORMAL, f.getSize()*0.75);
+			fps.setFont(f);
+			field.getChildren().add(fps);
 		}
 		double c = (width+height)/4D;
 		for (Entry<Month, Label> e : monthTexts.entrySet()) {
@@ -118,6 +128,16 @@ public class Labelling implements Runnable {
 			l.layoutXProperty().set(x-w/2*0+5);
 			l.layoutYProperty().set(y-h/2+1);
 			l.setTextFill(Color.rgb(0, 0, 0, 1));
+		}
+
+		if (RenderLoop.enableFPS) {
+			fps.setVisible(true);
+			fps.layoutXProperty().set(5);
+			fps.layoutYProperty().set(5);
+			fps.setText(String.valueOf(Main.getFPS()));
+		}
+		else {
+			fps.setVisible(false);
 		}
 
 		if (descriptionChanged) {

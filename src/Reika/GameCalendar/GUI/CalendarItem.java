@@ -1,7 +1,7 @@
 package Reika.GameCalendar.GUI;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
@@ -12,7 +12,7 @@ public interface CalendarItem {
 
 	public String getDescriptiveDate();
 
-	public HashSet<ActivityCategory> getActiveCategories();
+	public Set<ActivityCategory> getActiveCategories();
 
 	public List<? extends CalendarEvent> getItems(boolean activeOnly);
 

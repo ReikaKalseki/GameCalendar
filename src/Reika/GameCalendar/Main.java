@@ -21,7 +21,7 @@ public class Main {
 	//TODO:
 	//improve FB->video performance?
 
-	//the caching todos
+	//videorenderer -> "disable render to GUI while exporting" option?
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 

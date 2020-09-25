@@ -55,6 +55,7 @@ import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 import Reika.GameCalendar.Rendering.Framebuffer;
+import Reika.GameCalendar.Rendering.RenderLoop;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.GLFunctions;
 import Reika.GameCalendar.Util.TextureLoader;
@@ -265,7 +266,8 @@ public class VideoRenderer {
 				//encoder.encodeImage(frame);
 			}
 
-			if (true || !usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
+			/*
+			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
 				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
 				f.getParentFile().mkdirs();
 				ImageIO.write(frame, "png", f);
@@ -273,6 +275,7 @@ public class VideoRenderer {
 				if (Main.getTimeline().getStart().countDaysAfter(renderer.limit) > 10)
 					throw new RuntimeException("End");
 			}
+			 */
 
 			if (renderer.limit.compareTo(endDate) >= 0) {
 				this.finish();
@@ -603,6 +606,7 @@ public class VideoRenderer {
 		exportedFrames = 0;
 		if (renderedOutput != null)
 			renderedOutput.clear();
+		RenderLoop.sendToDFX = true;
 	}
 
 	private ArrayList<CalendarEvent> getCurrentItems() {

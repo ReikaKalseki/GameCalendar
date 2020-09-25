@@ -1,8 +1,10 @@
 package Reika.GameCalendar.GUI;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
@@ -28,6 +30,9 @@ public class GuiSection implements CalendarItem {
 	public DateStamp renderedEnd;
 
 	private boolean memorable = false;
+
+	private HashSet<ActivityCategory> activeCatCache = null;
+	private ArrayList<TimeSpan> activeSpanCache = null;
 
 	public GuiSection(Section s, int idx, GuiSection prev) {
 		section = s;
@@ -66,26 +71,28 @@ public class GuiSection implements CalendarItem {
 		return next;
 	}
 
-	//TODO cache this
-	public HashSet<ActivityCategory> getActiveCategories() {
-		HashSet<ActivityCategory> set = new HashSet();
-		for (ActivityCategory ts : section.getCategories()) {
-			if (GuiElement.CATEGORIES.isStringSelected(ts.name)) {
-				set.add(ts);
+	public synchronized Set<ActivityCategory> getActiveCategories() {
+		if (activeCatCache == null) {
+			activeCatCache = new HashSet();
+			for (ActivityCategory ts : section.getCategories()) {
+				if (GuiElement.CATEGORIES.isStringSelected(ts.name)) {
+					activeCatCache.add(ts);
+				}
 			}
 		}
-		return set;
+		return Collections.unmodifiableSet(activeCatCache);
 	}
 
-	//TODO - cache this
-	public ArrayList<TimeSpan> getActiveSpans() {
-		ArrayList<TimeSpan> li = new ArrayList();
-		for (TimeSpan ts : section.getSpans()) {
-			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name) && ts.isPrivacyLevelVisible()) {
-				li.add(ts);
+	public synchronized List<TimeSpan> getActiveSpans() {
+		if (activeSpanCache == null) {
+			activeSpanCache = new ArrayList();
+			for (TimeSpan ts : section.getSpans()) {
+				if (GuiElement.CATEGORIES.isStringSelected(ts.category.name) && ts.isPrivacyLevelVisible()) {
+					activeSpanCache.add(ts);
+				}
 			}
 		}
-		return li;
+		return Collections.unmodifiableList(activeSpanCache);
 	}
 
 	@Override
@@ -103,6 +110,11 @@ public class GuiSection implements CalendarItem {
 				return true;
 		}
 		return false;
+	}
+
+	public void clearCache() {
+		activeCatCache = null;
+		activeSpanCache = null;
 	}
 
 }

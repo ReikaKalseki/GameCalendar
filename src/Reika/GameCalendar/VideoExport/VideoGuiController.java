@@ -8,6 +8,8 @@ import Reika.GameCalendar.Main;
 import Reika.GameCalendar.GUI.ControllerBase;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.NonlinearSlider;
+import Reika.GameCalendar.Rendering.CalendarRenderer;
+import Reika.GameCalendar.Rendering.RenderLoop;
 import Reika.GameCalendar.Util.ArrayHelper;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.MathHelper;
@@ -42,6 +44,9 @@ public class VideoGuiController extends ControllerBase {
 
 	@FXML
 	private CheckBox pauseNew;
+
+	@FXML
+	private CheckBox copyToDFX;
 
 	@FXML
 	private Label pauseLenText;
@@ -93,6 +98,8 @@ public class VideoGuiController extends ControllerBase {
 		jcodec.setSelected(!ffmpeg.isSelected());
 		pauseNew.setSelected(VideoRenderer.instance.pauseDuration > 0);
 
+		copyToDFX.setSelected(RenderLoop.sendToDFX);
+
 		speedSlider = (Slider)JFXWindow.replaceNode(this, speedSlider, new NonlinearSlider(speedSlider, daysPerFrameOptions, true));
 
 		pauseSlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(pauseSlider, newVal.doubleValue()));
@@ -133,7 +140,10 @@ public class VideoGuiController extends ControllerBase {
 
 		switch(id) {
 			case "goButton":
-				VideoRenderer.instance.startRendering(Main.getCalendarRenderer());
+				CalendarRenderer cal = Main.getCalendarRenderer();
+				cal.clearSelection();
+				JFXWindow.getGUI().setScreenshots(null);
+				VideoRenderer.instance.startRendering(cal);
 				window.close();
 				break;
 			case "loadFile":
@@ -153,6 +163,7 @@ public class VideoGuiController extends ControllerBase {
 		VideoRenderer.instance.pauseDuration = pauseNew.isSelected() ? (int)pauseSlider.getValue() : 0;
 		VideoRenderer.instance.startDate = DateStamp.parse(startDate.getText());
 		VideoRenderer.instance.endDate = DateStamp.parse(endDate.getText());
+		RenderLoop.sendToDFX = copyToDFX.isSelected();
 	}
 
 	@Override
