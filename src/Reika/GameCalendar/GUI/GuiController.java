@@ -297,7 +297,7 @@ public class GuiController extends ControllerBase {
 	}
 
 	private boolean isVideoExportValid() {
-		return !GuiElement.ARCMERGE.isChecked() && this.areAllCategoriesActive();
+		return !GuiElement.ARCMERGE.isChecked();// && this.areAllCategoriesActive();
 	}
 
 	private boolean areAllCategoriesActive() {

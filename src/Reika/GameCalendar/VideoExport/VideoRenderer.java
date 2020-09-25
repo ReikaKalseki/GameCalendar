@@ -163,6 +163,12 @@ public class VideoRenderer {
 			}
 
 			List<String> li = ActivityCategory.getSortedNameList(JFXWindow.getGUI().getSortingMode());
+			Iterator<String> it = li.iterator();
+			while (it.hasNext()) {
+				String s = it.next();
+				if (!GuiElement.CATEGORIES.isStringSelected(s))
+					it.remove();
+			}
 			categories = new ActivityEntry[li.size()];
 			for (int i = 0; i < li.size(); i++) {
 				ActivityEntry ae = new ActivityEntry(ActivityCategory.getByName(li.get(i)), i);
@@ -288,9 +294,28 @@ public class VideoRenderer {
 		Font f = g.getFont();
 		int size = f.getSize();
 		this.addCategoryList(g, f, size);
+		this.addImageLabels(g, f, size);
 		this.addDescriptionText(g, f);
 		this.addCalendarLabels(g, f, size);
 		g.dispose();
+	}
+
+	private void addImageLabels(Graphics2D g, Font f, int size) {
+		g.setFont(new Font(f.getName(), Font.BOLD, size*5/4));
+		Color old = g.getColor();
+		g.setColor(new Color(0xffffff));
+		for (int i = 0; i < currentImages.length; i++) {
+			EmbeddedEvent ee = currentImages[i];
+			if (ee != null) {
+				int ox = SCREENSHOT_WIDTH*(ee.slotIndex%2);
+				int oy = SCREENSHOT_HEIGHT*(ee.slotIndex/2);
+				int x = CALENDAR_SIZE+ox;
+				int y = oy;
+				int d = 8;
+				g.drawString(ee.event.name, x+d, y+d);
+			}
+		}
+		g.setColor(old);
 	}
 
 	private void addCategoryList(Graphics2D g, Font f, int size) {

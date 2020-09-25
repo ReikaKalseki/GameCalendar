@@ -23,8 +23,6 @@ public class Main {
 
 	//improve FB->video performance?
 
-	//status bar is a bit thick now -> see if can downsize and make the window a little smaller
-
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
 		@Override
