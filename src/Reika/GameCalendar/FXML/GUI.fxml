@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TitledPane?>
@@ -92,6 +93,9 @@
                            <content>
                               <VBox fx:id="optionsContainer" alignment="CENTER_LEFT" spacing="12.0">
                                  <children>
+                                    <CheckBox fx:id="selectHighlightsInSection" mnemonicParsing="false" text="Also Select Highlights Within Clicked Section" />
+                                    <CheckBox fx:id="selectSectionsWithHighlight" mnemonicParsing="false" text="Also Select Section Containing Clicked Highlight" />
+                                    <Separator />
                                     <CheckBox fx:id="importantDates" mnemonicParsing="false" text="Show Important Holidays/Dates" />
                                     <CheckBox fx:id="currentDate" mnemonicParsing="false" text="Show Current Date Marker" />
                                     <CheckBox mnemonicParsing="false" text="Show Christmas Break Period" fx:id="xmasBreak" />
@@ -102,8 +106,19 @@
                                     <CheckBox fx:id="memorable" mnemonicParsing="false" text="Show &quot;Memorable&quot; Sections As Special" />
                                     <CheckBox fx:id="mergeArcs" mnemonicParsing="false" text="Merge All Same-Category Time Spans" />
                                     <Separator />
-                                    <CheckBox fx:id="selectHighlightsInSection" mnemonicParsing="false" text="Also Select Highlights Within Clicked Section" />
-                                    <CheckBox fx:id="selectSectionsWithHighlight" mnemonicParsing="false" text="Also Select Section Containing Clicked Highlight" />
+                                    <VBox alignment="CENTER">
+                                       <VBox.margin>
+                                          <Insets bottom="2.0" top="-5.0" />
+                                       </VBox.margin>
+                                       <children>
+                                          <Label alignment="CENTER" text="Maximum Privacy Level To Show" />
+                                          <Slider fx:id="privacy" blockIncrement="1.0" majorTickUnit="1.0" max="3.0" minorTickCount="0" showTickMarks="true" snapToTicks="true">
+                                             <padding>
+                                                <Insets bottom="-6.0" />
+                                             </padding>
+                                          </Slider>
+                                       </children>
+                                    </VBox>
                                  </children>
                                  <padding>
                                     <Insets bottom="6.0" left="8.0" right="6.0" top="6.0" />

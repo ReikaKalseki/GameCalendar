@@ -76,6 +76,10 @@ public class DataLoader {
 		if (Boolean.valueOf(map.get("memorable"))) {
 			ret.setMemorable();
 		}
+		String priv = map.get("privacy");
+		if (priv != null) {
+			ret.setPrivacy(Integer.parseInt(priv));
+		}
 		return ret;
 	}
 
@@ -87,6 +91,10 @@ public class DataLoader {
 		}
 		if (Boolean.valueOf(map.get("memorable"))) {
 			ret.setMemorable();
+		}
+		String priv = map.get("privacy");
+		if (priv != null) {
+			ret.setPrivacy(Integer.parseInt(priv));
 		}
 		return ret;
 	}

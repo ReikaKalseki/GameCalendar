@@ -25,6 +25,7 @@ public class Timeline {
 
 	private DateStamp earliest;
 	private DateStamp latest;
+	private int maxPrivacy = 0;
 
 	private boolean prepared = false;
 
@@ -34,7 +35,7 @@ public class Timeline {
 		events.add(e);
 		dates.add(e.time);
 		years.add(e.time.year);
-		this.updateBounds(e.time);
+		this.updateBounds(e.time, e.getPrivacy());
 		prepared = false;
 	}
 
@@ -44,19 +45,20 @@ public class Timeline {
 		dates.add(e.end);
 		years.add(e.start.year);
 		years.add(e.end.year);
-		this.updateBounds(e.start, e.end);
+		this.updateBounds(e.start, e.end, e.getPrivacy());
 		prepared = false;
 	}
 
-	private void updateBounds(DateStamp t) {
-		this.updateBounds(t, t);
+	private void updateBounds(DateStamp t, int p) {
+		this.updateBounds(t, t, p);
 	}
 
-	private void updateBounds(DateStamp t1, DateStamp t2) {
+	private void updateBounds(DateStamp t1, DateStamp t2, int p) {
 		if (earliest == null || t1.compareTo(earliest) < 0)
 			earliest = t1;
 		if (latest == null || t2.compareTo(latest) > 0)
 			latest = t2;
+		maxPrivacy = Math.max(maxPrivacy, p);
 	}
 
 	public void prepare() {
@@ -155,6 +157,10 @@ public class Timeline {
 
 	public List<Highlight> getEvents() {
 		return Collections.unmodifiableList(events);
+	}
+
+	public int getMaxPrivacyLevel() {
+		return maxPrivacy;
 	}
 
 }

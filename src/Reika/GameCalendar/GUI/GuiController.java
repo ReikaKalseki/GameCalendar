@@ -17,6 +17,8 @@ import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.VideoExport.VideoOptionsWindow;
 
 import javafx.application.HostServices;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -32,6 +34,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
@@ -129,6 +132,9 @@ public class GuiController extends ControllerBase {
 	private ScrollPane imageScroller;
 
 	@FXML
+	private Slider privacy;
+
+	@FXML
 	Label status;
 
 	DriftFXSurface renderer;
@@ -198,6 +204,16 @@ public class GuiController extends ControllerBase {
 		renderer.setPrefSize(800, 800);
 		renderField.setPadding(new Insets(0));
 
+		privacy.setMax(Main.getTimeline().getMaxPrivacyLevel());
+		privacy.setValue(privacy.getMax());
+		privacy.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				privacy.setValue((int)Math.round(newValue.doubleValue()));
+				GuiController.this.update(GuiElement.PRIVACY.id);
+			}
+		});
+
 		Labelling.instance.init(calendarOverlay);
 
 		//this.dynamicizeTextBoxes(root);
@@ -223,7 +239,8 @@ public class GuiController extends ControllerBase {
 		});
 
 		for (NodeWrapper n : this.getOptionNodes()) {
-			((CheckBox)n.object).selectedProperty().set(GuiElement.getByID(n.fxID).isDefaultChecked());
+			if (n.object instanceof CheckBox)
+				((CheckBox)n.object).selectedProperty().set(GuiElement.getByID(n.fxID).isDefaultChecked());
 		}
 
 		descriptionPane.setEditable(false);
@@ -391,6 +408,7 @@ public class GuiController extends ControllerBase {
 		SECTIONSWITHHIGHLIGHT("selectSectionsWithHighlight"),
 		CATEGORIES("catList"),
 		SORTORDER("sortList"),
+		PRIVACY("privacy"),
 		;
 
 		private final String id;
@@ -433,6 +451,7 @@ public class GuiController extends ControllerBase {
 				case RELOAD:
 				case HIGHLIGHTS:
 				case ARCMERGE:
+				case PRIVACY:
 					return true;
 				default:
 					return false;
@@ -458,6 +477,10 @@ public class GuiController extends ControllerBase {
 
 		public boolean isStringSelected(String s) {
 			return JFXWindow.getGUI().isListEntrySelected(this, s);
+		}
+
+		public double getValue() {
+			return JFXWindow.getGUI().getSliderValue(this);
 		}
 
 		private void onButtonClick(GuiController c) {

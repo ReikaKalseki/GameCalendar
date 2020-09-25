@@ -27,6 +27,8 @@ import Reika.GameCalendar.VideoExport.VideoRenderer;
 
 public class RenderLoop extends Thread {
 
+	public static boolean enableFPS = false;
+
 	private DriftFXSurface surface;
 	private Swapchain chain;
 	private Renderer hook;
@@ -40,6 +42,7 @@ public class RenderLoop extends Thread {
 	private GLCapabilities glCaps;
 
 	private boolean shouldClose = false;
+	private long FPS;
 
 	private Framebuffer msaaBuffer;
 	private Framebuffer intermediate;
@@ -90,11 +93,13 @@ public class RenderLoop extends Thread {
 		while (!shouldClose) {
 			try {
 				long pre = System.currentTimeMillis();
-
 				this.renderLoop();
-
+				long post = System.currentTimeMillis();
+				if (enableFPS) {
+					long dur = post-pre;
+					FPS = 1000/dur;
+				}
 				if (!VideoRenderer.instance.isRendering()) {
-					long post = System.currentTimeMillis();
 					long sleep = GLFWWindow.MILLIS_PER_FRAME-(post-pre);
 					if (sleep > 0) {
 						Thread.sleep(sleep);
@@ -221,6 +226,12 @@ public class RenderLoop extends Thread {
 
 	public void close() {
 		shouldClose = true;
+	}
+
+	public long getFPS() {
+		if (!enableFPS)
+			throw new IllegalStateException("FPS is not enabled!");
+		return FPS;
 	}
 
 }

@@ -22,6 +22,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextInputControl;
@@ -118,6 +119,9 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		else if (n2.object instanceof TextInputControl) {
 			//((TextInputControl)n2.object).textProperty().addListener(this);
 			//optionNodes.put(n2.fxID, n2);
+		}
+		else if (n2.object instanceof Slider) {
+			optionNodes.put(n2.fxID, n2);
 		}
 		else if (n2.object instanceof ListView) {
 			((ListView)n2.object).getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {

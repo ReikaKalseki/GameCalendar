@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
@@ -159,6 +160,11 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 	boolean isListEntrySelected(GuiElement e, String s) {
 		ListView n = this.getListView(e);
 		return n != null && n.getSelectionModel().isSelected(n.getItems().indexOf(s));
+	}
+
+	double getSliderValue(GuiElement e) {
+		Node n = this.getOption(e);
+		return n != null ? ((Slider)n).getValue() : 0;
 	}
 
 	private Node getOption(GuiElement e) {

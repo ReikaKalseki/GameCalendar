@@ -1,10 +1,14 @@
 package Reika.GameCalendar.VideoExport;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -90,6 +94,7 @@ public class VideoRenderer {
 	private Framebuffer renderedOutput;
 
 	private boolean flipBuffers = false;
+	private int exportedFrames = 0;
 
 	private AWTSequenceEncoder encoder;
 
@@ -120,7 +125,7 @@ public class VideoRenderer {
 	private void init() {
 		try {
 			Timeline t = Main.getTimeline();
-			if (startDate == null || startDate.compareTo(t.getStart()) < 0)
+			if (startDate == null || startDate.year < t.getStart().year)
 				throw new IllegalArgumentException("Invalid start date!");
 			if (endDate == null || endDate.compareTo(t.getEnd()) > 0)
 				throw new IllegalArgumentException("Invalid end date!");
@@ -199,6 +204,9 @@ public class VideoRenderer {
 		try {
 			GL11.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
 			renderedOutput.clear();
+			exportedFrames++;
+			if (exportedFrames == 1) //first rendered frame from calendar is always garbage, holding "leftover" data
+				return;
 
 			BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 			HashSet<String> usedImages = new HashSet();
@@ -257,15 +265,14 @@ public class VideoRenderer {
 				//encoder.encodeImage(frame);
 			}
 
-			/*
-			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
+			if (true || !usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
 				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
 				f.getParentFile().mkdirs();
 				ImageIO.write(frame, "png", f);
-				if (renderer.limit.year >= 2012)
+				//if (renderer.limit.year >= 2012)
+				if (Main.getTimeline().getStart().countDaysAfter(renderer.limit) > 10)
 					throw new RuntimeException("End");
 			}
-			 */
 
 			if (renderer.limit.compareTo(endDate) >= 0) {
 				this.finish();
@@ -301,7 +308,7 @@ public class VideoRenderer {
 	}
 
 	private void addImageLabels(Graphics2D g, Font f, int size) {
-		g.setFont(new Font(f.getName(), Font.BOLD, size*5/4));
+		Font f2 = new Font(f.getName(), Font.BOLD, size*5/4);
 		Color old = g.getColor();
 		g.setColor(new Color(0xffffff));
 		for (int i = 0; i < currentImages.length; i++) {
@@ -310,18 +317,35 @@ public class VideoRenderer {
 				int ox = SCREENSHOT_WIDTH*(ee.slotIndex%2);
 				int oy = SCREENSHOT_HEIGHT*(ee.slotIndex/2);
 				int x = CALENDAR_SIZE+ox;
-				int y = oy;
+				int y = oy+4;
 				int d = 6;
-				g.drawString(ee.event.name, x+d, y-d);
+				this.drawStringWithOutline(g, f2, ee.event.category.name+": "+ee.event.name, x+d, y+d*2);
 			}
 		}
 		g.setColor(old);
+		g.setFont(f);
+	}
+
+	private void drawStringWithOutline(Graphics2D g, Font f, String s, int x, int y) {
+		AffineTransform tr = g.getTransform();
+		AffineTransform tr2 = (AffineTransform)tr.clone();
+		tr2.translate(x, y);
+		g.transform(tr2);
+		g.setColor(Color.black);
+		FontRenderContext frc = g.getFontRenderContext();
+		TextLayout tl = new TextLayout(s, f, frc);
+		Shape shape = tl.getOutline(null);
+		g.setStroke(new BasicStroke(2F));
+		g.draw(shape);
+		g.setColor(Color.white);
+		g.fill(shape);
+		g.setTransform(tr);
 	}
 
 	private void addCategoryList(Graphics2D g, Font f, int size) {
 		int ox = CALENDAR_SIZE+SCREENSHOT_WIDTH*2+4;
 		int oy = 8;
-		f = new Font(f.getName(), Font.BOLD, 16);
+		f = new Font(f.getName(), Font.BOLD, 15);
 		g.setFont(f);
 		for (ActivityEntry ae : categories) {
 			ae.isActive = activeCategories.contains(ae.category);
@@ -536,7 +560,7 @@ public class VideoRenderer {
 			else {
 				encoder.finish();
 			}
-			StatusHandler.postStatus("Video completion succeeded.", 2500, false);
+			StatusHandler.postStatus("Video completion succeeded. Exported "+exportedFrames+" frames", 2500, false);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -576,6 +600,7 @@ public class VideoRenderer {
 		process = null;
 		isInitialized = false;
 		flipBuffers = false;
+		exportedFrames = 0;
 		if (renderedOutput != null)
 			renderedOutput.clear();
 	}

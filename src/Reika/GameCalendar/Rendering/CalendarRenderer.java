@@ -61,13 +61,13 @@ public class CalendarRenderer {
 	private final HashMap<DateStamp, GuiHighlight> events = new HashMap();
 	private final ArrayList<Integer> years;
 
-	public DateStamp limit = null;
-
 	public final double arcThickness;
 	public final double arcThicknessHalfFraction = 0.35;
 
 	private final Collection<CalendarItem> selectedObjects = new HashSet();
 	private final Collection<CalendarItem> selectedObjectsCache = new ArrayList();
+
+	public DateStamp limit = null;
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
@@ -189,7 +189,7 @@ public class CalendarRenderer {
 				continue;
 			if (limit != null && s.section.startTime.compareTo(limit) >= 0)
 				continue;
-			if (s.getActiveCategories().isEmpty())
+			if (s.getActiveSpans().isEmpty())
 				continue;
 			this.drawSectionArc(s, wf, t, limit);
 		}

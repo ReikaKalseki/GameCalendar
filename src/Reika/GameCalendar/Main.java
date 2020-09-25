@@ -19,9 +19,6 @@ public class Main {
 	 */
 
 	//TODO:
-	//maybe make a "tiering" system for memorable
-	//and a "privacy" level?
-
 	//improve FB->video performance?
 
 	//the caching todos
@@ -91,6 +88,10 @@ public class Main {
 
 	public static Timeline getTimeline() {
 		return timeline;
+	}
+
+	public static long getFPS() {
+		return renderer.getFPS();
 	}
 
 }

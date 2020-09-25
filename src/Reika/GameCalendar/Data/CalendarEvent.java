@@ -129,4 +129,8 @@ public abstract class CalendarEvent {
 		return o.getClass() == this.getClass() && ((CalendarEvent)o).name.equals(name) && ((CalendarEvent)o).category.equals(category);
 	}
 
+	public int getPrivacy() {
+		return privacyLevel;
+	}
+
 }
