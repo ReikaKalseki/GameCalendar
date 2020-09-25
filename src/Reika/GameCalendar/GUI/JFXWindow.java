@@ -72,11 +72,17 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 		window.setTitle("Game Calendar - ReikaKalseki, 2020");
 		window.setScene(display);
+		double h = resolution.getHeight();
 		//window.setWidth(resolution.getWidth()/2);
 		//window.setHeight(resolution.getHeight()/2);
 		//window.setX(resolution.getWidth()/4);
 		//window.setY(resolution.getHeight()/4);
+		//window.setHeight(Math.min(window.getHeight(), 1000));
+		window.setMaxHeight(h-8);
+		double y = h <= 1080 ? 4 : h-1080/2D+4;
 		window.show();
+		window.setY(y);
+		window.setX((resolution.getWidth()-window.getWidth())/2);
 
 		primary.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override

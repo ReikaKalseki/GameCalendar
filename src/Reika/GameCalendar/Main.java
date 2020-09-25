@@ -21,6 +21,8 @@ public class Main {
 	//TODO:
 	//maybe make a "tiering" system for memorable
 
+	//improve FB->video performance?
+
 	//status bar is a bit thick now -> see if can downsize and make the window a little smaller
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
@@ -38,28 +40,32 @@ public class Main {
 	private static RenderLoop renderer;
 	private static Timeline timeline;
 	private static CalendarRenderer gui;
+	private static String filepath;
 
 	private static final Calendar calendar = Calendar.getInstance();
 
 	public static void main(String[] args) {
 		Thread.setDefaultUncaughtExceptionHandler(defaultErrorHandler);
 
-		load();
+		load(args.length > 0 ? args[0] : null);
 
 		renderer = new RenderLoop();
 		renderer.start();
 		JFXWindow.create();
 
-		//WavefrontObjDemoStandalone.main(args);
-		//window.create();
 		renderer.close();
 		System.out.print("Exiting program");
 		System.exit(0);
 	}
 
 	public static void load() {
+		load(filepath);
+	}
+
+	private static void load(String path) {
+		filepath = path;
 		timeline = new Timeline();
-		File f = new File("Data");
+		File f = filepath != null ? new File(filepath, "Data") : new File("Data");
 		for (File in : f.listFiles()) {
 			if (in.isDirectory()) {
 				try {
