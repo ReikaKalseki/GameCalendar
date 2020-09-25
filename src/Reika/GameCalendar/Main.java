@@ -20,8 +20,11 @@ public class Main {
 
 	//TODO:
 	//maybe make a "tiering" system for memorable
+	//and a "privacy" level?
 
 	//improve FB->video performance?
+
+	//the caching todos
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 

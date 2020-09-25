@@ -22,7 +22,7 @@ public abstract class CalendarEvent {
 	private final File sourceFile;
 
 	private boolean isMemorable;
-
+	private int privacyLevel = 0;
 	private File screenshot;
 
 	private Image screenshotData;
@@ -45,6 +45,11 @@ public abstract class CalendarEvent {
 
 	public final CalendarEvent setMemorable() {
 		isMemorable = true;
+		return this;
+	}
+
+	public final CalendarEvent setPrivacy(int l) {
+		privacyLevel = l;
 		return this;
 	}
 
@@ -105,6 +110,10 @@ public abstract class CalendarEvent {
 		if (!Strings.isNullOrEmpty(description)) {
 			ret.add("\t"+description);
 		}
+	}
+
+	public final boolean isPrivacyLevelVisible() {
+		return GuiElement.PRIVACY.getValue() >= privacyLevel;
 	}
 
 	protected abstract DateStamp getFirstDate();

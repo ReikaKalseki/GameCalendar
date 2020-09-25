@@ -81,7 +81,7 @@ public class GuiSection implements CalendarItem {
 	public ArrayList<TimeSpan> getActiveSpans() {
 		ArrayList<TimeSpan> li = new ArrayList();
 		for (TimeSpan ts : section.getSpans()) {
-			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name)) {
+			if (GuiElement.CATEGORIES.isStringSelected(ts.category.name) && ts.isPrivacyLevelVisible()) {
 				li.add(ts);
 			}
 		}

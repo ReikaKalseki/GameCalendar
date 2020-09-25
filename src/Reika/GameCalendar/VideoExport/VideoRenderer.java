@@ -311,8 +311,8 @@ public class VideoRenderer {
 				int oy = SCREENSHOT_HEIGHT*(ee.slotIndex/2);
 				int x = CALENDAR_SIZE+ox;
 				int y = oy;
-				int d = 8;
-				g.drawString(ee.event.name, x+d, y+d);
+				int d = 6;
+				g.drawString(ee.event.name, x+d, y-d);
 			}
 		}
 		g.setColor(old);
