@@ -124,6 +124,7 @@ public class VideoGuiController extends ControllerBase {
 			p.getChildren().add(b);
 			b.setToggleGroup(videoFormat);
 			formatOptions.put(v, b);
+			this.registerNode("format"+v.name(), b);
 		}
 		videoFormat.selectToggle(formatOptions.get(VideoRenderer.instance.videoFormat));
 		String at = VideoRenderer.instance.outputPath;

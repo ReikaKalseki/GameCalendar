@@ -3,6 +3,7 @@ package Reika.GameCalendar.VideoExport;
 import java.io.IOException;
 
 import Reika.GameCalendar.Main;
+import Reika.GameCalendar.GUI.GuiStateCache;
 import Reika.GameCalendar.Rendering.RenderLoop;
 
 import javafx.application.HostServices;
@@ -23,6 +24,8 @@ public class VideoOptionsWindow implements EventHandler<javafx.event.Event> {
 	private Scene display;
 	private Parent root;
 	private VideoGuiController controller;
+
+	private static final GuiStateCache<VideoGuiController> stateCache = new GuiStateCache("GuiState/Video");
 
 	public VideoOptionsWindow() {
 

@@ -1,4 +1,4 @@
-package Reika.GameCalendar.Util;
+package Reika.GameCalendar.IO;
 
 
 import java.io.BufferedReader;

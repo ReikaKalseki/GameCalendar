@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import Reika.GameCalendar.Main;
-import Reika.GameCalendar.Util.DataLoader;
+import Reika.GameCalendar.IO.DataLoader;
 import Reika.GameCalendar.Util.DateStamp;
 
 public class ActivityCategory implements Comparable<ActivityCategory> {

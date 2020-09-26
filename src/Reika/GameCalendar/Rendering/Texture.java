@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.google.common.base.Throwables;
 
-import Reika.GameCalendar.Util.TextureLoader;
+import Reika.GameCalendar.IO.TextureLoader;
 
 public class Texture {
 

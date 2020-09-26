@@ -49,6 +49,7 @@ import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiController.GuiElement;
+import Reika.GameCalendar.IO.TextureLoader;
 import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
@@ -58,7 +59,6 @@ import Reika.GameCalendar.Rendering.Framebuffer;
 import Reika.GameCalendar.Rendering.RenderLoop;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.GLFunctions;
-import Reika.GameCalendar.Util.TextureLoader;
 
 public class VideoRenderer {
 

@@ -7,13 +7,15 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.GameCalendar.Util;
+package Reika.GameCalendar.IO;
 
 import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import Reika.GameCalendar.Util.GLFunctions;
 
 public class TextureLoader {
 

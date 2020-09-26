@@ -10,8 +10,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
+import Reika.GameCalendar.IO.TextureLoader;
 import Reika.GameCalendar.Util.GLFunctions;
-import Reika.GameCalendar.Util.TextureLoader;
 
 public class Framebuffer {
 

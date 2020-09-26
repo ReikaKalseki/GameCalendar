@@ -1,4 +1,4 @@
-package Reika.GameCalendar.Util;
+package Reika.GameCalendar.IO;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Highlight;
 import Reika.GameCalendar.Data.TimeSpan;
 import Reika.GameCalendar.Data.Timeline;
+import Reika.GameCalendar.Util.DateStamp;
 
 public class DataLoader {
 

@@ -46,6 +46,8 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 	private Parent root;
 	private GuiController controller;
 
+	private static final GuiStateCache<GuiController> stateCache = new GuiStateCache("GuiState/Base");
+
 	public JFXWindow() {
 		gui = this;
 	}

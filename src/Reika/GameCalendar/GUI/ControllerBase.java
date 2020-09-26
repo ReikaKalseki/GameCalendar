@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import Reika.GameCalendar.VideoExport.VideoRenderer;
 
@@ -33,6 +35,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 
 	private Parent rootNode;
 
+	private final HashSet<String> nameSet = new HashSet();
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> buttons = new HashMap();
@@ -135,8 +138,18 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		}
 	}
 
+	protected final void registerNode(String id, Node n) {
+		if (nameSet.contains(id))
+			throw new IllegalArgumentException("ID '"+id+"' is already occupied!");
+		NodeWrapper nw = new NodeWrapper(id, n);
+		allNodes.put(id, nw);
+		nameSet.add(id);
+		this.addHook(nw);
+	}
+
 	private void collectAllNodes() throws Exception {
 		allNodes.clear();
+		nameSet.clear();
 		Field[] fd = this.getClass().getDeclaredFields();
 		for (Field f : fd) {
 			if (f.getAnnotation(Deprecated.class) != null)
@@ -148,6 +161,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 			if (o instanceof Node) {
 				NodeWrapper nw = new NodeWrapper(f.getName(), (Node)o);
 				allNodes.put(o, nw);
+				nameSet.add(nw.fxID);
 			}
 		}
 	}
@@ -225,6 +239,15 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 
 	protected final NodeWrapper getNode(Node n) {
 		return allNodes.get(n);
+	}
+
+	public Node getNode(String id) {
+		NodeWrapper n = allNodes.get(id);
+		return n != null ? n.object : null;
+	}
+
+	public Set<String> getNodeNames() {
+		return Collections.unmodifiableSet(nameSet);
 	}
 
 	protected final void replaceNode(Node rem, Node repl) {
