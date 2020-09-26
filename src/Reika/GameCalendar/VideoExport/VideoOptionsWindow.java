@@ -3,6 +3,7 @@ package Reika.GameCalendar.VideoExport;
 import java.io.IOException;
 
 import Reika.GameCalendar.Main;
+import Reika.GameCalendar.Rendering.RenderLoop;
 
 import javafx.application.HostServices;
 import javafx.event.EventHandler;
@@ -52,6 +53,8 @@ public class VideoOptionsWindow implements EventHandler<javafx.event.Event> {
 			@Override
 			public void handle(WindowEvent t) {
 				window.close();
+				if (!VideoRenderer.instance.isRendering())
+					RenderLoop.sendToDFX = true;
 			}
 		});
 	}

@@ -78,7 +78,7 @@ public class VideoRenderer {
 	public int pauseDuration = 2;
 	public DateStamp startDate = null;
 	public DateStamp endDate = null;
-	public VideoFormats videoFormat = null;
+	public VideoFormats videoFormat = VideoFormats.X264;
 	public String outputPath = null;
 
 	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {

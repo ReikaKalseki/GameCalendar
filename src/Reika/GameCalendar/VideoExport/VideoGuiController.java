@@ -125,8 +125,12 @@ public class VideoGuiController extends ControllerBase {
 			b.setToggleGroup(videoFormat);
 			formatOptions.put(v, b);
 		}
-		videoFormat.selectToggle(formatOptions.get(VideoFormats.X264));
-		outputFolder.setText(new File("").getAbsolutePath().replace('\\', '/'));
+		videoFormat.selectToggle(formatOptions.get(VideoRenderer.instance.videoFormat));
+		String at = VideoRenderer.instance.outputPath;
+		String folder = at == null ? new File("").getAbsolutePath().replace('\\', '/') : at.substring(0, at.lastIndexOf('/'));
+		String file = at == null ? null : at.substring(at.lastIndexOf('/')+1);
+		outputFolder.setText(folder);
+		outputName.setText(Strings.isNullOrEmpty(file) ? null : file);
 
 		copyToDFX.setSelected(RenderLoop.sendToDFX);
 
@@ -165,17 +169,17 @@ public class VideoGuiController extends ControllerBase {
 
 	@Override
 	protected void onButtonClick(Object o, String id) {
-		this.setSettings();
 		//"E:/My Documents/Programs and Utilities/ffmpeg-4.3.1-full_build/bin/ffmpeg.exe"
 
 		switch(id) {
 			case "goButton":
+				this.setSettings();
 				CalendarRenderer cal = Main.getCalendarRenderer();
 				cal.clearSelection();
 				JFXWindow.getGUI().setScreenshots(null);
 				VideoRenderer.instance.startRendering(cal);
 				window.close();
-				break;
+				return;
 			case "loadFile":
 				FileChooser fc = new FileChooser();
 				File f = fc.showOpenDialog(window);
@@ -192,6 +196,7 @@ public class VideoGuiController extends ControllerBase {
 				outputFolder.setText(f2 != null ? f2.getAbsolutePath().replace('\\', '/') : null);
 				break;
 		}
+		this.setSettings();
 	}
 
 	private void setSettings() {
