@@ -197,7 +197,7 @@ public class VideoRenderer {
 		return isRendering;
 	}
 
-	public void addFrame(Framebuffer calendar) {
+	public synchronized void addFrame(Framebuffer calendar) {
 		if (!isInitialized)
 			this.init();
 		if (!isInitialized)
@@ -289,6 +289,9 @@ public class VideoRenderer {
 				for (int i = 0; i < Math.max(1, daysPerFrame); i++)
 					renderer.limit = renderer.limit.nextDay();
 			}
+
+			if (exportedFrames == 1 || exportedFrames%(VIDEO_FPS/4) == 0)
+				StatusHandler.postStatus("Rendering Video; Exported frame "+exportedFrames, 5000, true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

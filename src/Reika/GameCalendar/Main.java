@@ -21,7 +21,7 @@ public class Main {
 	//TODO:
 	//improve FB->video performance?
 
-	//videorenderer -> "disable render to GUI while exporting" option?
+	//video encode options: other file formats
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
