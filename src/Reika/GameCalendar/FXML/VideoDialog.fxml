@@ -53,17 +53,7 @@
                   <VBox>
                      <children>
                         <Label text="File Format" />
-                        <RadioButton mnemonicParsing="false" text="x264 MP4 (Small size, high quality, not compatible with some players)" fx:id="x264">
-                           <VBox.margin>
-                              <Insets bottom="4.0" left="15.0" top="4.0" />
-                           </VBox.margin>
-                        </RadioButton>
-                        <RadioButton fx:id="h264" mnemonicParsing="false" text="h264 MP4 (Larger, slower encoding, lower quality, more compatible)">
-                           <VBox.margin>
-                              <Insets bottom="4.0" left="15.0" top="4.0" />
-                           </VBox.margin>
-                        </RadioButton>
-                        <RadioButton fx:id="avi" mnemonicParsing="false" text="AVI (Huge file size, fastest encoding, lossless, universally compatible)">
+                        <RadioButton fx:id="formatButtonPlaceholder" mnemonicParsing="false" text="x264 MP4 (Small size, high quality, not compatible with some players)">
                            <VBox.margin>
                               <Insets bottom="4.0" left="15.0" top="4.0" />
                            </VBox.margin>
@@ -72,13 +62,19 @@
                   </VBox>
                   <HBox alignment="CENTER_LEFT">
                      <children>
-                        <Label text="Output Folder">
+                        <Label text="Export To:">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField fx:id="outputFolder" prefWidth="725.0" />
-                        <Button fx:id="loadFile2" mnemonicParsing="false" text="Choose File...">
+                        <TextField fx:id="outputFolder" prefWidth="556.0" promptText="Output folder" />
+                        <Label text="/">
+                           <HBox.margin>
+                              <Insets left="4.0" right="4.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="outputName" prefWidth="160.0" promptText="Output file name (no ext)" />
+                        <Button fx:id="loadFolder" mnemonicParsing="false" text="Choose Folder...">
                            <HBox.margin>
                               <Insets left="4.0" />
                            </HBox.margin>

@@ -78,6 +78,8 @@ public class VideoRenderer {
 	public int pauseDuration = 2;
 	public DateStamp startDate = null;
 	public DateStamp endDate = null;
+	public VideoFormats videoFormat = null;
+	public String outputPath = null;
 
 	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {
 
@@ -131,7 +133,11 @@ public class VideoRenderer {
 			if (endDate == null || endDate.compareTo(t.getEnd()) > 0)
 				throw new IllegalArgumentException("Invalid end date!");
 
-			File f = new File("videotest.mp4");
+			if (outputPath.isEmpty() || outputPath.endsWith("/"))
+				throw new IllegalArgumentException("Invalid output path!");
+
+			File f = new File(outputPath+"."+videoFormat.fileExtension);
+			f.getParentFile().mkdirs();
 			if (f.exists())
 				f.delete();
 
@@ -632,9 +638,9 @@ public class VideoRenderer {
 		return li;
 	}
 
-	private static List<String> getFFMPEGArgs(File f) {
+	private List<String> getFFMPEGArgs(File f) {
 		//List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i tcp://localhost:"+PORT_NUMBER+"?listen -vcodec libx264 -vf eq=gamma="+String.valueOf(GAMMA)).split(" ")));
-		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i pipe: -c:v libx264 -vf eq=gamma="+String.valueOf(GAMMA)).split(" ")));
+		List<String> parts = new ArrayList(Arrays.asList(("-f rawvideo -pix_fmt 0rgb -s:v "+VIDEO_WIDTH+"x"+VIDEO_HEIGHT+" -r "+VIDEO_FPS+" -i pipe: -c:v "+videoFormat.ffmpegArgs+" -vf eq=gamma="+String.valueOf(GAMMA)).split(" ")));
 		parts.add(f.getAbsolutePath());
 		return parts;
 	}
