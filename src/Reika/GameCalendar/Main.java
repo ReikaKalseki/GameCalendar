@@ -23,6 +23,12 @@ public class Main {
 
 	//video encode options: other file formats
 
+	//gui settings persistence
+
+	//fmpeg admin problem
+
+	//all labels on calendar "wiggle" when gui refreshes (eg privacy slider)
+
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
 		@Override
