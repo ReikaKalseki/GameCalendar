@@ -68,6 +68,7 @@ public class Labelling implements Runnable {
 	public void run() {
 		List<Integer> years = renderer.getYears();
 		if (!loaded) {
+			System.out.println("Reloading calendar labelling system");
 			field.getChildren().clear();
 			monthTexts.clear();
 			for (Month m : Month.values()) {

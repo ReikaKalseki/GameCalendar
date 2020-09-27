@@ -49,11 +49,11 @@ import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiController.GuiElement;
-import Reika.GameCalendar.IO.TextureLoader;
 import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.StatusHandler;
+import Reika.GameCalendar.IO.TextureLoader;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 import Reika.GameCalendar.Rendering.Framebuffer;
 import Reika.GameCalendar.Rendering.RenderLoop;
@@ -148,6 +148,12 @@ public class VideoRenderer {
 
 				List<String> command = this.getFFMPEGArgs(f);
 				command.add(0, pathToFFMPEG);
+				if (false) {
+					command.add(0, "/C");
+					command.add(0, "cmd.exe");
+					command.set(2, "\""+command.get(2).replace('\\', '/')+"\"");
+					command.set(command.size()-1, "\""+command.get(command.size()-1).replace('\\', '/')+"\"");
+				}
 
 				//command = Arrays.asList("java", "-jar", "DataDump.jar");
 

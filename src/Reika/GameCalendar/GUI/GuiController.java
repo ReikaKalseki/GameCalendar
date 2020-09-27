@@ -303,7 +303,7 @@ public class GuiController extends ControllerBase {
 		else if (gui == null || gui.resetRenderer()) {
 			StatusHandler.postStatus("Reloading render state", 200);
 			Main.getCalendarRenderer().clearSelection();
-			Labelling.instance.init(calendarOverlay);
+			//Labelling.instance.init(calendarOverlay);
 			this.setImages(null);
 		}
 		if (gui == GuiElement.SORTORDER) {

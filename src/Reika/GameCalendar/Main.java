@@ -19,8 +19,6 @@ public class Main {
 
 	//fmpeg admin problem
 
-	//all labels on calendar "wiggle" when gui refreshes (eg privacy slider)
-
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
 		@Override
