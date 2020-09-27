@@ -90,6 +90,13 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		primary.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent t) {
+				try {
+					stateCache.save(controller);
+				}
+				catch (IOException e) {
+					System.err.println("Could not save GUI state:");
+					e.printStackTrace();
+				}
 				Platform.exit();
 			}
 		});
@@ -103,6 +110,8 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		for (TitledPane p : controller.getCollapsibleSections()) {
 			p.setExpanded(false);
 		}
+
+		stateCache.load(controller);
 
 		isLoaded = true;
 	}

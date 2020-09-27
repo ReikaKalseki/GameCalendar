@@ -208,7 +208,7 @@ public class CalendarRenderer {
 			GL11.glBegin(GL11.GL_POINTS);
 			ArrayList<GuiHighlight> memorable = new ArrayList();
 			for (GuiHighlight h : events.values()) {
-				if (h.getActiveCategories().isEmpty())
+				if (h.getActiveEvents().isEmpty())
 					continue;
 				if (limit != null && h.time.compareTo(limit) >= 0)
 					continue;

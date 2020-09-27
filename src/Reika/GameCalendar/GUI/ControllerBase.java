@@ -36,12 +36,15 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 	private Parent rootNode;
 
 	private final HashSet<String> nameSet = new HashSet();
+	private final HashSet<String> optionSet = new HashSet();
 	private final HashMap<Object, NodeWrapper> allNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> buttons = new HashMap();
 	private final HashMap<String, NodeWrapper> listSelects = new HashMap();
 
 	private HostServices host;
+
+	private boolean pauseUpdates = false;
 
 	protected void preInit(Parent root) {
 		rootNode = root;
@@ -106,6 +109,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		if (n2.object instanceof CheckBox) {
 			((CheckBox)n2.object).setOnAction(this);
 			optionNodes.put(n2.fxID, n2);
+			optionSet.add(n2.fxID);
 		}
 		else if (n2.object instanceof ButtonBase) {
 			((ButtonBase)n2.object).setOnAction(this);
@@ -125,16 +129,19 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		}
 		else if (n2.object instanceof Slider) {
 			optionNodes.put(n2.fxID, n2);
+			optionSet.add(n2.fxID);
 		}
 		else if (n2.object instanceof ListView) {
 			((ListView)n2.object).getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
 				@Override
 				public void changed(ObservableValue observable, Object oldValue, Object newValue) {
-					ControllerBase.this.update(n2.fxID);
+					if (!pauseUpdates)
+						ControllerBase.this.update(n2.fxID);
 				}
 
 			});
 			listSelects.put(n2.fxID, n2);
+			optionSet.add(n2.fxID);
 		}
 	}
 
@@ -150,6 +157,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 	private void collectAllNodes() throws Exception {
 		allNodes.clear();
 		nameSet.clear();
+		optionSet.clear();
 		Field[] fd = this.getClass().getDeclaredFields();
 		for (Field f : fd) {
 			if (f.getAnnotation(Deprecated.class) != null)
@@ -241,13 +249,19 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		return allNodes.get(n);
 	}
 
-	public Node getNode(String id) {
-		NodeWrapper n = allNodes.get(id);
+	public Node getOptionNode(String id) {
+		NodeWrapper n = optionNodes.get(id);
+		if (n == null)
+			n = listSelects.get(id);
 		return n != null ? n.object : null;
 	}
 
 	public Set<String> getNodeNames() {
 		return Collections.unmodifiableSet(nameSet);
+	}
+
+	public Set<String> getOptionNodeNames() {
+		return Collections.unmodifiableSet(optionSet);
 	}
 
 	protected final void replaceNode(Node rem, Node repl) {
@@ -258,6 +272,14 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		NodeWrapper nw2 = new NodeWrapper(nw.fxID, repl);
 		allNodes.put(repl, nw2);
 		this.addHook(nw2);
+	}
+
+	public final void pause() {
+		pauseUpdates = true;
+	}
+
+	public final void unpause() {
+		pauseUpdates = false;
 	}
 
 	protected static class NodeWrapper {

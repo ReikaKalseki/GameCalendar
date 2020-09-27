@@ -21,7 +21,7 @@ public class Main {
 	//TODO:
 	//improve FB->video performance?
 
-	//gui settings persistence across program loads
+	//video gui settings persistence not working
 
 	//fmpeg admin problem
 

@@ -52,9 +52,18 @@ public class VideoOptionsWindow implements EventHandler<javafx.event.Event> {
 		window.setScene(display);
 		window.show();
 
+		stateCache.load(controller);
+
 		window.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent t) {
+				try {
+					stateCache.save(controller);
+				}
+				catch (IOException e) {
+					System.err.println("Could not save GUI state:");
+					e.printStackTrace();
+				}
 				window.close();
 				if (!VideoRenderer.instance.isRendering())
 					RenderLoop.sendToDFX = true;

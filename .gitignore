@@ -31,6 +31,7 @@ libs/*
 Game Calendar/.settings/*
 Game Calendar/bin
 Game Calendar/libs
+Game Calendar/GuiState/*
 
 *hprof*
 *.hprof
@@ -40,3 +41,4 @@ Game Calendar/libs
 *.log
 *.mp4
 *.jar
+*.gui

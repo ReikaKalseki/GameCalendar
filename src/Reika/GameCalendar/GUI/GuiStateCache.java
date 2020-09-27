@@ -3,12 +3,16 @@ package Reika.GameCalendar.GUI;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import Reika.GameCalendar.IO.FileIO;
 
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Toggle;
@@ -26,36 +30,60 @@ public class GuiStateCache<C extends ControllerBase> {
 	}
 
 	public void save(C cb) throws IOException {
+		cb.pause();
+		System.out.println("Saving persisted GUI state for "+cb);
 		this.storageFolder.mkdirs();
-		for (String s : cb.getNodeNames()) {
-			Node n = cb.getNode(s);
+		for (String s : cb.getOptionNodeNames()) {
+			Node n = cb.getOptionNode(s);
+			if (n == null) {
+				System.err.println("Could not find node mapped to id '"+s+"'!");
+				continue;
+			}
 			NodeState ns = new NodeState(s);
 			ns.load(n);
 			ns.writeFile();
 		}
+		cb.unpause();
 	}
 
 	public void load(C cb) throws IOException {
-		for (File f : this.storageFolder.listFiles()) {
-			String s = f.getName().substring(0, f.getName().length()-4);
-			NodeState ns = new NodeState(s);
-			ns.readFile(f);
-			Node n = cb.getNode(s);
-			ns.write(n);
+		cb.pause();
+		if (this.storageFolder.exists()) {
+			System.out.println("Loading persisted GUI state for "+cb);
+			for (File f : this.storageFolder.listFiles()) {
+				String s = f.getName().substring(0, f.getName().length()-4);
+				NodeState ns = new NodeState(s);
+				ns.readFile(f);
+				Node n = cb.getOptionNode(s);
+				if (n == null) {
+					System.err.println("Could not find node mapped to id '"+s+"'!");
+					continue;
+				}
+				ns.write(n);
+			}
 		}
+		else {
+			System.out.println("No persisted GUI state for "+cb+" exists to load.");
+		}
+		cb.unpause();
 	}
 
 	private class NodeState {
 
+		private final String id;
 		private final String filename;
 
 		private final HashMap<String, String> data = new HashMap();
 
 		private NodeState(String s) {
-			filename = s+".gui";
+			id = s;
+			filename = id+".gui";
 		}
 
 		private void load(Node n) {
+			if (n instanceof CheckBox) {
+				this.data.put("selected", String.valueOf(((CheckBox)n).isSelected()));
+			}
 			if (n instanceof Toggle) {
 				this.data.put("selected", String.valueOf(((Toggle)n).isSelected()));
 			}
@@ -65,9 +93,24 @@ public class GuiStateCache<C extends ControllerBase> {
 			if (n instanceof Slider) {
 				this.data.put("pos", String.valueOf(((Slider)n).getValue()));
 			}
+			if (n instanceof ListView) {
+				ListView lv = (ListView)n;
+				List<Integer> li = new ArrayList(lv.getSelectionModel().getSelectedIndices());
+				Collections.sort(li);
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < li.size(); i++) {
+					sb.append(li.get(i));
+					if (i < li.size()-1)
+						sb.append(",");
+				}
+				this.data.put("entries", sb.toString());
+			}
 		}
 
 		private void write(Node n) {
+			if (n instanceof CheckBox) {
+				((CheckBox)n).setSelected(Boolean.parseBoolean(data.get("selected")));
+			}
 			if (n instanceof Toggle) {
 				((Toggle)n).setSelected(Boolean.parseBoolean(data.get("selected")));
 			}
@@ -76,6 +119,14 @@ public class GuiStateCache<C extends ControllerBase> {
 			}
 			if (n instanceof Slider) {
 				((Slider)n).setValue(Double.parseDouble(data.get("pos")));
+			}
+			if (n instanceof ListView) {
+				ListView lv = (ListView)n;
+				String[] numbers = this.data.get("entries").split(",");
+				lv.getSelectionModel().clearSelection();
+				for (String s : numbers) {
+					lv.getSelectionModel().select(Integer.parseInt(s));
+				}
 			}
 		}
 
