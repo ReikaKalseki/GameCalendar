@@ -52,8 +52,6 @@ public class VideoOptionsWindow implements EventHandler<javafx.event.Event> {
 		window.setScene(display);
 		window.show();
 
-		stateCache.load(controller);
-
 		window.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent t) {
@@ -78,6 +76,12 @@ public class VideoOptionsWindow implements EventHandler<javafx.event.Event> {
 
 	public void postInit(HostServices host) {
 		controller.postInit(host);
+		try {
+			stateCache.load(controller);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 		controller.window = window;
 	}
 

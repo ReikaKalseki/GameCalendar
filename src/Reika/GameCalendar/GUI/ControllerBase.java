@@ -29,6 +29,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.SplitPane.Divider;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Toggle;
 import javafx.scene.layout.Region;
 
 public abstract class ControllerBase implements EventHandler<ActionEvent> {
@@ -41,6 +42,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 	private final HashMap<String, NodeWrapper> optionNodes = new HashMap();
 	private final HashMap<String, NodeWrapper> buttons = new HashMap();
 	private final HashMap<String, NodeWrapper> listSelects = new HashMap();
+	private final HashMap<String, NodeWrapper> textInputNodes = new HashMap();
 
 	private HostServices host;
 
@@ -111,6 +113,10 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 			optionNodes.put(n2.fxID, n2);
 			optionSet.add(n2.fxID);
 		}
+		else if (n2.object instanceof Toggle) {
+			optionNodes.put(n2.fxID, n2);
+			optionSet.add(n2.fxID);
+		}
 		else if (n2.object instanceof ButtonBase) {
 			((ButtonBase)n2.object).setOnAction(this);
 			buttons.put(n2.fxID, n2);
@@ -125,7 +131,8 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		}
 		else if (n2.object instanceof TextInputControl) {
 			//((TextInputControl)n2.object).textProperty().addListener(this);
-			//optionNodes.put(n2.fxID, n2);
+			optionSet.add(n2.fxID);
+			textInputNodes.put(n2.fxID, n2);
 		}
 		else if (n2.object instanceof Slider) {
 			optionNodes.put(n2.fxID, n2);
@@ -253,6 +260,8 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		NodeWrapper n = optionNodes.get(id);
 		if (n == null)
 			n = listSelects.get(id);
+		if (n == null)
+			n = textInputNodes.get(id);
 		return n != null ? n.object : null;
 	}
 

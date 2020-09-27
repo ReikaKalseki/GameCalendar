@@ -13,15 +13,9 @@ import Reika.GameCalendar.Rendering.RenderLoop;
 import javafx.application.Platform;
 
 public class Main {
-	/*
-	DO NOT FORGET:
-
-	 */
 
 	//TODO:
 	//improve FB->video performance?
-
-	//video gui settings persistence not working
 
 	//fmpeg admin problem
 
