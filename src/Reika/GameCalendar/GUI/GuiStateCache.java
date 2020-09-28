@@ -39,6 +39,8 @@ public class GuiStateCache<C extends ControllerBase> {
 				System.err.println("Could not find node mapped to id '"+s+"'!");
 				continue;
 			}
+			if (!cb.shouldNodePersist(n))
+				continue;
 			NodeState ns = new NodeState(s);
 			ns.load(n);
 			ns.writeFile();
@@ -59,6 +61,8 @@ public class GuiStateCache<C extends ControllerBase> {
 					System.err.println("Could not find node mapped to id '"+s+"'!");
 					continue;
 				}
+				if (!cb.shouldNodePersist(n))
+					continue;
 				ns.write(n);
 			}
 		}

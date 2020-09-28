@@ -325,6 +325,12 @@ public class GuiController extends ControllerBase {
 		return true;
 	}
 
+	@Override
+	public boolean shouldNodePersist(Node n) {
+		NodeWrapper nw = this.getNode(n);
+		return nw != null && !nw.fxID.equals("descriptionPane");
+	}
+
 	void setImages(List<? extends CalendarEvent> images) {
 		imageContainer.getChildren().clear();
 		if (images != null) {

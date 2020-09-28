@@ -256,7 +256,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		return allNodes.get(n);
 	}
 
-	public Node getOptionNode(String id) {
+	public final Node getOptionNode(String id) {
 		NodeWrapper n = optionNodes.get(id);
 		if (n == null)
 			n = listSelects.get(id);
@@ -265,11 +265,11 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		return n != null ? n.object : null;
 	}
 
-	public Set<String> getNodeNames() {
+	public final Set<String> getNodeNames() {
 		return Collections.unmodifiableSet(nameSet);
 	}
 
-	public Set<String> getOptionNodeNames() {
+	public final Set<String> getOptionNodeNames() {
 		return Collections.unmodifiableSet(optionSet);
 	}
 
@@ -289,6 +289,10 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 
 	public final void unpause() {
 		pauseUpdates = false;
+	}
+
+	public boolean shouldNodePersist(Node n) {
+		return true;
 	}
 
 	protected static class NodeWrapper {

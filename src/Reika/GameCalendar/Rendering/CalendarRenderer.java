@@ -97,7 +97,7 @@ public class CalendarRenderer {
 		arcThickness = MAX_THICKNESS/years.size();
 	}
 
-	public List<Integer> getYears() {
+	public synchronized List<Integer> getYears() {
 		return Collections.unmodifiableList(years);
 	}
 
@@ -648,7 +648,7 @@ public class CalendarRenderer {
 		return Math.toRadians(-a+90);
 	}
 
-	private List<GuiSection> getActiveSectionList() {
+	private synchronized List<GuiSection> getActiveSectionList() {
 		return GuiElement.ARCMERGE.isChecked() ? sectionsCondensed : sections;
 	}
 
@@ -696,7 +696,7 @@ public class CalendarRenderer {
 		this.calculateDescriptions();
 	}
 
-	public void calculateDescriptions() {
+	public synchronized void calculateDescriptions() {
 		ArrayList<CalendarEvent> li = new ArrayList();
 		if (selectedObjects.isEmpty()) {
 			JFXWindow.getGUI().setScreenshots(null);
@@ -717,7 +717,7 @@ public class CalendarRenderer {
 		Labelling.instance.calculateDescriptions(li);
 	}
 
-	public void openSelectedFiles(HostServices host) {
+	public synchronized void openSelectedFiles(HostServices host) {
 		for (CalendarItem ci : selectedObjects) {
 			for (CalendarEvent ce : ci.getItems(true)) {
 				ce.openFile(host);
@@ -751,7 +751,7 @@ public class CalendarRenderer {
 		this.calculateDescriptions();
 	}
 
-	public GuiSection getSectionAt(DateStamp date) {
+	public synchronized GuiSection getSectionAt(DateStamp date) {
 		for (GuiSection s : this.getActiveSectionList()) {
 			if (date.isBetween(s.section.startTime, s.section.getEnd())) {
 				return s;
@@ -760,7 +760,7 @@ public class CalendarRenderer {
 		return null;
 	}
 
-	public ArrayList<GuiHighlight> getHighlightsInSection(GuiSection s) {
+	public synchronized ArrayList<GuiHighlight> getHighlightsInSection(GuiSection s) {
 		ArrayList<GuiHighlight> ret = new ArrayList();
 		for (GuiHighlight h : events.values()) {
 			if (h.time.isBetween(s.section.startTime, s.renderedEnd)) {
@@ -770,7 +770,7 @@ public class CalendarRenderer {
 		return ret;
 	}
 
-	public GuiHighlight getHighlightAtDate(DateStamp date) {
+	public synchronized GuiHighlight getHighlightAtDate(DateStamp date) {
 		return events.get(date);
 	}
 }
