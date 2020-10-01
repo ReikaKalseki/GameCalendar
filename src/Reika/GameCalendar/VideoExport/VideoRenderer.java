@@ -218,7 +218,6 @@ public class VideoRenderer {
 			return;
 		try {
 			GL11.glViewport(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-			renderedOutput.clear();
 			exportedFrames++;
 			if (exportedFrames == 1) //first rendered frame from calendar is always garbage, holding "leftover" data
 				return;
@@ -253,45 +252,13 @@ public class VideoRenderer {
 					currentImages[i] = ee;
 				currentItems.add(ee);
 			}
-			activeCategories.clear();
-			for (EmbeddedEvent e : currentItems) {
-				activeCategories.add(e.event.category);
-				if (e.hasImage())
-					usedImages.add(this.drawScreenshot(e));
-			}
-			//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
-			this.cleanImageCache(usedImages);
-			renderedOutput.writeIntoImage(frame, 0, 0, flipBuffers);
-			calendar.writeIntoImage(frame, 0, 0, flipBuffers);
-			flipBuffers = !flipBuffers;
-			this.addText(frame);
 			int n = !newEntries.isEmpty() && pauseDuration > 0 ? VIDEO_FPS*pauseDuration : (int)Math.max(1, 1/daysPerFrame);
-			if (pathToFFMPEG != null) {
-				ByteBuffer buf = bufferize(frame);
-				for (int i = 0; i < n; i++) {
-					byte[] data = new byte[buf.limit()];
-					buf.get(data);
-					ffmpegDataLine.write(data);
-					buf.rewind();
-				}
-			}
-			else {
-				Picture p = AWTUtil.fromBufferedImageRGB(frame);
-				for (int i = 0; i < n; i++)
-					encoder.encodeNativeFrame(p);
-				//encoder.encodeImage(frame);
-			}
 
-			/*
-			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
-				File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
-				f.getParentFile().mkdirs();
-				ImageIO.write(frame, "png", f);
-				//if (renderer.limit.year >= 2012)
-				if (Main.getTimeline().getStart().countDaysAfter(renderer.limit) > 10)
-					throw new RuntimeException("End");
-			}
-			 */
+			this.renderFrame(frame, calendar, usedImages);
+
+			this.writeFrame(frame, n);
+
+			this.cleanImageCache(usedImages);
 
 			if (renderer.limit.compareTo(endDate) >= 0) {
 				this.finish();
@@ -314,6 +281,50 @@ public class VideoRenderer {
 			StatusHandler.postStatus("Video frame construction failed.", 2500, false);
 			this.finish();
 		}
+	}
+
+	private void renderFrame(BufferedImage frame, Framebuffer calendar, HashSet<String> usedImages) {
+		renderedOutput.clear();
+		activeCategories.clear();
+		for (EmbeddedEvent e : currentItems) {
+			activeCategories.add(e.event.category);
+			if (e.hasImage())
+				usedImages.add(this.drawScreenshot(e));
+		}
+		//System.out.println("Frame "+renderer.limit.toString()+" used screenshots: "+usedImages);
+		renderedOutput.writeIntoImage(frame, 0, 0, flipBuffers);
+		calendar.writeIntoImage(frame, 0, 0, flipBuffers);
+		flipBuffers = !flipBuffers;
+		this.addText(frame);
+	}
+
+	private void writeFrame(BufferedImage frame, int n) throws IOException {
+		if (pathToFFMPEG != null) {
+			ByteBuffer buf = bufferize(frame);
+			for (int i = 0; i < n; i++) {
+				byte[] data = new byte[buf.limit()];
+				buf.get(data);
+				ffmpegDataLine.write(data);
+				buf.rewind();
+			}
+		}
+		else {
+			Picture p = AWTUtil.fromBufferedImageRGB(frame);
+			for (int i = 0; i < n; i++)
+				encoder.encodeNativeFrame(p);
+			//encoder.encodeImage(frame);
+		}
+
+		/*
+		if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
+			File f = new File("E:/CalendarVideoFrames/"+renderer.limit.toString().replace('/', '-')+".png");
+			f.getParentFile().mkdirs();
+			ImageIO.write(frame, "png", f);
+			//if (renderer.limit.year >= 2012)
+			if (Main.getTimeline().getStart().countDaysAfter(renderer.limit) > 10)
+				throw new RuntimeException("End");
+		}
+		 */
 	}
 
 	private void addText(BufferedImage frame) {
