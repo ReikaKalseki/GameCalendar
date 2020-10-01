@@ -222,7 +222,7 @@ public class VideoRenderer {
 			if (exportedFrames == 1) //first rendered frame from calendar is always garbage, holding "leftover" data
 				return;
 
-			BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
+			//BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 			HashSet<String> usedImages = new HashSet();
 			ArrayList<CalendarEvent> li = this.getCurrentItems();
 
@@ -254,9 +254,22 @@ public class VideoRenderer {
 			}
 			int n = !newEntries.isEmpty() && pauseDuration > 0 ? VIDEO_FPS*pauseDuration : (int)Math.max(1, 1/daysPerFrame);
 
-			this.renderFrame(frame, calendar, usedImages);
+			//this.renderFrame(frame, calendar, usedImages);
+			//this.writeFrame(frame, n);
 
-			this.writeFrame(frame, n);
+			for (int i = 0; i < n; i++) {
+				BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
+				for (EmbeddedEvent e : currentItems) {
+					if (li.contains(e.event)) {
+						e.age++;
+					}
+					else {
+						e.holdover++;
+					}
+				}
+				this.renderFrame(frame, calendar, usedImages);
+				this.writeFrame(frame, 1);
+			}
 
 			this.cleanImageCache(usedImages);
 
