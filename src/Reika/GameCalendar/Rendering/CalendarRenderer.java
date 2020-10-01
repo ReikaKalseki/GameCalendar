@@ -210,7 +210,7 @@ public class CalendarRenderer {
 			for (GuiHighlight h : events.values()) {
 				if (h.getActiveEvents().isEmpty())
 					continue;
-				if (limit != null && h.time.compareTo(limit) >= 0)
+				if (limit != null && h.time.compareTo(limit) > 0)
 					continue;
 				double a = h.time.getAngle();
 				int i = years.indexOf(h.time.year);

@@ -130,7 +130,7 @@ public class VideoRenderer {
 			Timeline t = Main.getTimeline();
 			if (startDate == null || startDate.year < t.getStart().year)
 				throw new IllegalArgumentException("Invalid start date!");
-			if (endDate == null || endDate.compareTo(t.getEnd()) > 0)
+			if (endDate == null || endDate.year > t.getEnd().year)
 				throw new IllegalArgumentException("Invalid end date!");
 
 			if (outputPath.isEmpty() || outputPath.endsWith("/"))
@@ -148,7 +148,7 @@ public class VideoRenderer {
 
 				List<String> command = this.getFFMPEGArgs(f);
 				command.add(0, pathToFFMPEG);
-				if (true) {
+				if (false) {
 					command.clear();
 					command.add("cmd.exe");
 					command.add("/C");
@@ -303,7 +303,7 @@ public class VideoRenderer {
 			}
 
 			if (exportedFrames == 1 || exportedFrames%(VIDEO_FPS/4) == 0)
-				StatusHandler.postStatus("Rendering Video; Exported frame "+exportedFrames, 5000, true);
+				;//StatusHandler.postStatus("Rendering Video; Exported frame "+exportedFrames, 5000, true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -629,7 +629,7 @@ public class VideoRenderer {
 		GuiSection s = renderer.getSectionAt(renderer.limit);
 		ArrayList<CalendarEvent> li = new ArrayList();
 		if (s != null && !s.section.isEmpty()) {
-			li.addAll(s.getItems(false));/*
+			li.addAll(s.getItems(true));/*
 			Collection<GuiHighlight> c = renderer.getHighlightsInSection(s);
 			for (GuiHighlight h : c) {
 				li.addAll(h.getItems(false));
