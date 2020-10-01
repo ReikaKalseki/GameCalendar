@@ -72,6 +72,7 @@ public class VideoRenderer {
 	private static final int VIDEO_HEIGHT = 1080;
 	private static final int VIDEO_FPS = 40;
 	private static final int PORT_NUMBER = 22640;
+	private static final int FADEOUT_DAYS = 15;
 	private static final double GAMMA = 1.02;
 
 	public String pathToFFMPEG = null;
@@ -235,7 +236,9 @@ public class VideoRenderer {
 					newEntries.remove(e.event);
 				}
 				else {
-					toRemove.add(e);
+					e.holdover++;
+					if (e.holdover >= FADEOUT_DAYS)
+						toRemove.add(e);
 				}
 			}
 			for (EmbeddedEvent e : toRemove) {
@@ -519,7 +522,7 @@ public class VideoRenderer {
 		GLFunctions.printGLErrors("FB bind");
 
 		float f = 1-e.age/5F;
-		if (f > 0) {
+		if (f > 0 && e.holdover <= 0) {
 			GL11.glColor4f(1, 0, 0, f);
 			int d = 4;
 			GLFunctions.drawQuadScreenCoords(x, y, d, SCREENSHOT_HEIGHT, VIDEO_WIDTH, VIDEO_HEIGHT);
@@ -529,8 +532,8 @@ public class VideoRenderer {
 			GLFunctions.printGLErrors("Outline draw");
 		}
 
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glColor4f(1, 1, 1, 1);
+		f = 1-e.holdover/(float)FADEOUT_DAYS;
+		GL11.glColor4f(1, 1, 1, f);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GLFunctions.printGLErrors("Draw prepare B");
 		GLFunctions.drawTextureAsQuadScreenCoords(gl, x, y, SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT, VIDEO_WIDTH, VIDEO_HEIGHT);
@@ -722,6 +725,7 @@ public class VideoRenderer {
 		private final int slotIndex;
 
 		private int age = 0;
+		private int holdover = 0;
 
 		private EmbeddedEvent(CalendarEvent ce, int idx) {
 			event = ce;
