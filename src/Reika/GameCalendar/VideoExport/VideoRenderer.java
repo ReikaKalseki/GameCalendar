@@ -72,7 +72,7 @@ public class VideoRenderer {
 	private static final int VIDEO_HEIGHT = 1080;
 	private static final int VIDEO_FPS = 40;
 	private static final int PORT_NUMBER = 22640;
-	private static final int FADEOUT_DAYS = 5;
+	private static final int FADEOUT_DAYS = 2;
 	private static final double GAMMA = 1.02;
 
 	public String pathToFFMPEG = null;
