@@ -260,6 +260,8 @@ public class VideoRenderer {
 			for (int i = 0; i < n; i++) {
 				BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 				for (EmbeddedEvent e : currentItems) {
+					if (renderer.limit.compareTo(e.event.getDescriptiveDate()) <= 0)
+						continue;
 					if (li.contains(e.event)) {
 						e.age++;
 					}
