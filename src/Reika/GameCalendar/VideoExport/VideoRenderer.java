@@ -59,6 +59,7 @@ import Reika.GameCalendar.Rendering.Framebuffer;
 import Reika.GameCalendar.Rendering.RenderLoop;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.GLFunctions;
+import Reika.GameCalendar.Util.GLFunctions.BlendMode;
 
 public class VideoRenderer {
 
@@ -510,14 +511,28 @@ public class VideoRenderer {
 		int y = oy;
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		float f = e.age >= 5 ? 1 : (e.age+1)/5F;
-		GL11.glColor4f(1, 1, 1, f);
-		GLFunctions.printGLErrors("Draw prepare");
+		GLFunctions.printGLErrors("Draw prepare A");
 		renderedOutput.bind(false);
 		GLFunctions.printGLErrors("FB bind");
+
+		float f = 1-e.age/5F;
+		if (f > 0) {
+			GL11.glColor4f(1, 0, 0, f);
+			int d = 4;
+			GLFunctions.drawQuadScreenCoords(x, y, d, SCREENSHOT_HEIGHT, VIDEO_WIDTH, VIDEO_HEIGHT);
+			GLFunctions.drawQuadScreenCoords(x+SCREENSHOT_WIDTH-d, y, d, SCREENSHOT_HEIGHT, VIDEO_WIDTH, VIDEO_HEIGHT);
+			GLFunctions.drawQuadScreenCoords(x, y, SCREENSHOT_WIDTH, d, VIDEO_WIDTH, VIDEO_HEIGHT);
+			GLFunctions.drawQuadScreenCoords(x, y+SCREENSHOT_HEIGHT-d, SCREENSHOT_WIDTH, d, VIDEO_WIDTH, VIDEO_HEIGHT);
+			GLFunctions.printGLErrors("Outline draw");
+		}
+
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GLFunctions.printGLErrors("Draw prepare B");
 		GLFunctions.drawTextureAsQuadScreenCoords(gl, x, y, SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT, VIDEO_WIDTH, VIDEO_HEIGHT);
 		GLFunctions.printGLErrors("Screenshot quad draw");
 		renderedOutput.unbind();

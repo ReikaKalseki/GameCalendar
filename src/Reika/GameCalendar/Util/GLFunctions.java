@@ -84,6 +84,27 @@ public class GLFunctions {
 	}*/
 
 	/** With the window from [0, to size, top left origin] */
+	public static void drawQuadScreenCoords(int x, int y, int w, int h, int screenWidth, int screenHeight) {
+		double rx = x/(double)screenWidth;
+		double ry = y/(double)screenHeight;
+		double rw = w/(double)screenWidth;
+		double rh = h/(double)screenHeight;
+		drawQuadGLCoords(rx*2-1, 1-ry*2, rw*2, -rh*2);
+	}
+
+	/** With the window from [-1 to +1], bottom left origin */
+	public static void drawQuadGLCoords(double x, double y, double w, double h) {
+		GL11.glBegin(GL11.GL_QUADS);
+		int v = h < 0 ? 1 : 0;
+		int dv = 1-v;
+		GL11.glVertex2d(x, y);
+		GL11.glVertex2d(x, y+h);
+		GL11.glVertex2d(x+w, y+h);
+		GL11.glVertex2d(x+w, y);
+		GL11.glEnd();
+	}
+
+	/** With the window from [0, to size, top left origin] */
 	public static void drawTextureAsQuadScreenCoords(int tex, int x, int y, int w, int h, int screenWidth, int screenHeight) {
 		double rx = x/(double)screenWidth;
 		double ry = y/(double)screenHeight;
