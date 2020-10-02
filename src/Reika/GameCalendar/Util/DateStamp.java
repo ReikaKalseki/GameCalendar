@@ -102,6 +102,7 @@ public class DateStamp implements Comparable<DateStamp> {
 		return new DateStamp(year, Month.of(month), day);
 	}
 
+	/** INCLUSIVE */
 	public boolean isBetween(DateStamp start, DateStamp end) {
 		return this.compareTo(start) >= 0 && this.compareTo(end) <= 0;
 	}

@@ -19,6 +19,8 @@ public class Main {
 
 	//fmpeg admin problem
 
+	//in video, arcs are showing after the highlights coinciding with their starts (eg thargoid kill and t10 engineering, and liz ryder cg and capship rout)
+
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
 		@Override

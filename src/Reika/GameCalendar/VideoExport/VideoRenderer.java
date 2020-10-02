@@ -28,6 +28,7 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -71,8 +72,8 @@ public class VideoRenderer {
 	private static final int VIDEO_WIDTH = 1920;
 	private static final int VIDEO_HEIGHT = 1080;
 	private static final int VIDEO_FPS = 40;
-	private static final int PORT_NUMBER = 22640;
-	private static final int FADEOUT_DAYS = 2;
+	//private static final int PORT_NUMBER = 22640;
+	//private static final int FADEOUT_DAYS = 0;
 	private static final double GAMMA = 1.02;
 
 	public String pathToFFMPEG = null;
@@ -225,7 +226,7 @@ public class VideoRenderer {
 
 			BufferedImage frame = new BufferedImage(VIDEO_WIDTH, VIDEO_HEIGHT, BufferedImage.TYPE_INT_RGB);
 			HashSet<String> usedImages = new HashSet();
-			ArrayList<CalendarEvent> li = this.getCurrentItems();
+			HashSet<CalendarEvent> li = this.getCurrentItems();
 
 			ArrayList<EmbeddedEvent> toRemove = new ArrayList();
 
@@ -237,8 +238,8 @@ public class VideoRenderer {
 				}
 				else {
 					e.holdover++;
-					if (e.holdover >= FADEOUT_DAYS)
-						toRemove.add(e);
+					//if (e.holdover >= FADEOUT_DAYS)
+					toRemove.add(e);
 				}
 			}
 			for (EmbeddedEvent e : toRemove) {
@@ -246,7 +247,9 @@ public class VideoRenderer {
 				if (e.slotIndex >= 0)
 					currentImages[e.slotIndex] = null;
 			}
-			for (CalendarEvent e : newEntries) {
+			ArrayList<CalendarEvent> newEntriesList = new ArrayList(newEntries);
+			Collections.sort(newEntriesList, CalendarRenderer.eventSorter);
+			for (CalendarEvent e : newEntriesList) {
 				int i = e.getScreenshotFile() != null ? this.getFirstFreeImageSlot() : -1;
 				EmbeddedEvent ee = new EmbeddedEvent(e, i);
 				if (i >= 0)
@@ -266,21 +269,7 @@ public class VideoRenderer {
 			flipBuffers = !flipBuffers;
 			this.addText(frame);
 			int n = !newEntries.isEmpty() && pauseDuration > 0 ? VIDEO_FPS*pauseDuration : (int)Math.max(1, 1/daysPerFrame);
-			if (pathToFFMPEG != null) {
-				ByteBuffer buf = bufferize(frame);
-				for (int i = 0; i < n; i++) {
-					byte[] data = new byte[buf.limit()];
-					buf.get(data);
-					ffmpegDataLine.write(data);
-					buf.rewind();
-				}
-			}
-			else {
-				Picture p = AWTUtil.fromBufferedImageRGB(frame);
-				for (int i = 0; i < n; i++)
-					encoder.encodeNativeFrame(p);
-				//encoder.encodeImage(frame);
-			}
+			this.exportFrame(frame, n);
 
 			/*
 			if (!usedImages.isEmpty() && (renderer.limit.day%4 == 0 || !newEntries.isEmpty())) {
@@ -313,6 +302,24 @@ public class VideoRenderer {
 			e.printStackTrace();
 			StatusHandler.postStatus("Video frame construction failed.", 2500, false);
 			this.finish();
+		}
+	}
+
+	private void exportFrame(BufferedImage frame, int n) throws IOException {
+		if (pathToFFMPEG != null) {
+			ByteBuffer buf = bufferize(frame);
+			for (int i = 0; i < n; i++) {
+				byte[] data = new byte[buf.limit()];
+				buf.get(data);
+				ffmpegDataLine.write(data);
+				buf.rewind();
+			}
+		}
+		else {
+			Picture p = AWTUtil.fromBufferedImageRGB(frame);
+			for (int i = 0; i < n; i++)
+				encoder.encodeNativeFrame(p);
+			//encoder.encodeImage(frame);
 		}
 	}
 
@@ -521,6 +528,7 @@ public class VideoRenderer {
 		renderedOutput.bind(false);
 		GLFunctions.printGLErrors("FB bind");
 
+		/*
 		float f = 1-e.age/5F;
 		if (f > 0 && e.holdover <= 0) {
 			GL11.glColor4f(1, 0, 0, f);
@@ -531,9 +539,10 @@ public class VideoRenderer {
 			GLFunctions.drawQuadScreenCoords(x, y+SCREENSHOT_HEIGHT-d, SCREENSHOT_WIDTH, d, VIDEO_WIDTH, VIDEO_HEIGHT);
 			GLFunctions.printGLErrors("Outline draw");
 		}
+		 */
 
-		f = 1-e.holdover/(float)FADEOUT_DAYS;
-		GL11.glColor4f(1, 1, 1, f);
+		//f = 1-e.holdover/(float)FADEOUT_DAYS;
+		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GLFunctions.printGLErrors("Draw prepare B");
 		GLFunctions.drawTextureAsQuadScreenCoords(gl, x, y, SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT, VIDEO_WIDTH, VIDEO_HEIGHT);
@@ -642,21 +651,23 @@ public class VideoRenderer {
 		RenderLoop.sendToDFX = true;
 	}
 
-	private ArrayList<CalendarEvent> getCurrentItems() {
+	private HashSet<CalendarEvent> getCurrentItems() {
 		ArrayList<File> ret = new ArrayList();
-		GuiSection s = renderer.getSectionAt(renderer.limit);
-		ArrayList<CalendarEvent> li = new ArrayList();
-		if (s != null && !s.section.isEmpty()) {
-			li.addAll(s.getItems(true));/*
+		Collection<GuiSection> cs = renderer.getSectionsAt(renderer.limit);
+		HashSet<CalendarEvent> li = new HashSet();
+		for (GuiSection s : cs) {
+			if (!s.section.isEmpty()) {
+				li.addAll(s.getItems(true));/*
 			Collection<GuiHighlight> c = renderer.getHighlightsInSection(s);
 			for (GuiHighlight h : c) {
 				li.addAll(h.getItems(false));
 			}*/
+			}
 		}
 		//else {
 		GuiHighlight h = GuiElement.HIGHLIGHTS.isChecked() ? renderer.getHighlightAtDate(renderer.limit) : null;
 		if (h != null) {
-			li.addAll(h.getItems(false));
+			li.addAll(h.getItems(true));
 		}
 		//}
 		return li;

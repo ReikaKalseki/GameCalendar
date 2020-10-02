@@ -664,9 +664,11 @@ public class CalendarRenderer {
 						//System.out.println(mx+","+my+" > "+s.section);
 						selectedObjects.add(h);
 						if (GuiElement.SECTIONSWITHHIGHLIGHT.isChecked()) {
-							GuiSection s = this.getSectionAt(h.time);
-							if (s != null && !s.getActiveCategories().isEmpty() && !selectedObjects.contains(s)) {
-								selectedObjects.add(s);
+							Collection<GuiSection> cs = this.getSectionsAt(h.time);
+							for (GuiSection s : cs) {
+								if (!s.getActiveCategories().isEmpty() && !selectedObjects.contains(s)) {
+									selectedObjects.add(s);
+								}
 							}
 						}
 						//break;
@@ -751,13 +753,15 @@ public class CalendarRenderer {
 		this.calculateDescriptions();
 	}
 
-	public synchronized GuiSection getSectionAt(DateStamp date) {
+	/** Returns 0-2 entries, depending on whether the date represents an "empty" region, the middle of one region, or the boundary between two regions. */
+	public synchronized Collection<GuiSection> getSectionsAt(DateStamp date) {
+		Collection<GuiSection> ret = new ArrayList();
 		for (GuiSection s : this.getActiveSectionList()) {
 			if (date.isBetween(s.section.startTime, s.section.getEnd())) {
-				return s;
+				ret.add(s);
 			}
 		}
-		return null;
+		return ret;
 	}
 
 	public synchronized ArrayList<GuiHighlight> getHighlightsInSection(GuiSection s) {
