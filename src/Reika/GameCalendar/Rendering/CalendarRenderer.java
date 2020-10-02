@@ -655,7 +655,7 @@ public class CalendarRenderer {
 	public synchronized void handleMouse(double x, double y) {
 		if (VideoRenderer.instance.isRendering())
 			return;
-		selectedObjects.clear();
+		this.clearSelection();
 		if (GuiElement.HIGHLIGHTS.isChecked()) {
 			double d = 1/50D;
 			for (GuiHighlight h : events.values()) {
@@ -683,11 +683,7 @@ public class CalendarRenderer {
 						//System.out.println(mx+","+my+" > "+s.section);
 						selectedObjects.add(s);
 						if (GuiElement.HIGHLIGHTS.isChecked() && GuiElement.HIGHLIGHTSINSECTION.isChecked()) {
-							for (GuiHighlight h : events.values()) {
-								if (h.time.isBetween(s.section.startTime, s.renderedEnd) && !h.getActiveCategories().isEmpty()) {
-									selectedObjects.add(h);
-								}
-							}
+							this.selectHighlightsInSection(s);
 						}
 						break;
 					}
@@ -699,6 +695,7 @@ public class CalendarRenderer {
 	}
 
 	public synchronized void calculateDescriptions() {
+		HashSet<CalendarEvent> set = new HashSet();
 		ArrayList<CalendarEvent> li = new ArrayList();
 		if (selectedObjects.isEmpty()) {
 			JFXWindow.getGUI().setScreenshots(null);
@@ -707,12 +704,13 @@ public class CalendarRenderer {
 			for (CalendarItem ci : selectedObjects) {
 				for (CalendarEvent ce : ci.getItems(true)) {
 					if (ce instanceof CompoundElement) {
-						li.addAll(((CompoundElement)ce).getElements());
+						set.addAll(((CompoundElement)ce).getElements());
 					}
 					else
-						li.add(ce);
+						set.add(ce);
 				}
 			}
+			li.addAll(set);
 			Collections.sort(li, eventSorter);
 			JFXWindow.getGUI().setScreenshots(li);
 		}
@@ -723,6 +721,43 @@ public class CalendarRenderer {
 		for (CalendarItem ci : selectedObjects) {
 			for (CalendarEvent ce : ci.getItems(true)) {
 				ce.openFile(host);
+			}
+		}
+	}
+
+	public synchronized void selectAllAtDate(DateStamp date, boolean anyYear) {
+		this.clearSelection();
+		if (anyYear) {
+			for (GuiSection s : this.getActiveSectionList()) {
+				if (s.containsDate(date, true)) {
+					selectedObjects.add(s);
+				}
+			}
+			for (GuiHighlight s : events.values()) {
+				if (date.month == s.time.month && date.day == s.time.day) {
+					selectedObjects.add(s);
+				}
+			}
+		}
+		else {
+			for (GuiSection gs : this.getSectionsAt(date)) {
+				selectedObjects.add(gs);
+				if (GuiElement.HIGHLIGHTS.isChecked() && GuiElement.HIGHLIGHTSINSECTION.isChecked()) {
+					this.selectHighlightsInSection(gs);
+				}
+			}
+			GuiHighlight h = this.getHighlightAtDate(date);
+			if (h != null) {
+				selectedObjects.add(h);
+			}
+		}
+		this.calculateDescriptions();
+	}
+
+	private synchronized void selectHighlightsInSection(GuiSection gs) {
+		for (GuiHighlight h : events.values()) {
+			if (h.time.isBetween(gs.section.startTime, gs.renderedEnd) && !h.getActiveCategories().isEmpty()) {
+				selectedObjects.add(h);
 			}
 		}
 	}

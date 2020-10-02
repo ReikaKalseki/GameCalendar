@@ -1,5 +1,6 @@
 package Reika.GameCalendar.GUI;
 
+import java.time.MonthDay;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -115,6 +116,31 @@ public class GuiSection implements CalendarItem {
 	public void clearCache() {
 		activeCatCache = null;
 		activeSpanCache = null;
+	}
+
+	/** INCLUSIVE */
+	public boolean containsDate(DateStamp date, boolean anyYear) {
+		DateStamp end = renderedEnd != null ? renderedEnd : section.getEnd();
+		if (anyYear) {
+			if (this.getLength() > 366)
+				return true;
+			MonthDay current = MonthDay.of(date.month, date.day);
+			MonthDay from = MonthDay.of(section.startTime.month, section.startTime.day);
+			MonthDay until = MonthDay.of(end.month, end.day);
+
+			if (from.compareTo(until) <= 0)
+				return from.compareTo(current) <= 0 && current.compareTo(until) <= 0;
+			else
+				return current.compareTo(until) <= 0 || current.compareTo(from) >= 0;
+		}
+		else {
+			return date.isBetween(section.startTime, end);
+		}
+	}
+
+	public int getLength() {
+		DateStamp end = renderedEnd != null ? renderedEnd : section.getEnd();
+		return section.startTime.countDaysAfter(end);
 	}
 
 }

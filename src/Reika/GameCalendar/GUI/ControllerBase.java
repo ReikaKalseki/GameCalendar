@@ -295,6 +295,15 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		return true;
 	}
 
+	protected final void turnOffPickOnBoundsFor(Node n) {
+		n.setPickOnBounds(false);
+		if (n instanceof Parent) {
+			for (Node c : ((Parent)n).getChildrenUnmodifiable()) {
+				this.turnOffPickOnBoundsFor(c);
+			}
+		}
+	}
+
 	protected static class NodeWrapper {
 
 		public final String fxID;

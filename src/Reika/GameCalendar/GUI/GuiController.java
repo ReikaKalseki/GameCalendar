@@ -14,6 +14,7 @@ import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Util.Colors;
+import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.VideoExport.VideoOptionsWindow;
 
 import javafx.application.HostServices;
@@ -61,7 +62,11 @@ public class GuiController extends ControllerBase {
 	@FXML
 	private Pane calendarOverlay;
 
-	@FXML TextArea descriptionPane;
+	@FXML
+	private Pane calendarButtonHolder;
+
+	@FXML
+	TextArea descriptionPane;
 
 	@FXML
 	private ListView<String> catList;
@@ -115,6 +120,9 @@ public class GuiController extends ControllerBase {
 
 	@FXML
 	private Button videoExport;
+
+	@FXML
+	private Button selectToday;
 
 	@FXML
 	private VBox optionsContainer;
@@ -213,6 +221,10 @@ public class GuiController extends ControllerBase {
 				GuiController.this.update(GuiElement.PRIVACY.id);
 			}
 		});
+
+		this.turnOffPickOnBoundsFor(calendarButtonHolder);
+		selectToday.setLayoutX(800-selectToday.getWidth());
+		selectToday.setLayoutY(800-selectToday.getHeight()-3);
 
 		Labelling.instance.init(calendarOverlay);
 
@@ -415,6 +427,7 @@ public class GuiController extends ControllerBase {
 		CATEGORIES("catList"),
 		SORTORDER("sortList"),
 		PRIVACY("privacy"),
+		ALLTODAY("selectToday"),
 		;
 
 		private final String id;
@@ -458,6 +471,7 @@ public class GuiController extends ControllerBase {
 				case HIGHLIGHTS:
 				case ARCMERGE:
 				case PRIVACY:
+				case ALLTODAY:
 					return true;
 				default:
 					return false;
@@ -523,6 +537,10 @@ public class GuiController extends ControllerBase {
 						StatusHandler.postStatus("Failed to load video window", 4000);
 						e.printStackTrace();
 					}
+					break;
+				case ALLTODAY:
+					Main.getCalendarRenderer().clearSelection();
+					Main.getCalendarRenderer().selectAllAtDate(DateStamp.launch, true);
 					break;
 				default:
 					break;

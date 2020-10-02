@@ -36,6 +36,11 @@
                                     <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
                                  </center></BorderPane>
                               <Pane fx:id="calendarOverlay" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" />
+                              <Pane fx:id="calendarButtonHolder" prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <Button fx:id="selectToday" mnemonicParsing="false" text="Select All Today" />
+                                 </children>
+                              </Pane>
                            </children>
                         </StackPane>
                      </content>
@@ -131,9 +136,9 @@
                         </TitledPane>
                         <TitledPane fx:id="screenshotsTitled" text="Screenshots for Selected Period">
                            <content>
-                              <ScrollPane fx:id="imageScroller" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="580.0" vbarPolicy="ALWAYS">
+                              <ScrollPane fx:id="imageScroller" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" vbarPolicy="ALWAYS">
                                  <content>
-                                    <VBox fx:id="imageContainer" prefHeight="180.0" prefWidth="320.0" />
+                                    <VBox fx:id="imageContainer" prefHeight="463.0" prefWidth="320.0" />
                                  </content>
                               </ScrollPane>
                            </content>
