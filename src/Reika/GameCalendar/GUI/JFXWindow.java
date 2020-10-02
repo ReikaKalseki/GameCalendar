@@ -159,7 +159,7 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		return gui != null && gui.controller != null ? gui.controller.mouseHandler : null;
 	}
 
-	public SortingMode getSortingMode() {
+	public static SortingMode getSortingMode() {
 		return gui != null && gui.controller != null ? SortingMode.values()[gui.controller.sortList.getSelectionModel().getSelectedIndex()] : SortingMode.ALPHA;
 	}
 

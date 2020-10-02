@@ -47,6 +47,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
+import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiController.GuiElement;
@@ -88,7 +89,11 @@ public class VideoRenderer {
 
 		@Override
 		public int compare(EmbeddedEvent o1, EmbeddedEvent o2) {
-			int cat = o1.event.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.event.category);
+			SortingMode m = JFXWindow.getSortingMode();
+			if (m == SortingMode.INDIVIDUAL) {
+				return CalendarRenderer.eventSorter.compare(o1.event, o2.event);
+			}
+			int cat = o1.event.category.compareTo(m, o2.event.category);
 			return cat != 0 ? cat : CalendarRenderer.eventSorter.compare(o1.event, o2.event);
 		}
 
@@ -183,7 +188,7 @@ public class VideoRenderer {
 				freeScreenshotSlots.add(GL11.glGenTextures());
 			}
 
-			List<String> li = ActivityCategory.getSortedNameList(JFXWindow.getGUI().getSortingMode());
+			List<String> li = ActivityCategory.getSortedNameList(JFXWindow.getSortingMode());
 			Iterator<String> it = li.iterator();
 			while (it.hasNext()) {
 				String s = it.next();

@@ -230,8 +230,8 @@ public class GuiController extends ControllerBase {
 
 		//this.dynamicizeTextBoxes(root);
 		sortList.setItems(FXCollections.observableList(SortingMode.list()));
-		sortList.getSelectionModel().clearAndSelect(SortingMode.TIME.ordinal());
-		catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(SortingMode.values()[sortList.getSelectionModel().getSelectedIndex()])));
+		sortList.getSelectionModel().clearAndSelect(SortingMode.INDIVIDUAL.ordinal());
+		catList.setItems(FXCollections.observableList(ActivityCategory.getSortedNameList(JFXWindow.getSortingMode())));
 		catList.getSelectionModel().selectAll();
 		catList.setCellFactory(lv -> {
 			ListCell<String> cell = new CategoryListCell();

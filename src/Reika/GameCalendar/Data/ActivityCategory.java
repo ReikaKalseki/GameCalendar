@@ -70,9 +70,10 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 	}
 
 	public static enum SortingMode {
-		ALPHA("Alphabetical"),
-		EXPLICIT("File-specified"),
-		TIME("By first appearance");
+		ALPHA("By Category - Alphabetical"),
+		EXPLICIT("By Category - File-Specified"),
+		TIME("By Category - First Appearance"),
+		INDIVIDUAL("By Individual Date");
 
 		private final String displayName;
 
@@ -113,6 +114,7 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 			case EXPLICIT:
 				return Integer.compare(sortingIndex, o.sortingIndex);
 			case TIME:
+			case INDIVIDUAL:
 				return firstDate.compareTo(o.firstDate);
 			default:
 				return 0;

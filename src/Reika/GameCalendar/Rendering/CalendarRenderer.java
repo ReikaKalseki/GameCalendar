@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.CompoundElement;
 import Reika.GameCalendar.Data.CondensedTimeline;
@@ -47,9 +48,15 @@ public class CalendarRenderer {
 	public static final Comparator<CalendarEvent> eventSorter = new Comparator<CalendarEvent>() {
 		@Override
 		public int compare(CalendarEvent o1, CalendarEvent o2) {
-			int dc = o1.getDescriptiveDate().compareTo(o2.getDescriptiveDate());
-			int cc = o1.category.compareTo(JFXWindow.getGUI().getSortingMode(), o2.category);
-			return dc+cc*10000;
+			SortingMode m = JFXWindow.getSortingMode();
+			if (m == SortingMode.INDIVIDUAL) {
+				return o1.getDescriptiveDate().compareTo(o2.getDescriptiveDate());
+			}
+			else {
+				int dc = o1.getDescriptiveDate().compareTo(o2.getDescriptiveDate());
+				int cc = o1.category.compareTo(JFXWindow.getSortingMode(), o2.category);
+				return dc+cc*10000;
+			}
 		}
 	};
 
