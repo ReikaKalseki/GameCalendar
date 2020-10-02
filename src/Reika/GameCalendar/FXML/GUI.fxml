@@ -138,7 +138,7 @@
                            <content>
                               <ScrollPane fx:id="imageScroller" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" vbarPolicy="ALWAYS">
                                  <content>
-                                    <VBox fx:id="imageContainer" prefHeight="463.0" prefWidth="320.0" />
+                                    <VBox fx:id="imageContainer" prefHeight="514.0" prefWidth="320.0" />
                                  </content>
                               </ScrollPane>
                            </content>
