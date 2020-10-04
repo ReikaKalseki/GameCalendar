@@ -208,63 +208,7 @@ public class CalendarRenderer {
 		}
 
 		if (GuiElement.HIGHLIGHTS.isChecked()) {
-			GL11.glPushMatrix();
-			GL11.glTranslated(0, 0, -0.1);
-			GL11.glPointSize(8);
-			GL11.glColor4f(0, 0, 0, 1);
-			GL11.glBegin(GL11.GL_POINTS);
-			ArrayList<GuiHighlight> memorable = new ArrayList();
-			for (GuiHighlight h : events.values()) {
-				if (h.getActiveEvents().isEmpty())
-					continue;
-				if (limit != null && h.time.compareTo(limit) > 0)
-					continue;
-				double a = h.time.getAngle();
-				int i = years.indexOf(h.time.year);
-				double r1 = INNER_RADIUS+i*arcThickness;
-				double r2 = INNER_RADIUS+(i+1)*arcThickness;
-				double r = r1+(r2-r1)*(a/360D);
-				double ang = this.getGuiAngle(a);
-				double x = r*Math.cos(ang);
-				double y = r*Math.sin(ang);
-				h.position = new DoublePoint(x, y);
-				GL11.glVertex2d(x, y);
-				if (GuiElement.MEMORABLE.isChecked() && h.isMemorable(true)) {
-					memorable.add(h);
-				}
-			}
-			GL11.glEnd();
-
-			if (!memorable.isEmpty()) {
-				double d = 1/80D;
-				GL11.glLineWidth(1);
-				GL11.glColor4f(1, 1, 1, 1);
-				GL11.glBegin(GL11.GL_LINES);
-				for (GuiHighlight h : memorable) {
-					GL11.glVertex2d(h.position.x, h.position.y-d);
-					GL11.glVertex2d(h.position.x, h.position.y+d);
-					GL11.glVertex2d(h.position.x-d, h.position.y);
-					GL11.glVertex2d(h.position.x+d, h.position.y);
-				}
-				GL11.glEnd();
-				GL11.glLineWidth(2);
-			}
-
-			for (CalendarItem ci : selectedObjects) {
-				if (ci instanceof GuiHighlight) {
-					GuiHighlight gh = (GuiHighlight)ci;
-					double d = 1/50D;
-					GL11.glBegin(GL11.GL_LINE_LOOP);
-					for (double a = 0; a < 360; a += 60) {
-						double dx = d*Math.cos(Math.toRadians(a+90));
-						double dy = d*Math.sin(Math.toRadians(a+90));
-						GL11.glVertex2d(gh.position.x+dx, gh.position.y+dy);
-					}
-					GL11.glEnd();
-				}
-			}
-
-			GL11.glPopMatrix();
+			this.drawHighlights();
 		}
 
 		if (GuiElement.XMAS.isChecked()) {
@@ -299,6 +243,68 @@ public class CalendarRenderer {
 		}
 
 		this.updateLabels(sw, sh);
+	}
+
+	private void drawHighlights() {
+		GL11.glPushMatrix();
+		GL11.glTranslated(0, 0, -0.1);
+		GL11.glPointSize(8);
+		GL11.glColor4f(0, 0, 0, 1);
+		//ArrayList<GuiHighlight> memorable = new ArrayList();
+		for (GuiHighlight h : events.values()) {
+			if (h.getActiveEvents().isEmpty())
+				continue;
+			if (limit != null && h.time.compareTo(limit) > 0)
+				continue;
+			GL11.glPointSize(GuiElement.MEMORABLE.isChecked() && h.isMemorable(true) ? 10 : 8);
+			GL11.glBegin(GL11.GL_POINTS);
+			double a = h.time.getAngle();
+			int i = years.indexOf(h.time.year);
+			double r1 = INNER_RADIUS+i*arcThickness;
+			double r2 = INNER_RADIUS+(i+1)*arcThickness;
+			double r = r1+(r2-r1)*(a/360D);
+			double ang = this.getGuiAngle(a);
+			double x = r*Math.cos(ang);
+			double y = r*Math.sin(ang);
+			h.position = new DoublePoint(x, y);
+			GL11.glVertex2d(x, y);
+			GL11.glEnd();
+		}
+		/*
+		if (!memorable.isEmpty()) {
+			double d = 1/80D;
+			GL11.glLineWidth(1);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glBegin(GL11.GL_LINES);
+			for (GuiHighlight h : memorable) {
+				GL11.glVertex2d(h.position.x-d, h.position.y-d);
+				GL11.glVertex2d(h.position.x-d, h.position.y+d);
+				GL11.glVertex2d(h.position.x+d, h.position.y-d);
+				GL11.glVertex2d(h.position.x+d, h.position.y+d);
+				GL11.glVertex2d(h.position.x-d, h.position.y-d);
+				GL11.glVertex2d(h.position.x+d, h.position.y-d);
+				GL11.glVertex2d(h.position.x-d, h.position.y+d);
+				GL11.glVertex2d(h.position.x+d, h.position.y+d);
+			}
+			GL11.glEnd();
+			GL11.glLineWidth(2);
+		}*/
+
+		for (CalendarItem ci : selectedObjects) {
+			if (ci instanceof GuiHighlight) {
+				GuiHighlight gh = (GuiHighlight)ci;
+				double d = 1/50D;
+				GL11.glBegin(GL11.GL_LINE_LOOP);
+				for (double a = 0; a < 360; a += 60) {
+					double dx = d*Math.cos(Math.toRadians(a+90));
+					double dy = d*Math.sin(Math.toRadians(a+90));
+					GL11.glVertex2d(gh.position.x+dx, gh.position.y+dy);
+				}
+				GL11.glEnd();
+			}
+		}
+
+		GL11.glPopMatrix();
 	}
 
 	private void updateLabels(int sw, int sh) {
