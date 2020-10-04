@@ -38,7 +38,7 @@
                               <Pane fx:id="calendarOverlay" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="800.0" />
                               <Pane fx:id="calendarButtonHolder" prefHeight="200.0" prefWidth="200.0">
                                  <children>
-                                    <Button fx:id="selectToday" mnemonicParsing="false" text="Select All Today" />
+                                    <Button fx:id="advancedSelection" mnemonicParsing="false" text="Advanced Selection..." />
                                  </children>
                               </Pane>
                            </children>

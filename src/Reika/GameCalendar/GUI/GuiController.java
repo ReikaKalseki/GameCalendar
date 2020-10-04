@@ -14,7 +14,6 @@ import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Util.Colors;
-import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.VideoExport.VideoOptionsWindow;
 
 import javafx.application.HostServices;
@@ -122,7 +121,7 @@ public class GuiController extends ControllerBase {
 	private Button videoExport;
 
 	@FXML
-	private Button selectToday;
+	private Button advancedSelection;
 
 	@FXML
 	private VBox optionsContainer;
@@ -223,8 +222,8 @@ public class GuiController extends ControllerBase {
 		});
 
 		this.turnOffPickOnBoundsFor(calendarButtonHolder);
-		selectToday.setLayoutX(800-selectToday.getWidth());
-		selectToday.setLayoutY(800-selectToday.getHeight()-3);
+		advancedSelection.setLayoutX(800-advancedSelection.getWidth());
+		advancedSelection.setLayoutY(800-advancedSelection.getHeight()-3);
 
 		Labelling.instance.init(calendarOverlay);
 
@@ -313,17 +312,21 @@ public class GuiController extends ControllerBase {
 			Main.getCalendarRenderer().calculateDescriptions();
 		}
 		else if (gui == null || gui.resetRenderer()) {
-			StatusHandler.postStatus("Reloading render state", 200);
-			Main.getCalendarRenderer().clearSelection();
-			//Labelling.instance.init(calendarOverlay);
-			this.setImages(null);
+			this.resetRenderer();
 		}
 		if (gui == GuiElement.SORTORDER) {
 			Main.getCalendarRenderer().restoreSelection();
 		}
 		videoExport.disableProperty().set(!this.isVideoExportValid());
 		openFiles.disableProperty().set(GuiElement.ARCMERGE.isChecked());
-		selectToday.disableProperty().set(!this.areAllCategoriesActive());
+		//selectToday.disableProperty().set(!this.areAllCategoriesActive());
+	}
+
+	private void resetRenderer() {
+		StatusHandler.postStatus("Reloading render state", 200);
+		Main.getCalendarRenderer().clearSelection();
+		//Labelling.instance.init(calendarOverlay);
+		this.setImages(null);
 	}
 
 	private boolean isVideoExportValid() {
@@ -428,7 +431,7 @@ public class GuiController extends ControllerBase {
 		CATEGORIES("catList"),
 		SORTORDER("sortList"),
 		PRIVACY("privacy"),
-		ALLTODAY("selectToday"),
+		ADVSEL("advancedSelection"),
 		;
 
 		private final String id;
@@ -472,7 +475,7 @@ public class GuiController extends ControllerBase {
 				case HIGHLIGHTS:
 				case ARCMERGE:
 				case PRIVACY:
-				case ALLTODAY:
+					//case ADVSEL:
 					return true;
 				default:
 					return false;
@@ -539,9 +542,17 @@ public class GuiController extends ControllerBase {
 						e.printStackTrace();
 					}
 					break;
-				case ALLTODAY:
-					Main.getCalendarRenderer().clearSelection();
-					Main.getCalendarRenderer().selectAllAtDate(DateStamp.launch, true);
+				case ADVSEL:
+					c.resetRenderer();
+					try {
+						AdvancedSelectionWindow vow = new AdvancedSelectionWindow();
+						vow.init();
+						vow.postInit(JFXWindow.getGUI().getHostServices());
+					}
+					catch (IOException e) {
+						StatusHandler.postStatus("Failed to load selection window", 4000);
+						e.printStackTrace();
+					}
 					break;
 				default:
 					break;

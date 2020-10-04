@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="root" alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.VideoExport.VideoGuiController">
+   <children>
+      <TitledPane animated="false" collapsible="false" text="Encoder">
+         <content>
+            <VBox alignment="CENTER_LEFT">
+               <children>
+                  <RadioButton fx:id="jcodec" mnemonicParsing="false" text="JCodec (Built-in, but slow to encode and has poor color accuracy)">
+                     <VBox.margin>
+                        <Insets bottom="3.0" top="6.0" />
+                     </VBox.margin>
+                  </RadioButton>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <RadioButton fx:id="ffmpeg" mnemonicParsing="false" text="FFMPEG (Fast, accurate, requires independent install)">
+                           <HBox.margin>
+                              <Insets right="9.0" />
+                           </HBox.margin>
+                        </RadioButton>
+                        <TextField fx:id="mpegPath" prefWidth="500.0" promptText="Path to FFMPEG executable" />
+                        <Button fx:id="loadFile" mnemonicParsing="false" text="Choose File...">
+                           <HBox.margin>
+                              <Insets left="4.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets bottom="3.0" top="3.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </TitledPane>
+      <Separator prefWidth="200.0" />
+      <TitledPane animated="false" collapsible="false" text="Video Options">
+         <content>
+            <VBox alignment="CENTER_LEFT">
+               <children>
+                  <VBox>
+                     <children>
+                        <Label text="File Format" />
+                        <RadioButton fx:id="formatButtonPlaceholder" mnemonicParsing="false" text="x264 MP4 (Small size, high quality, not compatible with some players)">
+                           <VBox.margin>
+                              <Insets bottom="4.0" left="15.0" top="4.0" />
+                           </VBox.margin>
+                        </RadioButton>
+                     </children>
+                  </VBox>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="Export To:">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="outputFolder" prefWidth="556.0" promptText="Output folder" />
+                        <Label text="/">
+                           <HBox.margin>
+                              <Insets left="4.0" right="4.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="outputName" prefWidth="160.0" promptText="Output file name (no ext)" />
+                        <Button fx:id="loadFolder" mnemonicParsing="false" text="Choose Folder...">
+                           <HBox.margin>
+                              <Insets left="4.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets bottom="3.0" top="3.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets top="8.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </TitledPane>
+      <Separator prefWidth="200.0" />
+      <TitledPane animated="false" collapsible="false" text="Playback Options">
+         <content>
+            <VBox alignment="CENTER_LEFT">
+               <children>
+                  <CheckBox fx:id="copyToDFX" mnemonicParsing="false" text="Render calendar into GUI during video generation as preview (may slow export)">
+                     <VBox.margin>
+                        <Insets bottom="6.0" />
+                     </VBox.margin>
+                  </CheckBox>
+                  <VBox>
+                     <children>
+                        <CheckBox fx:id="pauseNew" mnemonicParsing="false" text="Pause timelapse on new event/period">
+                           <VBox.margin>
+                              <Insets bottom="3.0" top="3.0" />
+                           </VBox.margin>
+                        </CheckBox>
+                        <HBox>
+                           <children>
+                              <Label text="Pause duration:">
+                                 <padding>
+                                    <Insets bottom="3.0" top="3.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="pauseLenText" text="&lt;Time&gt;">
+                                 <padding>
+                                    <Insets bottom="3.0" top="3.0" />
+                                 </padding>
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <Slider fx:id="pauseSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                           <padding>
+                              <Insets bottom="3.0" top="3.0" />
+                           </padding>
+                        </Slider>
+                     </children>
+                  </VBox>
+                  <VBox>
+                     <children>
+                        <HBox>
+                           <children>
+                              <Label text="Days Per Frame:">
+                                 <padding>
+                                    <Insets bottom="3.0" top="3.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="speedText" text="&lt;Days&gt;">
+                                 <padding>
+                                    <Insets bottom="3.0" top="3.0" />
+                                 </padding>
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <Slider fx:id="speedSlider" blockIncrement="30.0" majorTickUnit="30.0" max="31.0" min="1.0" minorTickCount="29" showTickLabels="true" showTickMarks="true">
+                           <padding>
+                              <Insets bottom="3.0" top="3.0" />
+                           </padding>
+                        </Slider>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="20.0" top="20.0" />
+                     </VBox.margin>
+                  </VBox>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="Play From">
+                           <padding>
+                              <Insets bottom="3.0" top="3.0" />
+                           </padding>
+                        </Label>
+                        <TextField fx:id="startDate" promptText="Start Date">
+                           <HBox.margin>
+                              <Insets left="8.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Label text="to">
+                           <padding>
+                              <Insets bottom="3.0" top="3.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets left="6.0" right="6.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="endDate" promptText="End Date" />
+                     </children>
+                     <padding>
+                        <Insets bottom="3.0" top="3.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </TitledPane>
+      <Separator prefWidth="200.0" />
+      <Button fx:id="goButton" alignment="CENTER" mnemonicParsing="false" text="Generate Video">
+         <VBox.margin>
+            <Insets bottom="5.0" top="2.0" />
+         </VBox.margin>
+      </Button>
+   </children>
+</VBox>
