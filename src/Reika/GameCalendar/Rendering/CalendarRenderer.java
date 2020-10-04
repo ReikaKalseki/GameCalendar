@@ -266,30 +266,42 @@ public class CalendarRenderer {
 			double x = r*Math.cos(ang);
 			double y = r*Math.sin(ang);
 			h.position = new DoublePoint(x, y);
-			GL11.glVertex2d(x, y);
 			if (GuiElement.MEMORABLE.isChecked() && h.isMemorable(true)) {
 				memorable.add(h);
+			}
+			else {
+				GL11.glVertex2d(x, y);
 			}
 		}
 		GL11.glEnd();
 
 		if (!memorable.isEmpty()) {
+			GL11.glTranslated(0, 0, -0.85);
 			double d = 1/80D;
-			GL11.glLineWidth(1);
-			GL11.glColor4f(1, 1, 1, 1);
-			GL11.glBegin(GL11.GL_LINES);
+			double d2 = 1/140D;
+			GL11.glColor4f(0, 0, 0, 1);
+			/*
+			GL11.glBegin(GL11.GL_QUADS);
 			for (GuiHighlight h : memorable) {
 				GL11.glVertex2d(h.position.x-d, h.position.y-d);
 				GL11.glVertex2d(h.position.x-d, h.position.y+d);
-				GL11.glVertex2d(h.position.x+d, h.position.y-d);
 				GL11.glVertex2d(h.position.x+d, h.position.y+d);
-				GL11.glVertex2d(h.position.x-d, h.position.y-d);
 				GL11.glVertex2d(h.position.x+d, h.position.y-d);
-				GL11.glVertex2d(h.position.x-d, h.position.y+d);
-				GL11.glVertex2d(h.position.x+d, h.position.y+d);
 			}
 			GL11.glEnd();
-			GL11.glLineWidth(2);
+			 */
+			for (GuiHighlight h : memorable) {
+				GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+				GL11.glVertex2d(h.position.x, h.position.y);
+				for (double a = 0; a <= 360; a += 30) {
+					double ang = this.getGuiAngle(a);
+					double r = a%60 == 0 ? d : d2;
+					double x = h.position.x+r*Math.cos(ang);
+					double y = h.position.y+r*Math.sin(ang);
+					GL11.glVertex2d(x, y);
+				}
+				GL11.glEnd();
+			}
 		}
 
 		for (CalendarItem ci : selectedObjects) {
