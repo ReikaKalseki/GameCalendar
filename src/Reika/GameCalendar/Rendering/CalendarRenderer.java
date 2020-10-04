@@ -250,14 +250,13 @@ public class CalendarRenderer {
 		GL11.glTranslated(0, 0, -0.1);
 		GL11.glPointSize(8);
 		GL11.glColor4f(0, 0, 0, 1);
-		//ArrayList<GuiHighlight> memorable = new ArrayList();
+		GL11.glBegin(GL11.GL_POINTS);
+		ArrayList<GuiHighlight> memorable = new ArrayList();
 		for (GuiHighlight h : events.values()) {
 			if (h.getActiveEvents().isEmpty())
 				continue;
 			if (limit != null && h.time.compareTo(limit) > 0)
 				continue;
-			GL11.glPointSize(GuiElement.MEMORABLE.isChecked() && h.isMemorable(true) ? 10 : 8);
-			GL11.glBegin(GL11.GL_POINTS);
 			double a = h.time.getAngle();
 			int i = years.indexOf(h.time.year);
 			double r1 = INNER_RADIUS+i*arcThickness;
@@ -268,9 +267,12 @@ public class CalendarRenderer {
 			double y = r*Math.sin(ang);
 			h.position = new DoublePoint(x, y);
 			GL11.glVertex2d(x, y);
-			GL11.glEnd();
+			if (GuiElement.MEMORABLE.isChecked() && h.isMemorable(true)) {
+				memorable.add(h);
+			}
 		}
-		/*
+		GL11.glEnd();
+
 		if (!memorable.isEmpty()) {
 			double d = 1/80D;
 			GL11.glLineWidth(1);
@@ -288,7 +290,7 @@ public class CalendarRenderer {
 			}
 			GL11.glEnd();
 			GL11.glLineWidth(2);
-		}*/
+		}
 
 		for (CalendarItem ci : selectedObjects) {
 			if (ci instanceof GuiHighlight) {
