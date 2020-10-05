@@ -2,7 +2,6 @@ package Reika.GameCalendar.GUI;
 
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
-import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Util.DateStamp;
 
 import javafx.application.HostServices;
@@ -130,7 +129,7 @@ public class AdvancedSelectionController extends ControllerBase {
 			switch(this) {
 				case YEAR:
 					int year = Integer.parseInt(con.selYear.getSelectionModel().getSelectedItem());
-					Main.getCalendarRenderer().selectComplex(item -> item.containsYear(year, true));
+					Main.getCalendarRenderer().selectComplexSub(item -> item.containsYear(year));
 					break;
 				case DATE:
 					DateStamp date = DateStamp.parse(con.date.getText());
@@ -140,20 +139,12 @@ public class AdvancedSelectionController extends ControllerBase {
 					String catsel = con.category.getSelectionModel().getSelectedItem();
 					String catselYear = con.catYear.getSelectionModel().getSelectedItem();
 					int catyear = catselYear.equals("Any") ? -1 : Integer.parseInt(catselYear);
-					Main.getCalendarRenderer().selectComplex(item -> (catyear == -1 || item.containsYear(catyear, true)) && item.getActiveCategories().contains(ActivityCategory.getByName(catsel)));
+					Main.getCalendarRenderer().selectComplexSub(item -> (catyear == -1 || item.containsYear(catyear)) && item.category == ActivityCategory.getByName(catsel));
 					break;
 				case MEMORABLE:
 					String memselYear = con.memYear.getSelectionModel().getSelectedItem();
 					int memyear = memselYear.equals("Any") ? -1 : Integer.parseInt(memselYear);
-					Main.getCalendarRenderer().selectComplex(item -> {
-						if (memyear == -1 || item.containsYear(memyear, true)) {
-							for (CalendarEvent e : item.getItems(true)) {
-								if (e.isMemorable())
-									return true;
-							}
-						}
-						return false;
-					});
+					Main.getCalendarRenderer().selectComplexSub(item -> item.isMemorable() && (memyear == -1 || item.containsYear(memyear)));
 					break;
 				default:
 					break;

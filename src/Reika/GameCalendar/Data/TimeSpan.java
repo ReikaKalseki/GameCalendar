@@ -61,4 +61,9 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 		return end;
 	}
 
+	@Override
+	public boolean containsYear(int year) {
+		return start.year == year || end.year == year || (start.year < year && end.year > year);
+	}
+
 }

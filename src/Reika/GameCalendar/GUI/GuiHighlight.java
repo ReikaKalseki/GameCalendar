@@ -67,7 +67,7 @@ public class GuiHighlight implements CalendarItem {
 		if (activeEventCache == null) {
 			activeEventCache = new ArrayList();
 			for (Highlight ts : events) {
-				if (GuiElement.CATEGORIES.isStringSelected(ts.category.name) && ts.isPrivacyLevelVisible()) {
+				if (ts.isVisible()) {
 					activeEventCache.add(ts);
 				}
 			}

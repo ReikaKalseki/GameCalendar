@@ -43,4 +43,9 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 		return time;
 	}
 
+	@Override
+	public boolean containsYear(int year) {
+		return time.year == year;
+	}
+
 }

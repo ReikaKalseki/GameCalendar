@@ -128,23 +128,6 @@
             <Insets bottom="5.0" top="2.0" />
          </VBox.margin>
          <children>
-            <VBox alignment="CENTER_LEFT">
-               <children>
-                  <CheckBox mnemonicParsing="false" text="Events">
-                     <VBox.margin>
-                        <Insets bottom="4.0" top="4.0" />
-                     </VBox.margin>
-                  </CheckBox>
-                  <CheckBox mnemonicParsing="false" text="Periods">
-                     <VBox.margin>
-                        <Insets bottom="4.0" top="4.0" />
-                     </VBox.margin>
-                  </CheckBox>
-               </children>
-               <HBox.margin>
-                  <Insets right="24.0" />
-               </HBox.margin>
-            </VBox>
             <Button fx:id="doSelect" alignment="CENTER" mnemonicParsing="false" text="Select Applicable Elements" />
          </children>
       </HBox>

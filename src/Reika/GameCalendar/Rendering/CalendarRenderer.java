@@ -35,6 +35,7 @@ import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
 import Reika.GameCalendar.Util.DoublePolygon;
+import Reika.GameCalendar.Util.EventSelector;
 import Reika.GameCalendar.Util.GLFunctions.BlendMode;
 import Reika.GameCalendar.VideoExport.VideoRenderer;
 
@@ -750,6 +751,48 @@ public class CalendarRenderer {
 			for (CalendarEvent ce : ci.getItems(true)) {
 				ce.openFile(host);
 			}
+		}
+	}
+
+	public synchronized void selectComplexSub(EventSelector sel) {
+		this.clearSelection();
+		HashSet<CalendarEvent> set = new HashSet();
+		for (GuiSection s : this.getActiveSectionList()) {
+			if (s.polygon != null) {
+				boolean flag = false;
+				for (TimeSpan ts : s.getActiveSpans()) {
+					if (ts.isVisible() && sel.select(ts)) {
+						set.add(ts);
+						flag = true;
+					}
+				}
+				if (flag) {
+					selectedObjects.add(s);
+				}
+			}
+		}
+		for (GuiHighlight s : events.values()) {
+			if (s.position != null) {
+				boolean flag = false;
+				for (Highlight ts : s.getActiveEvents()) {
+					if (ts.isVisible() && sel.select(ts)) {
+						set.add(ts);
+						flag = true;
+					}
+				}
+				if (flag) {
+					selectedObjects.add(s);
+				}
+			}
+		}
+		if (set.isEmpty()) {
+			JFXWindow.getGUI().setScreenshots(null);
+		}
+		else {
+			ArrayList<CalendarEvent> li = new ArrayList(set);
+			Collections.sort(li, eventSorter);
+			JFXWindow.getGUI().setScreenshots(li);
+			Labelling.instance.calculateDescriptions(li);
 		}
 	}
 

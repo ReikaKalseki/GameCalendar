@@ -88,7 +88,7 @@ public class GuiSection implements CalendarItem {
 		if (activeSpanCache == null) {
 			activeSpanCache = new ArrayList();
 			for (TimeSpan ts : section.getSpans()) {
-				if (GuiElement.CATEGORIES.isStringSelected(ts.category.name) && ts.isPrivacyLevelVisible()) {
+				if (ts.isVisible()) {
 					activeSpanCache.add(ts);
 				}
 			}

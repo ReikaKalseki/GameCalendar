@@ -112,7 +112,7 @@ public abstract class CalendarEvent {
 		}
 	}
 
-	public final boolean isPrivacyLevelVisible() {
+	protected final boolean isPrivacyLevelVisible() {
 		return GuiElement.PRIVACY.getValue() >= privacyLevel;
 	}
 
@@ -131,6 +131,12 @@ public abstract class CalendarEvent {
 
 	public int getPrivacy() {
 		return privacyLevel;
+	}
+
+	public abstract boolean containsYear(int year);
+
+	public final boolean isVisible() {
+		return this.isPrivacyLevelVisible() && GuiElement.CATEGORIES.isStringSelected(category.name);
 	}
 
 }
