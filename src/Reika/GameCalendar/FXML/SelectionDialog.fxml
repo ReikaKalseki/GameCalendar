@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -96,19 +97,11 @@
          <content>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <VBox prefWidth="210.0">
+                  <AnchorPane prefWidth="210.0">
                      <HBox.margin>
                         <Insets left="24.0" right="9.0" />
                      </HBox.margin>
-                     <children>
-                        <CheckBox fx:id="memEvents" mnemonicParsing="false" text="Events">
-                           <VBox.margin>
-                              <Insets bottom="4.0" />
-                           </VBox.margin>
-                        </CheckBox>
-                        <CheckBox fx:id="memPeriods" mnemonicParsing="false" text="Periods" />
-                     </children>
-                  </VBox>
+                  </AnchorPane>
                   <Label text="In Year:">
                      <HBox.margin>
                         <Insets left="8.0" right="8.0" />
@@ -130,10 +123,30 @@
          </font>
       </TitledPane>
       <Separator prefWidth="200.0" />
-      <Button fx:id="doSelect" alignment="CENTER" mnemonicParsing="false" text="Select Applicable Elements">
+      <HBox alignment="CENTER">
          <VBox.margin>
             <Insets bottom="5.0" top="2.0" />
          </VBox.margin>
-      </Button>
+         <children>
+            <VBox alignment="CENTER_LEFT">
+               <children>
+                  <CheckBox mnemonicParsing="false" text="Events">
+                     <VBox.margin>
+                        <Insets bottom="4.0" top="4.0" />
+                     </VBox.margin>
+                  </CheckBox>
+                  <CheckBox mnemonicParsing="false" text="Periods">
+                     <VBox.margin>
+                        <Insets bottom="4.0" top="4.0" />
+                     </VBox.margin>
+                  </CheckBox>
+               </children>
+               <HBox.margin>
+                  <Insets right="24.0" />
+               </HBox.margin>
+            </VBox>
+            <Button fx:id="doSelect" alignment="CENTER" mnemonicParsing="false" text="Select Applicable Elements" />
+         </children>
+      </HBox>
    </children>
 </VBox>
