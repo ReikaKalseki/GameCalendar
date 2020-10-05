@@ -143,4 +143,13 @@ public class GuiSection implements CalendarItem {
 		return section.startTime.countDaysAfter(end);
 	}
 
+	@Override
+	public boolean containsYear(int year, boolean activeOnly) {
+		for (TimeSpan ts : activeOnly ? this.getActiveSpans() : section.getSpans()) {
+			if (ts.start.year == year || ts.end.year == year)
+				return true;
+		}
+		return false;
+	}
+
 }

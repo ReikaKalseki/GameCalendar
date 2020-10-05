@@ -95,6 +95,9 @@ public class DateStamp implements Comparable<DateStamp> {
 		if (s.equals("<ongoing>")) {
 			return launch;
 		}
+		if (s.equals("<Today>")) {
+			return launch;
+		}
 		String[] parts = s.split("/");
 		int day = parts.length == 3 ? Integer.parseInt(parts[0]) : 1;
 		int month = Integer.parseInt(parts.length == 3 ? parts[1] : parts[0]);

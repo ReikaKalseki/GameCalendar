@@ -19,6 +19,11 @@ public class Main {
 
 	//fmpeg admin problem
 
+	//"Select all in year" is selecting too much, likely due to 'transitive leakage', i.e a section extending a little out of the year,
+	//'contaminating' all within that section, and then selecting every section that contains THOSE
+
+	//related: select all of category selects the entire section with any subelements of a given category, including all ones NOT of that cat
+
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
 
 		@Override

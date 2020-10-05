@@ -16,4 +16,6 @@ public interface CalendarItem {
 
 	public List<? extends CalendarEvent> getItems(boolean activeOnly);
 
+	public boolean containsYear(int year, boolean activeOnly);
+
 }

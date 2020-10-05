@@ -33,7 +33,7 @@ public class AdvancedSelectionWindow implements EventHandler<javafx.event.Event>
 		window = new Stage();
 		System.out.println("Initializing GUI.");
 		window.getIcons().add(new Image(Main.class.getResourceAsStream("icon.png")));
-		window.setHeight(640);
+		//window.setHeight(640);
 		window.setResizable(false);
 
 		FXMLLoader loader = new FXMLLoader(Main.class.getResource("FXML/SelectionDialog.fxml"));

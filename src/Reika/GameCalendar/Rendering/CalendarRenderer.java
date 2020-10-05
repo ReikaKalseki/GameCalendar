@@ -30,6 +30,7 @@ import Reika.GameCalendar.GUI.GuiHighlight;
 import Reika.GameCalendar.GUI.GuiSection;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.GUI.Labelling;
+import Reika.GameCalendar.Util.CalendarSelector;
 import Reika.GameCalendar.Util.Colors;
 import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.DoublePoint;
@@ -750,6 +751,19 @@ public class CalendarRenderer {
 				ce.openFile(host);
 			}
 		}
+	}
+
+	public synchronized void selectComplex(CalendarSelector sel) {
+		this.clearSelection();
+		for (GuiSection s : this.getActiveSectionList()) {
+			if (s.polygon != null && sel.select(s))
+				selectedObjects.add(s);
+		}
+		for (GuiHighlight s : events.values()) {
+			if (s.position != null && sel.select(s))
+				selectedObjects.add(s);
+		}
+		this.calculateDescriptions();
 	}
 
 	public synchronized void selectAllAtDate(DateStamp date, boolean anyYear) {
