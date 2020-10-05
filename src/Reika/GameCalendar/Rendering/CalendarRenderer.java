@@ -395,6 +395,11 @@ public class CalendarRenderer {
 		LinkedList<DoublePoint> pointsInnerWide = new LinkedList();
 		LinkedList<DoublePoint> pointsOuterWide = new LinkedList();
 		int colorstep = 2;//Math.max(4, 6-i2/2);
+
+		double dt = arcThicknessHalfFraction;
+		if (GuiElement.MEMORABLE.isChecked() && !s.isMemorable(true))
+			dt *= 0.75;
+
 		for (double a = a1; a < a2; a += 0.5) {
 			double ang = this.getGuiAngle(a);
 			double r1 = r1a;
@@ -402,11 +407,11 @@ public class CalendarRenderer {
 
 			double r0 = r1+(r2-r1)*(a/360D);
 
-			double ra = r0-arcThickness*arcThicknessHalfFraction*wf;
-			double rb = r0+arcThickness*arcThicknessHalfFraction*wf;
+			double ra = r0-arcThickness*dt*wf;
+			double rb = r0+arcThickness*dt*wf;
 
-			double ra2 = ra-arcThickness*arcThicknessHalfFraction*wf*0.25;
-			double rb2 = rb+arcThickness*arcThicknessHalfFraction*wf*0.25;
+			double ra2 = ra-arcThickness*dt*wf*0.25;
+			double rb2 = rb+arcThickness*dt*wf*0.25;
 
 			double xa = ra*Math.cos(ang);
 			double ya = ra*Math.sin(ang);
@@ -475,7 +480,7 @@ public class CalendarRenderer {
 		}
 		if (sel)
 			GL11.glEnd();
-		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
+		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true) && false) {
 			GL11.glLineWidth(12);
 			GL11.glEnable(GL11.GL_LINE_STIPPLE);
 			short bits = 0x7070;
