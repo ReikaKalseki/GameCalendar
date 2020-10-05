@@ -480,7 +480,8 @@ public class CalendarRenderer {
 		}
 		if (sel)
 			GL11.glEnd();
-		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true) && false) {
+		/*
+		if (GuiElement.MEMORABLE.isChecked() && s.isMemorable(true)) {
 			GL11.glLineWidth(12);
 			GL11.glEnable(GL11.GL_LINE_STIPPLE);
 			short bits = 0x7070;
@@ -503,11 +504,12 @@ public class CalendarRenderer {
 			GL11.glBegin(GL11.GL_LINE_LOOP);
 			for (DoublePoint p : pointsWide) {
 				GL11.glVertex2d(p.x, p.y);
-			}*/
+			}*//*
 			GL11.glEnd();
 			GL11.glDisable(GL11.GL_LINE_STIPPLE);
 			GL11.glLineWidth(2);
 		}
+			 */
 	}
 
 	private boolean shouldMerge(GuiSection g1, GuiSection g2) {
