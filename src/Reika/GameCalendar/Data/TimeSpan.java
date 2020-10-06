@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 
 import Reika.GameCalendar.Util.DateStamp;
 
@@ -12,8 +13,8 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 	public final DateStamp start;
 	public final DateStamp end;
 
-	public TimeSpan(File f, ActivityCategory a, DateStamp s, DateStamp e, String n, String desc) {
-		super(f, a, n, desc);
+	public TimeSpan(File f, HashMap<String, String> data, ActivityCategory a, DateStamp s, DateStamp e) {
+		super(f, data, a);
 		start = s;
 		end = e;
 		if (start.compareTo(end) >= 0 && !this.isOngoing()) {

@@ -1,5 +1,7 @@
 package Reika.GameCalendar.GUI;
 
+import org.lwjglx.debug.joptsimple.internal.Strings;
+
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Util.DateStamp;
@@ -29,6 +31,9 @@ public class AdvancedSelectionController extends ControllerBase {
 	private TextField date;
 
 	@FXML
+	private CheckBox anyYearDate;
+
+	@FXML
 	private ChoiceBox<String> selYear;
 	@FXML
 	private ChoiceBox<String> catYear;
@@ -39,7 +44,9 @@ public class AdvancedSelectionController extends ControllerBase {
 	private ChoiceBox<String> category;
 
 	@FXML
-	private CheckBox anyYearDate;
+	private TextField propertyKey;
+	@FXML
+	private TextField propertyValue;
 
 	Stage window;
 
@@ -121,7 +128,9 @@ public class AdvancedSelectionController extends ControllerBase {
 		YEAR,
 		DATE,
 		CATEGORY,
-		MEMORABLE;
+		MEMORABLE,
+		PROPERTY,
+		;
 
 		private static final Selections[] list = values();
 
@@ -145,6 +154,17 @@ public class AdvancedSelectionController extends ControllerBase {
 					String memselYear = con.memYear.getSelectionModel().getSelectedItem();
 					int memyear = memselYear.equals("Any") ? -1 : Integer.parseInt(memselYear);
 					Main.getCalendarRenderer().selectComplexSub(item -> item.isMemorable() && (memyear == -1 || item.containsYear(memyear)));
+					break;
+				case PROPERTY:
+					String propkey = con.propertyKey.getText();
+					String value = con.propertyValue.getText();
+					if (Strings.isNullOrEmpty(value) || value.equals("<Any>"))
+						value = null;
+					final String valf = value;
+					Main.getCalendarRenderer().selectComplexSub(item -> {
+						String prop = item.getProperty(propkey);
+						return prop != null && (valf == null || valf.equals(prop));
+					});
 					break;
 				default:
 					break;

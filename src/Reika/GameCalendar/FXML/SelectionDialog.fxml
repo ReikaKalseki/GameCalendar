@@ -72,7 +72,7 @@
                      </HBox.margin>
                   </Label>
                   <ChoiceBox fx:id="category" prefWidth="150.0" />
-                  <Label text="In Year:">
+                  <Label prefWidth="65.0" text="In Year:">
                      <HBox.margin>
                         <Insets left="8.0" right="8.0" />
                      </HBox.margin>
@@ -102,7 +102,7 @@
                         <Insets left="24.0" right="9.0" />
                      </HBox.margin>
                   </AnchorPane>
-                  <Label text="In Year:">
+                  <Label prefWidth="65.0" text="In Year:">
                      <HBox.margin>
                         <Insets left="8.0" right="8.0" />
                      </HBox.margin>
@@ -112,6 +112,33 @@
                         <Insets right="8.0" />
                      </HBox.margin>
                   </ChoiceBox>
+               </children>
+               <padding>
+                  <Insets bottom="4.0" top="4.0" />
+               </padding>
+            </HBox>
+         </content>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <Separator prefWidth="200.0" />
+      <TitledPane animated="false" collapsible="false" text="Select All With Property">
+         <content>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label prefWidth="60.0" text="Property:">
+                     <HBox.margin>
+                        <Insets left="24.0" right="8.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="propertyKey" prefWidth="150.0" promptText="Property Key" />
+                  <Label prefWidth="65.0" text="With Value:">
+                     <HBox.margin>
+                        <Insets left="8.0" right="8.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="propertyValue" prefWidth="150.0" promptText="Leave Empty For Any" />
                </children>
                <padding>
                   <Insets bottom="4.0" top="4.0" />

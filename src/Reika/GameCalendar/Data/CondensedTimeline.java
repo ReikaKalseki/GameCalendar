@@ -84,8 +84,15 @@ public class CondensedTimeline {
 		private final List<TimeSpan> spans;
 
 		public CategoryTimeSpan(ActivityCategory a, DateStamp s, DateStamp e, List<TimeSpan> li) {
-			super(null, a, s, e, a.name, a.desc);
+			super(null, createData(a), a, s, e);
 			spans = li;
+		}
+
+		private static HashMap<String, String> createData(ActivityCategory a) {
+			HashMap<String, String> ret = new HashMap();
+			ret.put("name", a.name);
+			ret.put("desc", a.desc);
+			return ret;
 		}
 
 		@Override

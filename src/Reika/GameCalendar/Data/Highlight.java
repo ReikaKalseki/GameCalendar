@@ -1,6 +1,7 @@
 package Reika.GameCalendar.Data;
 
 import java.io.File;
+import java.util.HashMap;
 
 import Reika.GameCalendar.Util.DateStamp;
 
@@ -8,8 +9,8 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 
 	public final DateStamp time;
 
-	public Highlight(File f, ActivityCategory a, DateStamp t, String n, String desc) {
-		super(f, a, n, desc);
+	public Highlight(File f, HashMap<String, String> data, ActivityCategory a, DateStamp t) {
+		super(f, data, a);
 		time = t;
 	}
 

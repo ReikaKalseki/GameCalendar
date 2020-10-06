@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.lwjglx.debug.joptsimple.internal.Strings;
 
@@ -20,6 +21,7 @@ public abstract class CalendarEvent {
 
 	public final ActivityCategory category;
 	private final File sourceFile;
+	private final HashMap<String, String> data;
 
 	private boolean isMemorable;
 	private int privacyLevel = 0;
@@ -27,13 +29,14 @@ public abstract class CalendarEvent {
 
 	private Image screenshotData;
 
-	public CalendarEvent(File f, ActivityCategory a, String n, String desc) {
+	public CalendarEvent(File f, HashMap<String, String> map, ActivityCategory a) {
 		sourceFile = f;
+		data = new HashMap(map);
+		name = data.get("name");
+		description = data.get("desc");
 		if (a == null)
-			throw new IllegalArgumentException("Null category for '"+n+"'!");
+			throw new IllegalArgumentException("Null category for '"+name+"'!");
 		category = a;
-		name = n;
-		description = desc;
 	}
 
 	public final CalendarEvent setScreenshot(File f) {
@@ -137,6 +140,10 @@ public abstract class CalendarEvent {
 
 	public final boolean isVisible() {
 		return this.isPrivacyLevelVisible() && GuiElement.CATEGORIES.isStringSelected(category.name);
+	}
+
+	public final String getProperty(String key) {
+		return data.get(key);
 	}
 
 }

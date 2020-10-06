@@ -310,8 +310,10 @@ public class CalendarRenderer {
 		for (CalendarItem ci : selectedObjects) {
 			if (ci instanceof GuiHighlight) {
 				GuiHighlight gh = (GuiHighlight)ci;
-				if (gh.position == null)
+				if (gh.position == null) {
+					System.err.println("Selected an invisible object: "+gh);
 					continue;
+				}
 				double d = 1/50D;
 				GL11.glBegin(GL11.GL_LINE_LOOP);
 				for (double a = 0; a < 360; a += 60) {
