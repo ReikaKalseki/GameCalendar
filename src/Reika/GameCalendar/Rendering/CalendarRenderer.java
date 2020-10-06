@@ -201,6 +201,8 @@ public class CalendarRenderer {
 				continue;
 			if (s.getActiveSpans().isEmpty())
 				continue;
+			if (GuiElement.SELONLY.isChecked() && !selectedObjects.contains(s) && !selectedObjects.isEmpty())
+				continue;
 			this.drawSectionArc(s, wf, t, limit);
 		}
 
@@ -260,6 +262,8 @@ public class CalendarRenderer {
 				continue;
 			if (limit != null && h.time.compareTo(limit) > 0)
 				continue;
+			if (GuiElement.SELONLY.isChecked() && !selectedObjects.contains(h) && !selectedObjects.isEmpty())
+				continue;
 			double a = h.time.getAngle();
 			int i = years.indexOf(h.time.year);
 			double r1 = INNER_RADIUS+i*arcThickness;
@@ -307,21 +311,23 @@ public class CalendarRenderer {
 			}
 		}
 
-		for (CalendarItem ci : selectedObjects) {
-			if (ci instanceof GuiHighlight) {
-				GuiHighlight gh = (GuiHighlight)ci;
-				if (gh.position == null) {
-					System.err.println("Selected an invisible object: "+gh);
-					continue;
+		if (!GuiElement.SELONLY.isChecked()) {
+			for (CalendarItem ci : selectedObjects) {
+				if (ci instanceof GuiHighlight) {
+					GuiHighlight gh = (GuiHighlight)ci;
+					if (gh.position == null) {
+						System.err.println("Selected an invisible object: "+gh);
+						continue;
+					}
+					double d = 1/50D;
+					GL11.glBegin(GL11.GL_LINE_LOOP);
+					for (double a = 0; a < 360; a += 60) {
+						double dx = d*Math.cos(Math.toRadians(a+90));
+						double dy = d*Math.sin(Math.toRadians(a+90));
+						GL11.glVertex2d(gh.position.x+dx, gh.position.y+dy);
+					}
+					GL11.glEnd();
 				}
-				double d = 1/50D;
-				GL11.glBegin(GL11.GL_LINE_LOOP);
-				for (double a = 0; a < 360; a += 60) {
-					double dx = d*Math.cos(Math.toRadians(a+90));
-					double dy = d*Math.sin(Math.toRadians(a+90));
-					GL11.glVertex2d(gh.position.x+dx, gh.position.y+dy);
-				}
-				GL11.glEnd();
 			}
 		}
 
@@ -471,7 +477,7 @@ public class CalendarRenderer {
 		points.addAll(pointsInner);
 		Collections.reverse(pointsOuter);
 		points.addAll(pointsOuter);
-		boolean sel = selectedObjects.contains(s);
+		boolean sel = !GuiElement.SELONLY.isChecked() && selectedObjects.contains(s);
 		if (sel) {
 			GL11.glColor4f(0, 0, 0, 1);
 			GL11.glBegin(GL11.GL_LINE_LOOP);

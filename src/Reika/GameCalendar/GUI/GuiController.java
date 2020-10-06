@@ -97,6 +97,9 @@ public class GuiController extends ControllerBase {
 	private CheckBox mergeArcs;
 
 	@FXML
+	private CheckBox selectedOnly;
+
+	@FXML
 	private CheckBox selectHighlightsInSection;
 
 	@FXML
@@ -432,6 +435,7 @@ public class GuiController extends ControllerBase {
 		SORTORDER("sortList"),
 		PRIVACY("privacy"),
 		ADVSEL("advancedSelection"),
+		SELONLY("selectedOnly"),
 		;
 
 		private final String id;
@@ -485,6 +489,7 @@ public class GuiController extends ControllerBase {
 		public boolean reloadTexts() {
 			switch(this) {
 				case SORTORDER:
+				case SELONLY:
 					return true;
 				default:
 					return this.resetRenderer();

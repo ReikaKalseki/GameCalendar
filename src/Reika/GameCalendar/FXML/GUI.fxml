@@ -110,6 +110,7 @@
                                     <CheckBox fx:id="highlights" mnemonicParsing="false" text="Show Highlights/Single Events" />
                                     <CheckBox fx:id="memorable" mnemonicParsing="false" text="Show &quot;Memorable&quot; Sections As Special" />
                                     <CheckBox fx:id="mergeArcs" mnemonicParsing="false" text="Merge All Same-Category Time Spans" />
+                                    <CheckBox fx:id="selectedOnly" mnemonicParsing="false" text="Only Show Selected Items" />
                                     <Separator />
                                     <VBox alignment="CENTER">
                                        <VBox.margin>
@@ -126,7 +127,7 @@
                                     </VBox>
                                  </children>
                                  <padding>
-                                    <Insets bottom="6.0" left="8.0" right="6.0" top="6.0" />
+                                    <Insets bottom="6.0" left="8.0" right="6.0" top="10.0" />
                                  </padding>
                               </VBox>
                            </content>
@@ -138,7 +139,7 @@
                            <content>
                               <ScrollPane fx:id="imageScroller" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" vbarPolicy="ALWAYS">
                                  <content>
-                                    <VBox fx:id="imageContainer" prefHeight="514.0" prefWidth="320.0" />
+                                    <VBox fx:id="imageContainer" prefHeight="487.0" prefWidth="320.0" />
                                  </content>
                               </ScrollPane>
                            </content>
