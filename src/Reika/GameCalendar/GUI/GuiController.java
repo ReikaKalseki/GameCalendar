@@ -480,6 +480,7 @@ public class GuiController extends ControllerBase {
 				case ARCMERGE:
 				case PRIVACY:
 					//case ADVSEL:
+				case SELONLY:
 					return true;
 				default:
 					return false;
@@ -489,7 +490,6 @@ public class GuiController extends ControllerBase {
 		public boolean reloadTexts() {
 			switch(this) {
 				case SORTORDER:
-				case SELONLY:
 					return true;
 				default:
 					return this.resetRenderer();

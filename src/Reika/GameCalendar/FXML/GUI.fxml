@@ -63,7 +63,7 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </TitledPane>
-                        <GridPane>
+                        <GridPane hgap="2.0" vgap="2.0">
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -74,13 +74,34 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Button fx:id="catAll" mnemonicParsing="false" text="Select All" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <Button fx:id="catNone" mnemonicParsing="false" text="Deselect All" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <Button fx:id="catFlip" mnemonicParsing="false" text="Invert Selection" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                              <Button fx:id="reloadFiles" mnemonicParsing="false" text="Reload Data Files" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                              <Button fx:id="openFiles" mnemonicParsing="false" text="Open Selected Data" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                              <Button fx:id="videoExport" mnemonicParsing="false" text="Export As Video" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                              <Button fx:id="catAll" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" prefHeight="27.0" text="Select All Categories" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="11.0" />
+                                 </font></Button>
+                              <Button fx:id="catNone" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" prefHeight="27.0" text="Deselect All Categories" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="11.0" />
+                                 </font></Button>
+                              <Button fx:id="catFlip" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" prefHeight="27.0" text="Invert Category Selection" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="11.0" />
+                                 </font></Button>
+                              <Button fx:id="reloadFiles" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" prefHeight="27.0" text="Reload All Data Files" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="11.0" />
+                                 </font></Button>
+                              <Button fx:id="openFiles" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" prefHeight="27.0" text="Open Selected Data Files" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="11.0" />
+                                 </font></Button>
+                              <Button fx:id="videoExport" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" mnemonicParsing="false" prefHeight="27.0" text="Export Timelapse Video" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="11.0" />
+                                 </font></Button>
                            </children>
+                           <padding>
+                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                           </padding>
                         </GridPane>
                      </items>
                   </SplitPane>
@@ -108,7 +129,7 @@
                                     <CheckBox fx:id="summerBreak" mnemonicParsing="false" text="Show Summer Break Period" />
                                     <Separator maxHeight="-Infinity" />
                                     <CheckBox fx:id="highlights" mnemonicParsing="false" text="Show Highlights/Single Events" />
-                                    <CheckBox fx:id="memorable" mnemonicParsing="false" text="Show &quot;Memorable&quot; Sections As Special" />
+                                    <CheckBox fx:id="memorable" mnemonicParsing="false" text="Show &quot;Memorable&quot; Items As Special" />
                                     <CheckBox fx:id="mergeArcs" mnemonicParsing="false" text="Merge All Same-Category Time Spans" />
                                     <CheckBox fx:id="selectedOnly" mnemonicParsing="false" text="Only Show Selected Items" />
                                     <Separator />
@@ -117,7 +138,7 @@
                                           <Insets bottom="2.0" top="-5.0" />
                                        </VBox.margin>
                                        <children>
-                                          <Label alignment="CENTER" text="Maximum Privacy Level To Show" />
+                                          <Label alignment="CENTER" text="Maximum Visible Privacy Level" />
                                           <Slider fx:id="privacy" blockIncrement="1.0" majorTickUnit="1.0" max="3.0" minorTickCount="0" showTickMarks="true" snapToTicks="true">
                                              <padding>
                                                 <Insets bottom="-6.0" />
@@ -135,7 +156,7 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </TitledPane>
-                        <TitledPane fx:id="screenshotsTitled" text="Screenshots for Selected Period">
+                        <TitledPane fx:id="screenshotsTitled" text="Screenshots for Selected Items">
                            <content>
                               <ScrollPane fx:id="imageScroller" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" vbarPolicy="ALWAYS">
                                  <content>
