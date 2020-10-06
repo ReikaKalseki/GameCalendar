@@ -3,6 +3,7 @@ package Reika.GameCalendar.GUI;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.fx.drift.DriftFXSurface;
@@ -29,6 +30,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
@@ -45,6 +47,8 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 	private Scene display;
 	private Parent root;
 	private GuiController controller;
+
+	private final HashSet<KeyCode> activeKeys = new HashSet();
 
 	private static final GuiStateCache<GuiController> stateCache = new GuiStateCache("GuiState/Base");
 
@@ -70,6 +74,9 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 		display = new Scene(root);
 
 		display.setFill(Color.rgb(0x22, 0xaa, 0xff));
+
+		display.setOnKeyPressed(event -> activeKeys.add(event.getCode()));
+		display.setOnKeyReleased(event -> activeKeys.remove(event.getCode()));
 
 		Rectangle2D resolution = Screen.getPrimary().getVisualBounds();
 
@@ -184,6 +191,10 @@ public class JFXWindow extends Application implements EventHandler<javafx.event.
 
 	private ListView getListView(GuiElement e) {
 		return gui != null && gui.controller != null ? gui.controller.getListView(e) : null;
+	}
+
+	public boolean isKeyPressed(KeyCode key) {
+		return activeKeys.contains(key);
 	}
 
 	@Override

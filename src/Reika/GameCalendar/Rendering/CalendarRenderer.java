@@ -41,6 +41,7 @@ import Reika.GameCalendar.VideoExport.VideoRenderer;
 
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
 
 public class CalendarRenderer {
 
@@ -309,6 +310,8 @@ public class CalendarRenderer {
 		for (CalendarItem ci : selectedObjects) {
 			if (ci instanceof GuiHighlight) {
 				GuiHighlight gh = (GuiHighlight)ci;
+				if (gh.position == null)
+					continue;
 				double d = 1/50D;
 				GL11.glBegin(GL11.GL_LINE_LOOP);
 				for (double a = 0; a < 360; a += 60) {
@@ -397,7 +400,7 @@ public class CalendarRenderer {
 		int colorstep = 2;//Math.max(4, 6-i2/2);
 
 		double dt = arcThicknessHalfFraction;
-		if (GuiElement.MEMORABLE.isChecked() && !s.isMemorable(true))
+		if (GuiElement.MEMORABLE.isChecked() && !GuiElement.ARCMERGE.isChecked() && !s.isMemorable(true))
 			dt *= 0.75;
 
 		for (double a = a1; a < a2; a += 0.5) {
@@ -691,7 +694,8 @@ public class CalendarRenderer {
 	public synchronized void handleMouse(double x, double y) {
 		if (VideoRenderer.instance.isRendering())
 			return;
-		this.clearSelection();
+		if (!JFXWindow.getGUI().isKeyPressed(KeyCode.CONTROL))
+			this.clearSelection();
 		if (GuiElement.HIGHLIGHTS.isChecked()) {
 			double d = 1/50D;
 			for (GuiHighlight h : events.values()) {
@@ -712,7 +716,7 @@ public class CalendarRenderer {
 				}
 			}
 		}
-		if (selectedObjects.isEmpty()) {
+		if (selectedObjects.isEmpty() || JFXWindow.getGUI().isKeyPressed(KeyCode.CONTROL)) {
 			for (GuiSection s : this.getActiveSectionList()) {
 				if (s.polygon != null && s.polygon.npoints > 0)	{
 					if (s.polygon.contains(x, y)) {
