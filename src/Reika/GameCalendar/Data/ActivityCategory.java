@@ -22,6 +22,8 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 		return categories.get(s);
 	}
 
+	private final HashMap<String, String> data;
+
 	public final String name;
 	public final String desc;
 	public final int color;
@@ -32,9 +34,10 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 
 	private DateStamp firstDate;
 
-	private ActivityCategory(File f, String n, String d, int c, int idx) {
+	private ActivityCategory(File f, String n, HashMap<String, String> map, int c, int idx) {
+		data = new HashMap(map);
 		name = n;
-		desc = d;
+		desc = data.get("desc");
 		color = c;
 		sortingIndex = idx;
 		folder = f;
@@ -47,7 +50,7 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 			name = in.getName();
 		}
 		int idx = data.containsKey("index") ? Integer.parseInt(data.get("index")) : 0;
-		ActivityCategory a = new ActivityCategory(in, name, data.get("desc"), Integer.parseInt(data.get("color"), 16), idx);
+		ActivityCategory a = new ActivityCategory(in, name, data, Integer.parseInt(data.get("color"), 16), idx);
 		a.loadFiles(t);
 		categories.put(a.name, a);
 	}
@@ -129,6 +132,23 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 	@Override
 	public final boolean equals(Object o) {
 		return o instanceof ActivityCategory && ((ActivityCategory)o).name.equals(name);
+	}
+
+	public HashMap<String, String> provideDataOverrides() {
+		HashMap<String, String> ret = new HashMap();
+		String over = data.get("override");
+		if (over != null) {
+			String[] parts = over.split(",");
+			for (String s : parts) {
+				String[] kv = s.split("=");
+				if (kv.length != 2) {
+					System.err.println("Invalid override data '"+over+"' in "+name);
+					return ret;
+				}
+				ret.put(kv[0], kv[1]);
+			}
+		}
+		return ret;
 	}
 
 }

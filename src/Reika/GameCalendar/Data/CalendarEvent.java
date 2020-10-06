@@ -30,12 +30,13 @@ public abstract class CalendarEvent {
 	private Image screenshotData;
 
 	public CalendarEvent(File f, HashMap<String, String> map, ActivityCategory a) {
-		sourceFile = f;
 		data = new HashMap(map);
 		name = data.get("name");
-		description = data.get("desc");
 		if (a == null)
 			throw new IllegalArgumentException("Null category for '"+name+"'!");
+		sourceFile = f;
+		data.putAll(a.provideDataOverrides());
+		description = data.get("desc");
 		category = a;
 	}
 
