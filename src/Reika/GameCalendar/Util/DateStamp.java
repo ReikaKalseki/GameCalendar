@@ -92,10 +92,10 @@ public class DateStamp implements Comparable<DateStamp> {
 	public static DateStamp parse(String s) {
 		if (Strings.isNullOrEmpty(s))
 			return null;
-		if (s.equals("<ongoing>")) {
+		if (s.equalsIgnoreCase("<ongoing>")) {
 			return launch;
 		}
-		if (s.equals("<Today>")) {
+		if (s.equalsIgnoreCase("<today>")) {
 			return launch;
 		}
 		String[] parts = s.split("/");

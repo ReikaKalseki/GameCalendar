@@ -17,6 +17,8 @@ import Reika.GameCalendar.Util.DateStamp;
 import Reika.GameCalendar.Util.MathHelper;
 
 import javafx.application.HostServices;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -90,6 +92,9 @@ public class VideoGuiController extends ControllerBase {
 	private ToggleGroup encoderOptions;
 	private ToggleGroup videoFormat;
 
+	@FXML
+	private Label fileExtension;
+
 	Stage window;
 
 	private boolean initialized = false;
@@ -123,6 +128,12 @@ public class VideoGuiController extends ControllerBase {
 			RadioButton b = v.makeNode(formatButtonPlaceholder);
 			p.getChildren().add(b);
 			b.setToggleGroup(videoFormat);
+			b.selectedProperty().addListener(new ChangeListener() {
+				@Override
+				public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+					VideoGuiController.this.update(v.name());
+				}
+			});
 			formatOptions.put(v, b);
 			this.registerNode("format"+v.name(), b);
 		}
@@ -226,6 +237,7 @@ public class VideoGuiController extends ControllerBase {
 
 		}
 		pauseSlider.setDisable(!pauseNew.isSelected());
+		fileExtension.setText("."+this.getSelectedFormat().fileExtension);
 		this.setSettings();
 	}
 

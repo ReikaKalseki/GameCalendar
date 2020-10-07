@@ -30,8 +30,8 @@
                               <Insets right="9.0" />
                            </HBox.margin>
                         </RadioButton>
-                        <TextField fx:id="mpegPath" prefWidth="500.0" promptText="Path to FFMPEG executable" />
-                        <Button fx:id="loadFile" mnemonicParsing="false" text="Choose File...">
+                        <TextField fx:id="mpegPath" prefWidth="526.0" promptText="Path to FFMPEG executable" />
+                        <Button fx:id="loadFile" mnemonicParsing="false" prefWidth="110.0" text="Choose File...">
                            <HBox.margin>
                               <Insets left="4.0" />
                            </HBox.margin>
@@ -73,8 +73,16 @@
                               <Insets left="4.0" right="4.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField fx:id="outputName" prefWidth="160.0" promptText="Output file name (no ext)" />
-                        <Button fx:id="loadFolder" mnemonicParsing="false" text="Choose Folder...">
+                        <TextField fx:id="outputName" prefWidth="160.0" promptText="Output file name (no ext)">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin></TextField>
+                        <Label fx:id="fileExtension" prefWidth="40.0" text=".mp4">
+                           <HBox.margin>
+                              <Insets left="3.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Button fx:id="loadFolder" mnemonicParsing="false" prefWidth="110.0" text="Choose Folder...">
                            <HBox.margin>
                               <Insets left="4.0" />
                            </HBox.margin>
