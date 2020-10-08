@@ -43,3 +43,7 @@ Game Calendar/GuiState/*
 *.jar
 *.gui
 *.avi
+
+*.csv
+*.xls
+*.xlsx

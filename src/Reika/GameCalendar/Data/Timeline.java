@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
 import Reika.GameCalendar.Util.DateStamp;
@@ -26,6 +28,8 @@ public class Timeline {
 	private DateStamp earliest;
 	private DateStamp latest;
 	private int maxPrivacy = 0;
+
+	private final TreeMap<DateStamp, Integer> memorabilityGraph = new TreeMap();
 
 	private boolean prepared = false;
 
@@ -115,6 +119,12 @@ public class Timeline {
 			sections.get(sections.size()-1).setEndTime(at);
 		//if (!at.equals(earliest))
 		sections.add(new Section(at, active));
+		int mem = 0;
+		for (TimeSpan ts : active) {
+			if (ts.isMemorable())
+				mem++;
+		}
+		memorabilityGraph.put(at, mem);
 	}
 
 	public Section getSection(DateStamp at) {
@@ -161,6 +171,10 @@ public class Timeline {
 
 	public int getMaxPrivacyLevel() {
 		return maxPrivacy;
+	}
+
+	public Map<DateStamp, Integer> getMemorabilityGraph() {
+		return Collections.unmodifiableMap(memorabilityGraph);
 	}
 
 }

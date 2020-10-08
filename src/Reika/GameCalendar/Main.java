@@ -80,6 +80,20 @@ public class Main {
 			}
 		}
 		timeline.prepare();
+		/*
+		try {
+			File fo = new File("memgraph.csv");
+			fo.createNewFile();
+			ArrayList<String> li = new ArrayList();
+			Map<DateStamp, Integer> map = timeline.getMemorabilityGraph();
+			for (Entry<DateStamp, Integer> e : map.entrySet()) {
+				li.add(e.getKey().toString()+","+e.getValue());
+			}
+			FileIO.writeLinesToFile(fo, li);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}*/
 		gui = new CalendarRenderer(timeline);
 	}
 
