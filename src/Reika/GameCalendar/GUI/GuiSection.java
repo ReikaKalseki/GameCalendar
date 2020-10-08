@@ -59,7 +59,7 @@ public class GuiSection implements CalendarItem {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return section.toString();
 	}
 

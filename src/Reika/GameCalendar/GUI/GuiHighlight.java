@@ -97,4 +97,9 @@ public class GuiHighlight implements CalendarItem {
 		return time.year == year && (!activeOnly || !this.getActiveEvents().isEmpty());
 	}
 
+	@Override
+	public final String toString() {
+		return events.toString();
+	}
+
 }
