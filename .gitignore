@@ -21,6 +21,7 @@ bin/*
 .classpath
 .project
 libs/*
+Data/*
 
 # Windows shortcuts
 *.lnk
