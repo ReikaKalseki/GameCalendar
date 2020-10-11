@@ -1,0 +1,52 @@
+#-------------------------------------------------------------------------------
+# @author Reika Kalseki
+# 
+# Copyright 2020
+# 
+# (Almost) all rights reserved.
+# Distribution of the software in any form is only allowed
+# with explicit, prior permission from the owner.
+#-------------------------------------------------------------------------------
+
+@author Reika
+
+0. TERMS
+-Original Author: The first creator of this project and its code, i.e. Reika.
+-Code, Source: The source code of this program, as featured in this repository. Libraries are explicitly excluded from this.
+-Binaries: Compiled versions of the source code, usually in JAR form.
+-Program: Largely synonymous with Binaries, an executable form of the program.
+-Libraries: Code packages not written by the original author, and which are part of a larger ecosystem of "helper projects" intended to be plugged into projects to fulfill some task, eg DriftFX, lwjgl.
+-Derivative Work: Any work created by taking this code and modifying it or integrating it into some other project. Full reimplementations do NOT count as derivatives provided they are not obvious copies.
+-Private Personal: Anything intended for and only available to a single person, usually the creator of that thing.
+-Public: Anything intended for and/or available to the general public.
+-Permission: An request to perform some action met with an unambiguous affirmative response from the original author.
+-Developer: A person or group who creates code and/or program(s). May overlap with User.
+-User: A person or group who uses a program for some purpose.
+
+1. OWNERSHIP
+This code is the property of and owned and copyrighted by the original author. In all circumstances, the original author retains all such ownership, and is free to distribute, reuse, or modify it as they see fit, in perpetuity.
+
+2. CODE VISIBLITY AND USE
+This code is provided under a modified visible-source license that is as follows:
+
+Any and all users are permitted to use the source for any purpose that does not involve redistributing this code in any form outside this repository, modified or otherwise. For example, reading the code for educational purposes (such as a template for how to use tools like DriftFX), to suggest improvements or bring attention to errors, to create derivative works for private personal use, or simply out of interest, are all valid use cases.
+
+3. PUBLIC DERIVATIVE WORKS
+If you wish to create a publicly accessible or distributed derivative work, these criteria must be followed:
+-Explicit written permission must be obtained from the original author of this code. Electronic writing is acceptable.
+-Derivative works cannot threaten the ability for the original author to reuse some or all of this code in other projects.
+-Derivative works must be prominently marked as such, and contain attribution to the original author, including a link to this source.
+-Derivative works cannot be released under "viral" or "fully open" licenses that would "contaminate" this source with that license.
+-Derivative works cannot be used to generate money, with the sole exception of ad revenue on applicable mediums, and even then only if the derivative work contains substantial novel content beyond this code.
+-Derivative works cannot be used to bring harm to any person, or to violate the law in such a way that "taints" the original code via the association with criminal activity.
+
+The original author reserves the right to revoke permission if these criteria are violated. Revocation of permission requires that a derivative work be removed from public access.
+
+4. LIBRARIES
+All used libraries are NOT owned by the original author of this code, nor are they subject to its restrictions on use and distribution. They maintain their original licenses and terms, including and excluding whatever limitations, permissions, liabilities, and similar that they always have. Generally, the license for a given library can be found packaged with the standard release or download of that library, and/or on its GitHub page if one exists. Additionally, for the sake of completeness and ease of access, as well as to satisfy some of these licenses, compiled binaries of this program contain a copy of the license for each of the libraries, named accordingly.
+
+5. LIABILITY
+This program and its source are provided with ZERO liability or warranty of any kind, and with no guarantees of functionality. While it is obviously intended that the program function as intended in as many environments as possible, and no harm is intended, no promises can be made. No guarantee can or will be provided that the program will fulfill its intended purpose on an arbitrary machine, nor that it will not create some undesired side effect such as but not limited to loss of data, computer freezes, or headaches from unpleasant color schemes.
+
+6. ACCEPTANCE
+The use of this code or program, either as a user or as a developer, constitutes agreement with the above license.
