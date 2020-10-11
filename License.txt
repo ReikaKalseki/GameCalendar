@@ -28,15 +28,15 @@ This code is the property of and owned and copyrighted by the original author. I
 
 2. CODE VISIBLITY AND USE
 This code is provided under a modified visible-source license that is as follows:
-
-Any and all users are permitted to use the source for any purpose that does not involve redistributing this code in any form outside this repository, modified or otherwise. For example, reading the code for educational purposes (such as a template for how to use tools like DriftFX), to suggest improvements or bring attention to errors, to create derivative works for private personal use, or simply out of interest, are all valid use cases.
+Any and all users and developers are permitted to use the source for any purpose that does not involve redistributing this code in any form outside this repository, modified or otherwise.
+For example, valid use cases include for educational purposes (such as a template for how to use tools like DriftFX), to suggest improvements or bring attention to errors, to create derivative works for private personal use, or reading the code simply out of interest.
 
 3. PUBLIC DERIVATIVE WORKS
 If you wish to create a publicly accessible or distributed derivative work, these criteria must be followed:
 -Explicit written permission must be obtained from the original author of this code. Electronic writing is acceptable.
 -Derivative works cannot threaten the ability for the original author to reuse some or all of this code in other projects.
 -Derivative works must be prominently marked as such, and contain attribution to the original author, including a link to this source.
--Derivative works cannot be released under "viral" or "fully open" licenses that would "contaminate" this source with that license.
+-Derivative works cannot be released under "viral" or "fully open" licenses if doing so would "contaminate" this source with that license.
 -Derivative works cannot be used to generate money, with the sole exception of ad revenue on applicable mediums, and even then only if the derivative work contains substantial novel content beyond this code.
 -Derivative works cannot be used to bring harm to any person, or to violate the law in such a way that "taints" the original code via the association with criminal activity.
 
