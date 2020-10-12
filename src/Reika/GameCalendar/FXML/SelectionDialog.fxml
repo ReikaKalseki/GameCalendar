@@ -156,6 +156,11 @@
          </VBox.margin>
          <children>
             <Button fx:id="doSelect" alignment="CENTER" mnemonicParsing="false" text="Select Applicable Elements" />
+            <CheckBox fx:id="selectSuperItems" mnemonicParsing="false" selected="true" text="Select Containing Arcs">
+               <HBox.margin>
+                  <Insets left="24.0" />
+               </HBox.margin>
+            </CheckBox>
          </children>
       </HBox>
    </children>
