@@ -55,9 +55,6 @@ public class AdvancedSelectionController extends ControllerBase {
 	private ToggleGroup sectionSelection;
 
 	@FXML
-	private CheckBox selectSuperItems;
-
-	@FXML
 	@Override
 	public void initialize() {
 		this.preInit(root);
@@ -138,11 +135,10 @@ public class AdvancedSelectionController extends ControllerBase {
 		private static final Selections[] list = values();
 
 		public void select(AdvancedSelectionController con) {
-			boolean superItems = con.selectSuperItems.isSelected();
 			switch(this) {
 				case YEAR:
 					int year = Integer.parseInt(con.selYear.getSelectionModel().getSelectedItem());
-					Main.getCalendarRenderer().selectComplexSub(item -> item.containsYear(year), superItems);
+					Main.getCalendarRenderer().selectComplexSub(item -> item.containsYear(year));
 					break;
 				case DATE:
 					DateStamp date = DateStamp.parse(con.date.getText());
@@ -152,12 +148,12 @@ public class AdvancedSelectionController extends ControllerBase {
 					String catsel = con.category.getSelectionModel().getSelectedItem();
 					String catselYear = con.catYear.getSelectionModel().getSelectedItem();
 					int catyear = catselYear.equals("Any") ? -1 : Integer.parseInt(catselYear);
-					Main.getCalendarRenderer().selectComplexSub(item -> (catyear == -1 || item.containsYear(catyear)) && item.category == ActivityCategory.getByName(catsel), superItems);
+					Main.getCalendarRenderer().selectComplexSub(item -> (catyear == -1 || item.containsYear(catyear)) && item.category == ActivityCategory.getByName(catsel));
 					break;
 				case MEMORABLE:
 					String memselYear = con.memYear.getSelectionModel().getSelectedItem();
 					int memyear = memselYear.equals("Any") ? -1 : Integer.parseInt(memselYear);
-					Main.getCalendarRenderer().selectComplexSub(item -> item.isMemorable() && (memyear == -1 || item.containsYear(memyear)), superItems);
+					Main.getCalendarRenderer().selectComplexSub(item -> item.isMemorable() && (memyear == -1 || item.containsYear(memyear)));
 					break;
 				case PROPERTY:
 					String propkey = con.propertyKey.getText();
@@ -168,7 +164,7 @@ public class AdvancedSelectionController extends ControllerBase {
 					Main.getCalendarRenderer().selectComplexSub(item -> {
 						String prop = item.getProperty(propkey);
 						return prop != null && (valf == null || valf.equals(prop));
-					}, superItems);
+					});
 					break;
 				default:
 					break;

@@ -773,7 +773,7 @@ public class CalendarRenderer {
 		}
 	}
 
-	public synchronized void selectComplexSub(EventSelector sel, boolean selectSuperItems) {
+	public synchronized void selectComplexSub(EventSelector sel) {
 		this.clearSelection();
 		HashSet<CalendarEvent> set = new HashSet();
 		for (GuiSection s : this.getActiveSectionList()) {
@@ -785,7 +785,7 @@ public class CalendarRenderer {
 						flag = true;
 					}
 				}
-				if (flag && selectSuperItems) {
+				if (flag) {
 					selectedObjects.add(s);
 				}
 			}
@@ -799,7 +799,7 @@ public class CalendarRenderer {
 						flag = true;
 					}
 				}
-				if (flag && selectSuperItems) {
+				if (flag) {
 					selectedObjects.add(s);
 				}
 			}
