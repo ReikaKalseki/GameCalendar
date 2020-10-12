@@ -23,13 +23,16 @@
 -Developer: A person or group who creates code and/or program(s). May overlap with User.
 -User: A person or group who uses a program for some purpose.
 
+
 1. OWNERSHIP
 This code is the property of and owned and copyrighted by the original author. In all circumstances, the original author retains all such ownership, and is free to distribute, reuse, or modify it as they see fit, in perpetuity.
 
+
 2. CODE VISIBLITY AND USE
 This code is provided under a modified visible-source license that is as follows:
-Any and all users and developers are permitted to use the source for any purpose that does not involve redistributing this code in any form outside this repository, modified or otherwise.
+Any and all users and developers are permitted to use the source for any purpose that does not involve redistributing this code in any form, modified or otherwise, to other users or developers.
 For example, valid use cases include for educational purposes (such as a template for how to use tools like DriftFX), to suggest improvements or bring attention to errors, to create derivative works for private personal use, or reading the code simply out of interest.
+
 
 3. PUBLIC DERIVATIVE WORKS
 If you wish to create a publicly accessible or distributed derivative work, these criteria must be followed:
@@ -42,11 +45,14 @@ If you wish to create a publicly accessible or distributed derivative work, thes
 
 The original author reserves the right to revoke permission if these criteria are violated. Revocation of permission requires that a derivative work be removed from public access.
 
+
 4. LIBRARIES
-All used libraries are NOT owned by the original author of this code, nor are they subject to its restrictions on use and distribution. They maintain their original licenses and terms, including and excluding whatever limitations, permissions, liabilities, and similar that they always have. Generally, the license for a given library can be found packaged with the standard release or download of that library, and/or on its GitHub page if one exists. Additionally, for the sake of completeness and ease of access, as well as to satisfy some of these licenses, compiled binaries of this program contain a copy of the license for each of the libraries, named accordingly, in a subfolder called "LibLicenses".
+All used libraries are NOT owned by the original author of this code, nor are they subject to its restrictions on use and distribution. They maintain their original licenses and terms, including and excluding whatever limitations, permissions, liabilities, and similar that they always have. Generally, the license for a given library can be found packaged with the standard release or download of that library, and/or on its GitHub page if one exists. Additionally, for the sake of completeness and ease of access, as well as to satisfy some of these licenses, the repository and compiled binaries of this program contain a copy of the license for each of the libraries, named accordingly, in a subfolder called "LibLicenses".
+
 
 5. LIABILITY
-This program and its source are provided with ZERO liability or warranty of any kind, and with no guarantees of functionality. While it is obviously intended that the program function as intended in as many environments as possible, and no harm is intended, no promises can be made. No guarantee can or will be provided that the program will fulfill its intended purpose on an arbitrary machine, nor that it will not create some undesired side effect such as but not limited to loss of data, computer freezes, or headaches from unpleasant color schemes.
+This program and its source are provided with ZERO liability or warranty of any kind, and with no guarantees of functionality. While it is obviously intended that the program function as intended in as many environments as possible, and no harm is intended, no promises can be made. No guarantee can or will be provided that the program will fulfill its intended purpose on an arbitrary machine, nor that it will not create some undesired side effect such as but not limited to loss of data, computer freezes, or headaches from unpleasant color schemes. As a result, the original author of this code disavows any responsibility in any way should such things occur.
+
 
 6. ACCEPTANCE
 The use of this code or program, either as a user or as a developer, constitutes agreement with the above license.
