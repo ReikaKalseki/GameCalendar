@@ -3,6 +3,7 @@ package Reika.GameCalendar.Data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class Timeline {
 	private int maxPrivacy = 0;
 
 	private final TreeMap<DateStamp, Integer> memorabilityGraph = new TreeMap();
+	private final HashMap<ActivityCategory, ActivityValue> activityLevels = new HashMap();
 
 	private boolean prepared = false;
 
@@ -71,20 +73,34 @@ public class Timeline {
 		ArrayList<DateStamp> li = new ArrayList(dates);
 		Collections.sort(li);
 		HashSet<TimeSpan> activeSpans = new HashSet();
+		ArrayList<ActivityPoint> snapshots = new ArrayList();
 		for (DateStamp s : li) {
 			for (TimeSpan t : periods) {
 				if (t.start.equals(s)) {
 					activeSpans.add(t);
-					this.splitSection(s, activeSpans);
+					this.splitSection(s, activeSpans, snapshots);
 				}
 				else if (t.end.equals(s)) {
 					activeSpans.remove(t);
-					this.splitSection(s, activeSpans);
+					this.splitSection(s, activeSpans, snapshots);
 				}
 			}
 		}
 		sections.get(sections.size()-1).setEndTime(latest);
 		Collections.sort(sections);
+
+		for (ActivityCategory a : ActivityCategory.getAllCategories()) {
+			int last = -1;
+			ActivityValue av = new ActivityValue();
+			for (ActivityPoint p : snapshots) {
+				int has = p.getValue(a);
+				if (has != last) {
+					av.addPoint(p.date, has);
+				}
+				last = has;
+			}
+			activityLevels.put(a, av);
+		}
 
 		prepared = true;
 
@@ -114,17 +130,22 @@ public class Timeline {
 		}
 	}
 
-	private void splitSection(DateStamp at, HashSet<TimeSpan> active) {
+	private void splitSection(DateStamp at, HashSet<TimeSpan> active, ArrayList<ActivityPoint> snapshots) {
 		if (!sections.isEmpty())
 			sections.get(sections.size()-1).setEndTime(at);
 		//if (!at.equals(earliest))
 		sections.add(new Section(at, active));
 		int mem = 0;
+		HashMap<ActivityCategory, Integer> map = new HashMap();
 		for (TimeSpan ts : active) {
 			if (ts.isMemorable())
 				mem++;
+			Integer get = map.get(ts.category);
+			int has = get != null ? get.intValue() : 0;
+			map.put(ts.category, has+1);
 		}
 		memorabilityGraph.put(at, mem);
+		snapshots.add(new ActivityPoint(at, map));
 	}
 
 	public Section getSection(DateStamp at) {
@@ -175,6 +196,23 @@ public class Timeline {
 
 	public Map<DateStamp, Integer> getMemorabilityGraph() {
 		return Collections.unmodifiableMap(memorabilityGraph);
+	}
+
+	private static class ActivityPoint {
+
+		private final DateStamp date;
+		private final HashMap<ActivityCategory, Integer> data;
+
+		private ActivityPoint(DateStamp at, HashMap<ActivityCategory, Integer> map) {
+			date = at;
+			data = map;
+		}
+
+		public int getValue(ActivityCategory a) {
+			Integer get = data.get(a);
+			return get != null ? get.intValue() : 0;
+		}
+
 	}
 
 }

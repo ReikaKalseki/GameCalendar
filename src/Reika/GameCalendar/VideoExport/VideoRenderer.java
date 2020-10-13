@@ -77,6 +77,8 @@ public class VideoRenderer {
 	//private static final int FADEOUT_DAYS = 0;
 	private static final double GAMMA = 1.02;
 
+	private final ArrayList<VideoInset> videoInsets = new ArrayList();
+
 	public String pathToFFMPEG = null;
 	public double daysPerFrame = 1;
 	public int pauseDuration = 2;
@@ -122,6 +124,10 @@ public class VideoRenderer {
 
 	private VideoRenderer() {
 
+	}
+
+	public void addInset(VideoInset vi) {
+		videoInsets.add(vi);
 	}
 
 	public void startRendering(CalendarRenderer data) {
@@ -338,6 +344,9 @@ public class VideoRenderer {
 		this.addImageLabels(g, f, size);
 		this.addDescriptionText(g, f);
 		this.addCalendarLabels(g, f, size);
+		for (VideoInset vi : videoInsets) {
+			vi.draw(frame, g, f);
+		}
 		g.dispose();
 	}
 
@@ -653,6 +662,7 @@ public class VideoRenderer {
 		exportedFrames = 0;
 		if (renderedOutput != null)
 			renderedOutput.clear();
+		videoInsets.clear();
 		RenderLoop.sendToDFX = true;
 	}
 

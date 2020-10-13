@@ -322,6 +322,7 @@ public class GuiController extends ControllerBase {
 		}
 		videoExport.disableProperty().set(!this.isVideoExportValid());
 		openFiles.disableProperty().set(GuiElement.ARCMERGE.isChecked());
+		memorable.disableProperty().set(GuiElement.ARCMERGE.isChecked());
 		//selectToday.disableProperty().set(!this.areAllCategoriesActive());
 	}
 

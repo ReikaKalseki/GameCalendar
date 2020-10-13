@@ -63,6 +63,10 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 		return Collections.unmodifiableSet(categories.keySet());
 	}
 
+	public static Collection<ActivityCategory> getAllCategories() {
+		return Collections.unmodifiableCollection(categories.values());
+	}
+
 	public static List<String> getSortedNameList(SortingMode mode) {
 		return mode.getSortedList(categories.values(), Main.getTimeline());
 	}
