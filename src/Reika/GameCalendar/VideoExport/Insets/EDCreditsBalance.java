@@ -34,14 +34,21 @@ public class EDCreditsBalance implements VideoInset {
 		if (f.exists()) {
 			ArrayList<String> li = FileIO.getFileAsLines(f);
 			for (String s : li) {
-				String[] parts = s.split(",");
-				DateStamp date = DateStamp.parse(parts[0]);
-				long balance = Long.parseLong(parts[2]);
-				long assets = Long.parseLong(parts[3]);
-				long total = Long.parseLong(parts[4]);
-				graphBalance.addPoint(date, balance);
-				graphAssets.addPoint(date, assets);
-				graphTotal.addPoint(date, total);
+				try {
+					String[] parts = s.split(",");
+					DateStamp date = DateStamp.parse(parts[0]);
+					int off = parts[1].indexOf(':') >= 0 ? 1 : 0;
+					long balance = Long.parseLong(parts[1+off]);
+					long assets = Long.parseLong(parts[2+off]);
+					long total = parts[3+off].isEmpty() ? -1 : Long.parseLong(parts[3+off]);
+					graphBalance.addPoint(date, balance);
+					graphAssets.addPoint(date, assets);
+					if (total >= 0)
+						graphTotal.addPoint(date, total);
+				}
+				catch (Exception e) {
+					throw new IllegalArgumentException("Invalid CSV line '"+s+"'", e);
+				}
 			}
 			graphBalance.calculate();
 			graphAssets.calculate();
@@ -59,10 +66,36 @@ public class EDCreditsBalance implements VideoInset {
 	}
 
 	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, Color c) {
+		DateStamp main = root;
+		long bmain = this.getBalance(main, line);
+		if (bmain < 0)
+			return;
+
 		g.setColor(c);
 		int xctr = XPOS+WIDTH;
 		int yctr = YPOS+HEIGHT;
 		int widthPerDay = 2;
+
+		DateStamp prev = main.previousDay();
+		int x1 = xctr;
+		int x2 = xctr-widthPerDay;
+		long bprev = this.getBalance(prev, line);
+		while (x2 >= XPOS) {
+			int y1 = yctr-this.getHeight(this.getBalance(main, line));
+			int y2 = yctr-this.getHeight(this.getBalance(prev, line));
+			g.drawLine(x1, y1, x2, y2);
+
+			//do {
+			main = prev;
+			prev = main.previousDay();
+			//bmain = bprev;
+			//bprev = this.getBalance(prev, line);
+			x1 -= widthPerDay;
+			x2 -= widthPerDay;
+			//} while(x2 >= XPOS+widthPerDay && bmain == bprev); //maybe?
+		}
+		//this has a problem -> it makes every increase occur in a single day, instead of as a line slope
+		/*
 		DateStamp minDate = root.getOffset(0, -WIDTH/widthPerDay);
 		int yVal = yctr-this.getHeight(this.getBalance(root, line));
 		DateStamp prevPoint = line.getPointBefore(root);
@@ -83,6 +116,7 @@ public class EDCreditsBalance implements VideoInset {
 			int y2 = yctr-this.getHeight(this.getBalance(minDate, line));
 			g.drawLine(x, y, x2, y2);
 		}
+		 */
 	}
 
 	private int getHeight(long val) {
@@ -93,6 +127,8 @@ public class EDCreditsBalance implements VideoInset {
 		long val = (long)gr.getValueAt(date);
 		if (!activity.isActiveAt(date)) {
 			DateStamp last = activity.getLastActiveDateBefore(date);
+			if (last == null)
+				return -1;
 			val = (long)gr.getValueAt(last);
 		}
 		return val;

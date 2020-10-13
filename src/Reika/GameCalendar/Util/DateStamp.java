@@ -98,11 +98,56 @@ public class DateStamp implements Comparable<DateStamp> {
 		if (s.equalsIgnoreCase("<today>")) {
 			return launch;
 		}
-		String[] parts = s.split("/");
+		String[] parts = null;
+		if (s.indexOf(' ') >= 0) {
+			parts = s.split(" ");
+		}
+		else {
+			parts = s.split("/");
+		}
 		int day = parts.length == 3 ? Integer.parseInt(parts[0]) : 1;
-		int month = Integer.parseInt(parts.length == 3 ? parts[1] : parts[0]);
+		Month month = parseMonth(parts.length == 3 ? parts[1] : parts[0]);
 		int year = Integer.parseInt(parts.length == 3 ? parts[2] : parts[1]);
-		return new DateStamp(year, Month.of(month), day);
+		return new DateStamp(year, month, day);
+	}
+
+	private static Month parseMonth(String val) {
+		try {
+			return Month.of(Integer.parseInt(val));
+		}
+		catch (NumberFormatException e) {
+			switch(val.toLowerCase(Locale.ENGLISH)) {
+				case "jan":
+					return Month.JANUARY;
+				case "feb":
+					return Month.FEBRUARY;
+				case "mar":
+					return Month.MARCH;
+				case "apr":
+					return Month.APRIL;
+				case "may":
+					return Month.MAY;
+				case "jun":
+				case "june":
+					return Month.JUNE;
+				case "jul":
+				case "july":
+					return Month.JULY;
+				case "aug":
+					return Month.AUGUST;
+				case "sep":
+				case "sept":
+					return Month.SEPTEMBER;
+				case "oct":
+					return Month.OCTOBER;
+				case "nov":
+					return Month.NOVEMBER;
+				case "dec":
+					return Month.DECEMBER;
+				default:
+					return null;
+			}
+		}
 	}
 
 	/** INCLUSIVE */
