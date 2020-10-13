@@ -67,11 +67,11 @@ public class VideoRenderer {
 
 	public static final VideoRenderer instance = new VideoRenderer();
 
-	private static final int CALENDAR_SIZE = 800;
-	private static final int SCREENSHOT_WIDTH = 480;
-	private static final int SCREENSHOT_HEIGHT = 270;
-	private static final int VIDEO_WIDTH = 1920;
-	private static final int VIDEO_HEIGHT = 1080;
+	public static final int CALENDAR_SIZE = 800;
+	public static final int SCREENSHOT_WIDTH = 480;
+	public static final int SCREENSHOT_HEIGHT = 270;
+	public static final int VIDEO_WIDTH = 1920;
+	public static final int VIDEO_HEIGHT = 1080;
 	private static final int VIDEO_FPS = 40;
 	//private static final int PORT_NUMBER = 22640;
 	//private static final int FADEOUT_DAYS = 0;
@@ -345,7 +345,7 @@ public class VideoRenderer {
 		this.addDescriptionText(g, f);
 		this.addCalendarLabels(g, f, size);
 		for (VideoInset vi : videoInsets) {
-			vi.draw(frame, g, f);
+			vi.draw(frame, g, f, renderer.limit);
 		}
 		g.dispose();
 	}

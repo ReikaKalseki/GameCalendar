@@ -1,14 +1,18 @@
 package Reika.GameCalendar;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Calendar;
+import java.util.HashSet;
 
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.JFXWindow;
 import Reika.GameCalendar.Rendering.CalendarRenderer;
 import Reika.GameCalendar.Rendering.RenderLoop;
+import Reika.GameCalendar.VideoExport.VideoRenderer;
+import Reika.GameCalendar.VideoExport.Insets.EDCreditsBalance;
 
 import javafx.application.Platform;
 
@@ -111,6 +115,25 @@ public class Main {
 
 	public static long getFPS() {
 		return renderer.getFPS();
+	}
+
+	public static void setVideoInsets() {
+		HashSet<ActivityCategory> active = ActivityCategory.getActiveCategories();
+		if (active.size() == 1) {
+			ActivityCategory a = active.iterator().next();
+			if (a.name.equals("Elite: Dangerous")) {
+				File f = new File("ED Credits.csv");
+				if (f.exists()) {
+					try {
+						EDCreditsBalance bal = new EDCreditsBalance(f, timeline.getActivityValue(a));
+						VideoRenderer.instance.addInset(bal);
+					}
+					catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 }

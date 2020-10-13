@@ -337,14 +337,6 @@ public class GuiController extends ControllerBase {
 		return !GuiElement.ARCMERGE.isChecked();// && this.areAllCategoriesActive();
 	}
 
-	private boolean areAllCategoriesActive() {
-		for (String s : ActivityCategory.getNameList()) {
-			if (!GuiElement.CATEGORIES.isStringSelected(s))
-				return false;
-		}
-		return true;
-	}
-
 	@Override
 	public boolean shouldNodePersist(Node n) {
 		NodeWrapper nw = this.getNode(n);

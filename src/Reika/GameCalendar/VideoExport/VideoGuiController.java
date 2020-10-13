@@ -189,6 +189,7 @@ public class VideoGuiController extends ControllerBase {
 				CalendarRenderer cal = Main.getCalendarRenderer();
 				cal.clearSelection();
 				JFXWindow.getGUI().setScreenshots(null);
+				Main.setVideoInsets();
 				VideoRenderer.instance.startRendering(cal);
 				window.close();
 				return;

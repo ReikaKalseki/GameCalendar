@@ -198,6 +198,10 @@ public class Timeline {
 		return Collections.unmodifiableMap(memorabilityGraph);
 	}
 
+	public ActivityValue getActivityValue(ActivityCategory a) {
+		return activityLevels.get(a);
+	}
+
 	private static class ActivityPoint {
 
 		private final DateStamp date;

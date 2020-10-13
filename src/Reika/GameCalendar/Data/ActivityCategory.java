@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import Reika.GameCalendar.Main;
+import Reika.GameCalendar.GUI.GuiController.GuiElement;
 import Reika.GameCalendar.IO.DataLoader;
 import Reika.GameCalendar.Util.DateStamp;
 
@@ -69,6 +71,23 @@ public class ActivityCategory implements Comparable<ActivityCategory> {
 
 	public static List<String> getSortedNameList(SortingMode mode) {
 		return mode.getSortedList(categories.values(), Main.getTimeline());
+	}
+
+	public static boolean areAllCategoriesActive() {
+		for (String s : ActivityCategory.getNameList()) {
+			if (!GuiElement.CATEGORIES.isStringSelected(s))
+				return false;
+		}
+		return true;
+	}
+
+	public static HashSet<ActivityCategory> getActiveCategories() {
+		HashSet<ActivityCategory> ret = new HashSet();
+		for (String s : ActivityCategory.getNameList()) {
+			if (GuiElement.CATEGORIES.isStringSelected(s))
+				ret.add(ActivityCategory.getByName(s));
+		}
+		return ret;
 	}
 
 	@Override
