@@ -45,6 +45,14 @@ public class LineGraph {
 		return key != null ? key.getValue() : 0;
 	}
 
+	public DateStamp getPointBefore(DateStamp date) {
+		DateStamp ret = data.floorKey(date);
+		if (ret != null && ret.equals(date)) {
+			ret = data.lowerKey(ret);
+		}
+		return ret;
+	}
+
 	@Override
 	public String toString() {
 		//return data.toString();

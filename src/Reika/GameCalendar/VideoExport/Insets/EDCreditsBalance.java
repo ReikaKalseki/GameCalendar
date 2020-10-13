@@ -53,21 +53,36 @@ public class EDCreditsBalance implements VideoInset {
 
 	@Override
 	public void draw(BufferedImage frame, Graphics2D g, Font f, DateStamp date) {
+		this.drawLines(date, g, graphBalance, Color.red);
+		this.drawLines(date, g, graphAssets, new Color(0, 170, 0));
+		this.drawLines(date, g, graphTotal, Color.BLUE);
+	}
+
+	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, Color c) {
+		g.setColor(c);
 		int xctr = XPOS+WIDTH;
 		int yctr = YPOS+HEIGHT;
-		int yCr = yctr-this.getHeight(this.getBalance(date, graphBalance));
-		int yAss = yctr-this.getHeight(this.getBalance(date, graphAssets));
-		int yTot = yctr-this.getHeight(this.getBalance(date, graphTotal));
-
-		g.setColor(Color.red);
-
-		g.drawLine(xctr, yCr, XPOS, yCrPrev);
-
-		g.setColor(new Color(0, 170, 0));
-		g.drawLine(xctr, yAss, XPOS, yAssPrev);
-
-		g.setColor(Color.BLUE);
-		g.drawLine(xctr, yTot, XPOS, yTotPrev);
+		int widthPerDay = 2;
+		DateStamp minDate = root.getOffset(0, -WIDTH/widthPerDay);
+		int yVal = yctr-this.getHeight(this.getBalance(root, line));
+		DateStamp prevPoint = line.getPointBefore(root);
+		int x = xctr;
+		int y = yVal;
+		DateStamp lastDrawn = null;
+		while (prevPoint != null && prevPoint.compareTo(minDate) > 0) {
+			int x2 = x-widthPerDay;
+			int y2 = yctr-this.getHeight(this.getBalance(prevPoint, line));
+			g.drawLine(x, y, x2, y2);
+			x = x2;
+			y = y2;
+			lastDrawn = prevPoint;
+			prevPoint = line.getPointBefore(prevPoint);
+		}
+		if (lastDrawn == null || !lastDrawn.equals(minDate)) {
+			int x2 = XPOS;
+			int y2 = yctr-this.getHeight(this.getBalance(minDate, line));
+			g.drawLine(x, y, x2, y2);
+		}
 	}
 
 	private int getHeight(long val) {

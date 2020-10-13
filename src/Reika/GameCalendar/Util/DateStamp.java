@@ -118,6 +118,12 @@ public class DateStamp implements Comparable<DateStamp> {
 		return new DateStamp(year, Month.of(month+1), daym);
 	}
 
+	public DateStamp getOffset(int years, int days) {
+		LocalDate now = LocalDate.of(year, month.getValue(), day);
+		LocalDate offset = now.plusDays(days).plusYears(years);
+		return new DateStamp(offset.getYear(), offset.getMonth(), offset.getDayOfMonth());
+	}
+
 	public DateStamp previousDay() {
 		if (month == Month.JANUARY && day == 1)
 			return new DateStamp(year-1, Month.DECEMBER, 31);
