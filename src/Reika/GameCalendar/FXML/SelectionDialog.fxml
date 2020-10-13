@@ -13,173 +13,143 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="root" alignment="CENTER" spacing="4.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.AdvancedSelectionController">
+<VBox fx:id="root" alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Reika.GameCalendar.GUI.AdvancedSelectionController">
    <children>
-      <TitledPane animated="false" collapsible="false" text="Selection Modes">
+      <TitledPane animated="false" collapsible="false" text="Select All In Year">
          <content>
-            <VBox>
+            <HBox alignment="CENTER_LEFT">
                <children>
-                  <TitledPane animated="false" collapsible="false" text="Select All In Year">
-                     <content>
-                        <HBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label prefWidth="60.0" text="Year:">
-                                 <HBox.margin>
-                                    <Insets left="24.0" right="9.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <ChoiceBox fx:id="selYear" prefWidth="150.0" />
-                           </children>
-                           <padding>
-                              <Insets bottom="4.0" top="4.0" />
-                           </padding>
-                        </HBox>
-                     </content>
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </TitledPane>
-                  <Separator prefWidth="200.0" />
-                  <TitledPane animated="false" collapsible="false" text="Select All Intersecting Date">
-                     <content>
-                        <HBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label prefWidth="60.0" text="Date:">
-                                 <HBox.margin>
-                                    <Insets left="24.0" right="8.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="date" prefWidth="150.0" text="&lt;Today&gt;" />
-                              <CheckBox fx:id="anyYearDate" mnemonicParsing="false" selected="true" text="Any Year">
-                                 <HBox.margin>
-                                    <Insets left="8.0" right="4.0" />
-                                 </HBox.margin>
-                              </CheckBox>
-                           </children>
-                           <padding>
-                              <Insets bottom="4.0" top="4.0" />
-                           </padding>
-                        </HBox>
-                     </content>
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </TitledPane>
-                  <Separator prefWidth="200.0" />
-                  <TitledPane animated="false" collapsible="false" text="Select All Of Category">
-                     <content>
-                        <HBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label prefWidth="60.0" text="Category:">
-                                 <HBox.margin>
-                                    <Insets left="24.0" right="9.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <ChoiceBox fx:id="category" prefWidth="150.0" />
-                              <Label prefWidth="65.0" text="In Year:">
-                                 <HBox.margin>
-                                    <Insets left="8.0" right="8.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <ChoiceBox fx:id="catYear" prefWidth="150.0">
-                                 <HBox.margin>
-                                    <Insets right="8.0" />
-                                 </HBox.margin>
-                              </ChoiceBox>
-                           </children>
-                           <padding>
-                              <Insets bottom="4.0" top="4.0" />
-                           </padding>
-                        </HBox>
-                     </content>
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </TitledPane>
-                  <Separator prefWidth="200.0" />
-                  <TitledPane animated="false" collapsible="false" text="Select All Memorable">
-                     <content>
-                        <HBox alignment="CENTER_LEFT">
-                           <children>
-                              <AnchorPane prefWidth="210.0">
-                                 <HBox.margin>
-                                    <Insets left="24.0" right="9.0" />
-                                 </HBox.margin>
-                              </AnchorPane>
-                              <Label prefWidth="65.0" text="In Year:">
-                                 <HBox.margin>
-                                    <Insets left="8.0" right="8.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <ChoiceBox fx:id="memYear" prefWidth="150.0">
-                                 <HBox.margin>
-                                    <Insets right="8.0" />
-                                 </HBox.margin>
-                              </ChoiceBox>
-                           </children>
-                           <padding>
-                              <Insets bottom="4.0" top="4.0" />
-                           </padding>
-                        </HBox>
-                     </content>
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </TitledPane>
-                  <Separator prefWidth="200.0" />
-                  <TitledPane animated="false" collapsible="false" text="Select All With Property">
-                     <content>
-                        <HBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label prefWidth="60.0" text="Property:">
-                                 <HBox.margin>
-                                    <Insets left="24.0" right="8.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="propertyKey" prefWidth="150.0" promptText="Property Key" />
-                              <Label prefWidth="65.0" text="With Value:">
-                                 <HBox.margin>
-                                    <Insets left="8.0" right="8.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="propertyValue" prefWidth="150.0" promptText="Leave Empty For Any" />
-                           </children>
-                           <padding>
-                              <Insets bottom="4.0" top="4.0" />
-                           </padding>
-                        </HBox>
-                     </content>
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </TitledPane>
-                  <Separator prefWidth="200.0" />
+                  <Label prefWidth="60.0" text="Year:">
+                     <HBox.margin>
+                        <Insets left="24.0" right="9.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ChoiceBox fx:id="selYear" prefWidth="150.0" />
                </children>
                <padding>
-                  <Insets left="12.0" top="12.0" />
+                  <Insets bottom="4.0" top="4.0" />
                </padding>
-            </VBox>
+            </HBox>
          </content>
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
       </TitledPane>
       <Separator prefWidth="200.0" />
-      <TitledPane animated="false" collapsible="false" text="Selection Settings">
+      <TitledPane animated="false" collapsible="false" text="Select All Intersecting Date">
          <content>
-            <VBox>
+            <HBox alignment="CENTER_LEFT">
                <children>
-                  <CheckBox fx:id="selectSuperItems" mnemonicParsing="false" selected="true" text="Select Containing Arcs" />
+                  <Label prefWidth="60.0" text="Date:">
+                     <HBox.margin>
+                        <Insets left="24.0" right="8.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="date" prefWidth="150.0" text="&lt;Today&gt;" />
+                  <CheckBox fx:id="anyYearDate" mnemonicParsing="false" selected="true" text="Any Year">
+                     <HBox.margin>
+                        <Insets left="8.0" right="4.0" />
+                     </HBox.margin>
+                  </CheckBox>
                </children>
-            </VBox>
+               <padding>
+                  <Insets bottom="4.0" top="4.0" />
+               </padding>
+            </HBox>
          </content>
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </TitledPane>
+      <Separator prefWidth="200.0" />
+      <TitledPane animated="false" collapsible="false" text="Select All Of Category">
+         <content>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label prefWidth="60.0" text="Category:">
+                     <HBox.margin>
+                        <Insets left="24.0" right="9.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ChoiceBox fx:id="category" prefWidth="150.0" />
+                  <Label prefWidth="65.0" text="In Year:">
+                     <HBox.margin>
+                        <Insets left="8.0" right="8.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ChoiceBox fx:id="catYear" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+               </children>
+               <padding>
+                  <Insets bottom="4.0" top="4.0" />
+               </padding>
+            </HBox>
+         </content>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <Separator prefWidth="200.0" />
+      <TitledPane animated="false" collapsible="false" text="Select All Memorable">
+         <content>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <AnchorPane prefWidth="210.0">
+                     <HBox.margin>
+                        <Insets left="24.0" right="9.0" />
+                     </HBox.margin>
+                  </AnchorPane>
+                  <Label prefWidth="65.0" text="In Year:">
+                     <HBox.margin>
+                        <Insets left="8.0" right="8.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ChoiceBox fx:id="memYear" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </ChoiceBox>
+               </children>
+               <padding>
+                  <Insets bottom="4.0" top="4.0" />
+               </padding>
+            </HBox>
+         </content>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <Separator prefWidth="200.0" />
+      <TitledPane animated="false" collapsible="false" text="Select All With Property">
+         <content>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label prefWidth="60.0" text="Property:">
+                     <HBox.margin>
+                        <Insets left="24.0" right="8.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="propertyKey" prefWidth="150.0" promptText="Property Key" />
+                  <Label prefWidth="65.0" text="With Value:">
+                     <HBox.margin>
+                        <Insets left="8.0" right="8.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="propertyValue" prefWidth="150.0" promptText="Leave Empty For Any" />
+               </children>
+               <padding>
+                  <Insets bottom="4.0" top="4.0" />
+               </padding>
+            </HBox>
+         </content>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TitledPane>
+      <Separator prefWidth="200.0" />
       <HBox alignment="CENTER">
          <VBox.margin>
             <Insets bottom="5.0" top="2.0" />
