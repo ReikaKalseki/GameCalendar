@@ -47,6 +47,22 @@ public class ActivityValue {
 		return data.ceilingKey(date);
 	}
 
+	public boolean areSeparated(DateStamp d1, DateStamp d2) {
+		Entry<DateStamp, Integer> start = data.ceilingEntry(d1);
+		Entry<DateStamp, Integer> end = data.floorEntry(d2);
+		if (data.floorKey(d1).equals(end.getKey()))
+			return false;
+		if (start.getKey().equals(end.getKey()))
+			return start.getValue() == 0 || end.getValue() == 0;
+		while (!start.getKey().equals(end.getKey())) {
+			int lvl = start.getValue();
+			if (lvl == 0)
+				return true;
+			start = data.higherEntry(start.getKey());
+		}
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		//return data.toString();

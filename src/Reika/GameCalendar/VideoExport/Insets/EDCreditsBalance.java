@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import Reika.GameCalendar.Data.ActivityValue;
 import Reika.GameCalendar.Data.LineGraph;
@@ -26,6 +27,10 @@ public class EDCreditsBalance implements VideoInset {
 	private final LineGraph graphAssets = new LineGraph();
 	private final LineGraph graphTotal = new LineGraph();
 
+	private final TreeMap<DateStamp, Double> lineBalance;
+	private final TreeMap<DateStamp, Double> lineAssets;
+	private final TreeMap<DateStamp, Double> lineTotal;
+
 	private final ActivityValue activity;
 
 	private final long limitValue;
@@ -36,11 +41,10 @@ public class EDCreditsBalance implements VideoInset {
 			for (String s : li) {
 				try {
 					String[] parts = s.split(",");
-					DateStamp date = DateStamp.parse(parts[0]);
-					int off = parts[1].indexOf(':') >= 0 ? 1 : 0;
-					long balance = Long.parseLong(parts[1+off]);
-					long assets = Long.parseLong(parts[2+off]);
-					long total = parts[3+off].isEmpty() ? -1 : Long.parseLong(parts[3+off]);
+					DateStamp date = DateStamp.parse(parts[2]);
+					long balance = Long.parseLong(parts[3]);
+					long assets = Long.parseLong(parts[4]);
+					long total = parts[5].isEmpty() ? -1 : Long.parseLong(parts[5]);
 					graphBalance.addPoint(date, balance);
 					graphAssets.addPoint(date, assets);
 					if (total >= 0)
@@ -54,18 +58,21 @@ public class EDCreditsBalance implements VideoInset {
 			graphAssets.calculate();
 			graphTotal.calculate();
 		}
+		lineAssets = graphAssets.unroll(a);
+		lineBalance = graphBalance.unroll(a);
+		lineTotal = graphTotal.unroll(a);
 		activity = a;
 		limitValue = (long)Math.max(Math.max(graphAssets.getMaxValue(), graphBalance.getMaxValue()), graphTotal.getMaxValue());
 	}
 
 	@Override
 	public void draw(BufferedImage frame, Graphics2D g, Font f, DateStamp date) {
-		this.drawLines(date, g, graphBalance, Color.red);
-		this.drawLines(date, g, graphAssets, new Color(0, 170, 0));
-		this.drawLines(date, g, graphTotal, Color.BLUE);
+		this.drawLines(date, g, graphBalance, lineBalance, Color.red);
+		this.drawLines(date, g, graphAssets, lineAssets, new Color(0, 170, 0));
+		this.drawLines(date, g, graphTotal, lineTotal, Color.BLUE);
 	}
 
-	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, Color c) {
+	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, TreeMap<DateStamp, Double> data, Color c) {
 		long bmain = this.getBalance(root, line);
 		if (bmain < 0)
 			return;
@@ -102,6 +109,22 @@ public class EDCreditsBalance implements VideoInset {
 			g.drawLine(x1, y1, x2, y2);
 		}*/
 
+		int x = xctr;
+		DateStamp at = root;
+		DateStamp prev = at.previousDay();
+		while (data.containsKey(prev) && x >= XPOS) {
+			int x1 = x;
+			int x2 = x1-widthPerDay;
+			int y1 = yctr-this.getHeight(data.get(at).intValue());
+			int y2 = yctr-this.getHeight(data.get(prev).intValue());
+			g.drawLine(x1, y1, x2, y2);
+
+			at = prev;
+			x -= widthPerDay;
+			prev = at.previousDay();
+		}
+
+		/*--------------------------------------------------------------------
 		DateStamp main = root;
 		DateStamp prev = main.previousDay();
 		int x1 = xctr;
@@ -116,7 +139,8 @@ public class EDCreditsBalance implements VideoInset {
 			prev = main.previousDay();
 			x1 -= widthPerDay;
 			x2 -= widthPerDay;
-		}
+		}---------------------------------------------------------------------
+		 */
 
 		/*
 		DateStamp minDate = root.getOffset(0, -WIDTH/widthPerDay);

@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import Reika.GameCalendar.Util.DateStamp;
+import Reika.GameCalendar.Util.MathHelper;
 
 public class LineGraph {
 
@@ -49,6 +50,36 @@ public class LineGraph {
 		DateStamp ret = data.floorKey(date);
 		if (ret != null && ret.equals(date)) {
 			ret = data.lowerKey(ret);
+		}
+		return ret;
+	}
+
+	public TreeMap<DateStamp, Double> unroll(ActivityValue av) {
+		TreeMap<DateStamp, Double> ret = new TreeMap();
+		DateStamp start = data.firstKey();
+		DateStamp at = start;
+		DateStamp next = data.higherKey(at);
+		while (next != null) {
+			while (!at.equals(next)) {
+				Double val = data.get(at);
+				if (val == null) {
+					Entry<DateStamp, Double> e1 = data.floorEntry(at);
+					Entry<DateStamp, Double> e2 = data.ceilingEntry(at);
+					if (av.areSeparated(e1.getKey(), e2.getKey())) {
+						val = e1.getValue();
+					}
+					else {
+						int step = e1.getKey().countDaysAfter(e2.getKey());
+						double y1 = e1.getValue();
+						double y2 = e2.getValue();
+						val = MathHelper.linterpolate(e1.getKey().countDaysAfter(at), 0, step, y1, y2);
+					}
+				}
+				ret.put(at, val);
+				at = at.nextDay();
+			}
+			at = next;
+			next = data.higherKey(next);
 		}
 		return ret;
 	}
