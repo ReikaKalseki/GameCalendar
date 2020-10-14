@@ -29,6 +29,7 @@ public class EDCreditsBalance implements VideoInset {
 	private static final int AXIS_HEIGHT = VideoRenderer.SCREENSHOT_HEIGHT/12;
 	private static final int WIDTH_PER_DAY = 5;//2;
 	private static final int POINTS_PER_DAY = WIDTH_PER_DAY;
+	private static final double LOG_EXPONENT = 2;
 
 	private final LineGraph graphBalance = new LineGraph();
 	private final LineGraph graphAssets = new LineGraph();
@@ -41,6 +42,7 @@ public class EDCreditsBalance implements VideoInset {
 	private final ActivityValue activity;
 
 	private final long limitValue;
+	private final long minValue;
 
 	public EDCreditsBalance(File f, ActivityValue a) throws IOException {
 		if (f.exists()) {
@@ -74,6 +76,7 @@ public class EDCreditsBalance implements VideoInset {
 		lineTotal = graphTotal.unroll(POINTS_PER_DAY);
 		activity = a;
 		limitValue = (long)Math.max(Math.max(graphAssets.getMaxValue(), graphBalance.getMaxValue()), graphTotal.getMaxValue());
+		minValue = (long)Math.min(Math.min(graphAssets.getMinValue(), graphBalance.getMinValue()), graphTotal.getMinValue());
 	}
 
 	@Override
@@ -85,15 +88,32 @@ public class EDCreditsBalance implements VideoInset {
 
 		g.setStroke(new BasicStroke(1F));
 		g.setColor(Color.gray);
-		int gridStep = 20;
-		for (int i = gridStep; i <= HEIGHT-AXIS_HEIGHT; i += gridStep) {
-			int ly = YPOS+HEIGHT-AXIS_HEIGHT-i;
-			g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
-			g.setColor(Color.black);
-			long axisVal = limitValue*i/HEIGHT;
-			String s = String.valueOf(axisVal);
-			g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
-			g.setColor(Color.gray);
+		if (LOG_EXPONENT == 1) {
+			int gridStep = 20;
+			for (int i = gridStep; i <= HEIGHT-AXIS_HEIGHT; i += gridStep) {
+				int ly = YPOS+HEIGHT-AXIS_HEIGHT-i;
+				g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
+				g.setColor(Color.black);
+				long axisVal = limitValue*i/HEIGHT;
+				String s = String.valueOf(axisVal);
+				g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
+				g.setColor(Color.gray);
+			}
+		}
+		else {
+			double value = Math.pow(10, (int)Math.log10(minValue));//MathHelper.ceil2expLong(minValue)/2;
+			int steps = (int)Math.ceil(Math.log(limitValue/minValue)/Math.log(LOG_EXPONENT))+1;
+			int gridStep = (HEIGHT-AXIS_HEIGHT)/steps;
+			int ly = YPOS+HEIGHT-AXIS_HEIGHT-1;
+			while (value <= limitValue) {
+				g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
+				g.setColor(Color.black);
+				String s = String.valueOf((long)(value));
+				g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
+				g.setColor(Color.gray);
+				value *= LOG_EXPONENT;
+				ly -= gridStep;
+			}
 		}
 		DateStamp at = date;
 		int x = XPOS+WIDTH;
@@ -240,8 +260,21 @@ public class EDCreditsBalance implements VideoInset {
 		return ret;
 	}
 
-	private int getHeight(long val) {
-		return (int)(val*(HEIGHT-AXIS_HEIGHT)/limitValue);
+	private int getHeight(double val) {
+		double lim = limitValue;
+		if (LOG_EXPONENT > 1 && val > 0) {
+			val = val <= minValue ? 0 : (Math.log(val)-Math.log(minValue))/Math.log(LOG_EXPONENT);
+			lim = Math.log(limitValue-minValue)/Math.log(LOG_EXPONENT);
+		}
+		int base = (int)(val*(HEIGHT-AXIS_HEIGHT)/lim);
+		/*
+		if (LOG_EXPONENT > 1) {
+	        double b = Math.log(y/x)/(y-x);
+	        double a = this.limitValue / Math.exp(b*this.limitValue);
+	       return (int)Math.round(a * Math.exp(b*val));
+		}
+		 */
+		return base;
 	}
 
 	/*

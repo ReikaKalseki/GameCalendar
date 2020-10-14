@@ -13,7 +13,8 @@ public class LineGraph {
 	private final HashMap<DateStamp, ArrayList<Double>> raw = new HashMap();
 	private final TreeMap<DateStamp, DayData> data = new TreeMap();
 
-	private double maxValue;
+	private double minValue = Double.POSITIVE_INFINITY;
+	private double maxValue = Double.NEGATIVE_INFINITY;
 
 	public void addPoint(DateStamp date, double value) {
 		ArrayList<Double> li = raw.get(date);
@@ -29,6 +30,7 @@ public class LineGraph {
 			DayData dd = new DayData(e.getValue(), maxPerDay);
 			data.put(e.getKey(), dd);
 			maxValue = Math.max(dd.highestValue, maxValue);
+			minValue = Math.min(dd.lowestValue, minValue);
 		}
 	}
 
@@ -97,6 +99,10 @@ public class LineGraph {
 		return sb.toString();
 	}
 
+	public double getMinValue() {
+		return minValue;
+	}
+
 	public double getMaxValue() {
 		return maxValue;
 	}
@@ -106,17 +112,21 @@ public class LineGraph {
 		private final ArrayList<Double> dataSeries = new ArrayList();
 		private final double averageValue;
 		private final double highestValue;
+		private final double lowestValue;
 
 		private DayData(ArrayList<Double> raw, int nsteps) {
 			double sum = 0;
 			double max = Double.NEGATIVE_INFINITY;
+			double min = Double.POSITIVE_INFINITY;
 			for (double d : raw) {
 				sum += d;
 				max = Math.max(max, d);
+				min = Math.min(min, d);
 			}
 			sum /= raw.size();
 			averageValue = sum;
 			highestValue = max;
+			lowestValue = min;
 
 			if (nsteps >= raw.size()) {
 				dataSeries.addAll(raw);

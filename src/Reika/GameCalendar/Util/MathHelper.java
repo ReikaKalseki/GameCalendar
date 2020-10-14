@@ -26,6 +26,20 @@ public class MathHelper {
 		return val;
 	}
 
+	public static long ceil2expLong(long val) {
+		if (val <= 0)
+			return 0;
+		val--;
+		val = (val >> 1) | val;
+		val = (val >> 2) | val;
+		val = (val >> 4) | val;
+		val = (val >> 8) | val;
+		val = (val >> 16) | val;
+		val = (val >> 32) | val;
+		val++;
+		return val;
+	}
+
 	public static double getThousandBase(double val) {
 		if (Math.abs(val) == Double.POSITIVE_INFINITY)
 			return val;
