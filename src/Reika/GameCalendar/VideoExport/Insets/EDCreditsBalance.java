@@ -75,6 +75,7 @@ public class EDCreditsBalance implements VideoInset {
 		int yctr = YPOS+HEIGHT;
 		int widthPerDay = 2;
 
+		/*
 		//trying to fix a problem -> day-by-day brute force makes every increase occur in a single day, instead of as a line slope
 		int x1 = xctr;
 		DateStamp main = root;
@@ -99,7 +100,24 @@ public class EDCreditsBalance implements VideoInset {
 			int y1 = yctr-this.getHeight(bmain);
 			int y2 = yctr-this.getHeight(bprev);
 			g.drawLine(x1, y1, x2, y2);
+		}*/
+
+		DateStamp main = root;
+		DateStamp prev = main.previousDay();
+		int x1 = xctr;
+		int x2 = xctr-widthPerDay;
+		long bprev = this.getBalance(prev, line);
+		while (x2 >= XPOS) {
+			int y1 = yctr-this.getHeight(this.getBalance(main, line));
+			int y2 = yctr-this.getHeight(this.getBalance(prev, line));
+			g.drawLine(x1, y1, x2, y2);
+
+			main = prev;
+			prev = main.previousDay();
+			x1 -= widthPerDay;
+			x2 -= widthPerDay;
 		}
+
 		/*
 		DateStamp minDate = root.getOffset(0, -WIDTH/widthPerDay);
 		int yVal = yctr-this.getHeight(this.getBalance(root, line));
