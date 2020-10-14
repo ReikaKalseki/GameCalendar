@@ -17,10 +17,10 @@ import Reika.GameCalendar.VideoExport.VideoRenderer;
 
 public class EDCreditsBalance implements VideoInset {
 
-	private static final int XPOS = VideoRenderer.CALENDAR_SIZE+2*VideoRenderer.SCREENSHOT_WIDTH;
-	private static final int YPOS = 120;
-	private static final int WIDTH = VideoRenderer.VIDEO_WIDTH-XPOS;
-	private static final int HEIGHT = 400;
+	private static final int XPOS = VideoRenderer.CALENDAR_SIZE;//+2*VideoRenderer.SCREENSHOT_WIDTH;
+	private static final int YPOS = 2*VideoRenderer.SCREENSHOT_HEIGHT;//120;
+	private static final int WIDTH = 2*VideoRenderer.SCREENSHOT_WIDTH;//VideoRenderer.VIDEO_WIDTH-XPOS;
+	private static final int HEIGHT = 2*VideoRenderer.SCREENSHOT_HEIGHT;//400;
 
 	private final LineGraph graphBalance = new LineGraph();
 	private final LineGraph graphAssets = new LineGraph();
@@ -66,8 +66,7 @@ public class EDCreditsBalance implements VideoInset {
 	}
 
 	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, Color c) {
-		DateStamp main = root;
-		long bmain = this.getBalance(main, line);
+		long bmain = this.getBalance(root, line);
 		if (bmain < 0)
 			return;
 
@@ -76,27 +75,31 @@ public class EDCreditsBalance implements VideoInset {
 		int yctr = YPOS+HEIGHT;
 		int widthPerDay = 2;
 
-		DateStamp prev = main.previousDay();
-		int x = xctr;
-		while (x >= XPOS+widthPerDay) {
+		//trying to fix a problem -> day-by-day brute force makes every increase occur in a single day, instead of as a line slope
+		int x1 = xctr;
+		DateStamp main = root;
+		DateStamp prev = line.getPointBefore(root);
+		DateStamp minDate = root.getOffset(0, -WIDTH/widthPerDay);
+		while (prev != null && prev.compareTo(minDate) > 0) {
 			bmain = this.getBalance(main, line);
 			long bprev = this.getBalance(prev, line);
-			int n = 1;
-			while (bprev == bmain && x-widthPerDay*n >= XPOS+widthPerDay) {
-				prev = prev.previousDay();
-				bprev = this.getBalance(prev, line);
-				n++;
-			}
 			int y1 = yctr-this.getHeight(bmain);
-			int x2 = x-widthPerDay*n;
+			int x2 = x1-widthPerDay*prev.countDaysAfter(main);
 			int y2 = yctr-this.getHeight(bprev);
-			g.drawLine(x, y1, x2, y2);
+			g.drawLine(x1, y1, x2, y2);
 
 			main = prev;
-			prev = main.previousDay();
-			x -= widthPerDay;
+			prev = line.getPointBefore(main);
+			x1 = x2;
 		}
-		//this has a problem -> it makes every increase occur in a single day, instead of as a line slope
+		if (!minDate.equals(main)) {
+			bmain = this.getBalance(main, line);
+			long bprev = this.getBalance(minDate, line);
+			int x2 = XPOS;
+			int y1 = yctr-this.getHeight(bmain);
+			int y2 = yctr-this.getHeight(bprev);
+			g.drawLine(x1, y1, x2, y2);
+		}
 		/*
 		DateStamp minDate = root.getOffset(0, -WIDTH/widthPerDay);
 		int yVal = yctr-this.getHeight(this.getBalance(root, line));
