@@ -62,9 +62,9 @@ public class EDCreditsBalance implements VideoInset {
 			graphAssets.calculate();
 			graphTotal.calculate();
 		}
-		lineAssets = graphAssets.unroll(a);
-		lineBalance = graphBalance.unroll(a);
-		lineTotal = graphTotal.unroll(a);
+		lineAssets = graphAssets.unroll();
+		lineBalance = graphBalance.unroll();
+		lineTotal = graphTotal.unroll();
 		activity = a;
 		limitValue = (long)Math.max(Math.max(graphAssets.getMaxValue(), graphBalance.getMaxValue()), graphTotal.getMaxValue());
 	}
@@ -77,8 +77,12 @@ public class EDCreditsBalance implements VideoInset {
 	}
 
 	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, TreeMap<DateStamp, Double> data, Color c) {
+		/*
 		long bmain = this.getBalance(root, line);
 		if (bmain < 0)
+			return;
+		 */
+		if (!data.containsKey(root))
 			return;
 
 		g.setColor(c);
@@ -119,8 +123,8 @@ public class EDCreditsBalance implements VideoInset {
 		while (data.containsKey(prev) && x >= XPOS) {
 			int x1 = x;
 			int x2 = x1-widthPerDay;
-			int y1 = yctr-this.getHeight(data.get(at).intValue());
-			int y2 = yctr-this.getHeight(data.get(prev).intValue());
+			int y1 = yctr-this.getHeight(this.getDataAt(data, at));
+			int y2 = yctr-this.getHeight(this.getDataAt(data, prev));
 			g.drawLine(x1, y1, x2, y2);
 
 			at = prev;
@@ -168,6 +172,14 @@ public class EDCreditsBalance implements VideoInset {
 			g.drawLine(x, y, x2, y2);
 		}
 		 */
+	}
+
+	private long getDataAt(TreeMap<DateStamp, Double> data, DateStamp date) {
+		DateStamp ref = date;
+		if (!activity.isActiveAt(ref)) {
+			ref = activity.getLastActiveDateBefore(ref);
+		}
+		return data.get(ref).longValue();
 	}
 
 	private int getHeight(long val) {

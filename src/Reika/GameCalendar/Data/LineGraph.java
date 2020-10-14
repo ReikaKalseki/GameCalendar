@@ -54,7 +54,7 @@ public class LineGraph {
 		return ret;
 	}
 
-	public TreeMap<DateStamp, Double> unroll(ActivityValue av) {
+	public TreeMap<DateStamp, Double> unroll() {
 		TreeMap<DateStamp, Double> ret = new TreeMap();
 		DateStamp start = data.firstKey();
 		DateStamp at = start;
@@ -65,15 +65,10 @@ public class LineGraph {
 				if (val == null) {
 					Entry<DateStamp, Double> e1 = data.floorEntry(at);
 					Entry<DateStamp, Double> e2 = data.ceilingEntry(at);
-					if (av.areSeparated(e1.getKey(), e2.getKey())) {
-						val = e1.getValue();
-					}
-					else {
-						int step = e1.getKey().countDaysAfter(e2.getKey());
-						double y1 = e1.getValue();
-						double y2 = e2.getValue();
-						val = MathHelper.linterpolate(e1.getKey().countDaysAfter(at), 0, step, y1, y2);
-					}
+					int step = e1.getKey().countDaysAfter(e2.getKey());
+					double y1 = e1.getValue();
+					double y2 = e2.getValue();
+					val = MathHelper.linterpolate(e1.getKey().countDaysAfter(at), 0, step, y1, y2);
 				}
 				ret.put(at, val);
 				at = at.nextDay();
