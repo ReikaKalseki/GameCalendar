@@ -173,7 +173,7 @@ public class MathHelper {
 		return (long)(0.5*(k1 + k2)*(k1 + k2 + 1) + k2);
 	}
 
-	public int floor(double d) {
+	public static int floor(double d) {
 		return (int)Math.floor(d);
 	}
 

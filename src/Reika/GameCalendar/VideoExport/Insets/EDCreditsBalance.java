@@ -23,19 +23,20 @@ public class EDCreditsBalance implements VideoInset {
 
 	private static final int XPOS = VideoRenderer.CALENDAR_SIZE;//+2*VideoRenderer.SCREENSHOT_WIDTH;
 	private static final int YPOS = 2*VideoRenderer.SCREENSHOT_HEIGHT;//120;
-	private static final int WIDTH = VideoRenderer.VIDEO_WIDTH-VideoRenderer.CALENDAR_SIZE;//2*VideoRenderer.SCREENSHOT_WIDTH;//VideoRenderer.VIDEO_WIDTH-XPOS;
+	private static final int WIDTH = VideoRenderer.VIDEO_WIDTH-VideoRenderer.CALENDAR_SIZE-20;//2*VideoRenderer.SCREENSHOT_WIDTH;//VideoRenderer.VIDEO_WIDTH-XPOS;
 	private static final int HEIGHT = 2*VideoRenderer.SCREENSHOT_HEIGHT;//400;
 	private static final int AXIS_WIDTH = WIDTH-2*VideoRenderer.SCREENSHOT_WIDTH;
 	private static final int AXIS_HEIGHT = VideoRenderer.SCREENSHOT_HEIGHT/12;
 	private static final int WIDTH_PER_DAY = 5;//2;
+	private static final int POINTS_PER_DAY = WIDTH_PER_DAY;
 
 	private final LineGraph graphBalance = new LineGraph();
 	private final LineGraph graphAssets = new LineGraph();
 	private final LineGraph graphTotal = new LineGraph();
 
-	private final TreeMap<DateStamp, Double> lineBalance;
-	private final TreeMap<DateStamp, Double> lineAssets;
-	private final TreeMap<DateStamp, Double> lineTotal;
+	private final TreeMap<DateStamp, ArrayList<Double>> lineBalance;
+	private final TreeMap<DateStamp, ArrayList<Double>> lineAssets;
+	private final TreeMap<DateStamp, ArrayList<Double>> lineTotal;
 
 	private final ActivityValue activity;
 
@@ -64,13 +65,13 @@ public class EDCreditsBalance implements VideoInset {
 					throw new IllegalArgumentException("Invalid CSV line '"+s+"'", e);
 				}
 			}
-			graphBalance.calculate();
-			graphAssets.calculate();
-			graphTotal.calculate();
+			graphBalance.calculate(POINTS_PER_DAY);
+			graphAssets.calculate(POINTS_PER_DAY);
+			graphTotal.calculate(POINTS_PER_DAY);
 		}
-		lineAssets = graphAssets.unroll();
-		lineBalance = graphBalance.unroll();
-		lineTotal = graphTotal.unroll();
+		lineAssets = graphAssets.unroll(POINTS_PER_DAY);
+		lineBalance = graphBalance.unroll(POINTS_PER_DAY);
+		lineTotal = graphTotal.unroll(POINTS_PER_DAY);
 		activity = a;
 		limitValue = (long)Math.max(Math.max(graphAssets.getMaxValue(), graphBalance.getMaxValue()), graphTotal.getMaxValue());
 	}
@@ -79,7 +80,7 @@ public class EDCreditsBalance implements VideoInset {
 	public void draw(BufferedImage frame, Graphics2D g, Font f, DateStamp date) {
 		//g.drawRect(XPOS, YPOS, WIDTH, HEIGHT);
 		g.setStroke(new BasicStroke(5F));
-		g.drawLine(XPOS+AXIS_WIDTH, YPOS, XPOS+AXIS_WIDTH, YPOS+HEIGHT);
+		g.drawLine(XPOS+AXIS_WIDTH, YPOS, XPOS+AXIS_WIDTH, YPOS+HEIGHT-AXIS_HEIGHT);
 		g.drawLine(XPOS+AXIS_WIDTH, YPOS+HEIGHT-AXIS_HEIGHT, XPOS+WIDTH, YPOS+HEIGHT-AXIS_HEIGHT);
 
 		g.setStroke(new BasicStroke(1F));
@@ -100,7 +101,7 @@ public class EDCreditsBalance implements VideoInset {
 			if (at.day == 1) {
 				g.drawLine(x, YPOS, x, YPOS+HEIGHT-AXIS_HEIGHT);
 				g.setColor(Color.black);
-				String n = at.month.getDisplayName(TextStyle.SHORT, Locale.getDefault());
+				String n = at.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+at.year;
 				g.drawString(n, x-g.getFontMetrics().stringWidth(n)/2, YPOS+HEIGHT-AXIS_HEIGHT*0/2);
 				g.setColor(Color.gray);
 			}
@@ -114,7 +115,7 @@ public class EDCreditsBalance implements VideoInset {
 		this.drawLines(date, g, graphTotal, lineTotal, Color.BLUE);
 	}
 
-	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, TreeMap<DateStamp, Double> data, Color c) {
+	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, TreeMap<DateStamp, ArrayList<Double>> data, Color c) {
 		/*
 		long bmain = this.getBalance(root, line);
 		if (bmain < 0)
@@ -160,10 +161,7 @@ public class EDCreditsBalance implements VideoInset {
 		while (data.containsKey(prev) && x >= XPOS+AXIS_WIDTH) {
 			int x1 = x;
 			int x2 = x1-WIDTH_PER_DAY;
-			int y1 = yctr-this.getHeight(this.getDataAt(data, at));
-			int y2 = yctr-this.getHeight(this.getDataAt(data, prev));
-			g.drawLine(x1, y1, x2, y2);
-
+			this.drawLinesForDay(g, data, x1, x2, yctr, at, prev, line);
 			at = prev;
 			x -= WIDTH_PER_DAY;
 			prev = at.previousDay();
@@ -211,18 +209,42 @@ public class EDCreditsBalance implements VideoInset {
 		 */
 	}
 
-	private long getDataAt(TreeMap<DateStamp, Double> data, DateStamp date) {
-		DateStamp ref = date;
-		if (!activity.isActiveAt(ref)) {
-			ref = activity.getLastActiveDateBefore(ref);
+	private void drawLinesForDay(Graphics2D g, TreeMap<DateStamp, ArrayList<Double>> data, int xAt, int xPrev, int yctr, DateStamp at, DateStamp prev, LineGraph line) {
+		long[] v1 = this.getDataAt(data, at);
+		long[] v2 = this.getDataAt(data, prev);
+		int width = xPrev-xAt;
+		int dx = width/v1.length;
+		int xAt0 = xAt-width/2;
+		for (int i = 0; i < v1.length-1; i++) {
+			int y0 = yctr-this.getHeight(v1[i]);
+			int y1 = yctr-this.getHeight(v1[i+1]);
+			int x0 = xAt0+dx*i;
+			int x1 = xAt0+dx*(i+1);
+			g.drawLine(x0, y0, x1, y1);
 		}
-		return data.get(ref).longValue();
+		int y1 = yctr-this.getHeight(v1[0]);
+		int y2 = yctr-this.getHeight(v2[v2.length-1]);
+		g.drawLine(xAt0, y1, xPrev+width/2-dx, y2);
+	}
+
+	private long[] getDataAt(TreeMap<DateStamp, ArrayList<Double>> data, DateStamp date) {
+		if (!activity.isActiveAt(date)) {
+			ArrayList<Double> li = data.get(activity.getLastActiveDateBefore(date));
+			return new long[] {li.get(li.size()-1).longValue()};
+		}
+		ArrayList<Double> li = data.get(date);
+		long[] ret = new long[li.size()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = li.get(i).longValue();
+		}
+		return ret;
 	}
 
 	private int getHeight(long val) {
 		return (int)(val*(HEIGHT-AXIS_HEIGHT)/limitValue);
 	}
 
+	/*
 	private long getBalance(DateStamp date, LineGraph gr) {
 		long val = (long)gr.getValueAt(date);
 		if (!activity.isActiveAt(date)) {
@@ -232,7 +254,7 @@ public class EDCreditsBalance implements VideoInset {
 			val = (long)gr.getValueAt(last);
 		}
 		return val;
-	}
+	}*/
 
 	/*
 	@Override
