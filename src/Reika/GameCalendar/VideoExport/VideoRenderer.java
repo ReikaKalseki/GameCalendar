@@ -338,6 +338,7 @@ public class VideoRenderer {
 		Graphics2D g = (Graphics2D)frame.getGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setColor(new Color(0x000000));
+		g.setStroke(new BasicStroke(2F));
 		Font f = g.getFont();
 		int size = f.getSize();
 		this.addCategoryList(g, f, size);

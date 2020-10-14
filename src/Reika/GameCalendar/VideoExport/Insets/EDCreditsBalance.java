@@ -1,12 +1,15 @@
 package Reika.GameCalendar.VideoExport.Insets;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import Reika.GameCalendar.Data.ActivityValue;
@@ -20,8 +23,11 @@ public class EDCreditsBalance implements VideoInset {
 
 	private static final int XPOS = VideoRenderer.CALENDAR_SIZE;//+2*VideoRenderer.SCREENSHOT_WIDTH;
 	private static final int YPOS = 2*VideoRenderer.SCREENSHOT_HEIGHT;//120;
-	private static final int WIDTH = 2*VideoRenderer.SCREENSHOT_WIDTH;//VideoRenderer.VIDEO_WIDTH-XPOS;
+	private static final int WIDTH = VideoRenderer.VIDEO_WIDTH-VideoRenderer.CALENDAR_SIZE;//2*VideoRenderer.SCREENSHOT_WIDTH;//VideoRenderer.VIDEO_WIDTH-XPOS;
 	private static final int HEIGHT = 2*VideoRenderer.SCREENSHOT_HEIGHT;//400;
+	private static final int AXIS_WIDTH = WIDTH-2*VideoRenderer.SCREENSHOT_WIDTH;
+	private static final int AXIS_HEIGHT = VideoRenderer.SCREENSHOT_HEIGHT/12;
+	private static final int WIDTH_PER_DAY = 5;//2;
 
 	private final LineGraph graphBalance = new LineGraph();
 	private final LineGraph graphAssets = new LineGraph();
@@ -71,6 +77,38 @@ public class EDCreditsBalance implements VideoInset {
 
 	@Override
 	public void draw(BufferedImage frame, Graphics2D g, Font f, DateStamp date) {
+		//g.drawRect(XPOS, YPOS, WIDTH, HEIGHT);
+		g.setStroke(new BasicStroke(5F));
+		g.drawLine(XPOS+AXIS_WIDTH, YPOS, XPOS+AXIS_WIDTH, YPOS+HEIGHT);
+		g.drawLine(XPOS+AXIS_WIDTH, YPOS+HEIGHT-AXIS_HEIGHT, XPOS+WIDTH, YPOS+HEIGHT-AXIS_HEIGHT);
+
+		g.setStroke(new BasicStroke(1F));
+		g.setColor(Color.gray);
+		int gridStep = 20;
+		for (int i = gridStep; i <= HEIGHT-AXIS_HEIGHT; i += gridStep) {
+			int ly = YPOS+HEIGHT-AXIS_HEIGHT-i;
+			g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
+			g.setColor(Color.black);
+			long axisVal = limitValue*i/HEIGHT;
+			String s = String.valueOf(axisVal);
+			g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
+			g.setColor(Color.gray);
+		}
+		DateStamp at = date;
+		int x = XPOS+WIDTH;
+		while (x > XPOS+AXIS_WIDTH) {
+			if (at.day == 1) {
+				g.drawLine(x, YPOS, x, YPOS+HEIGHT-AXIS_HEIGHT);
+				g.setColor(Color.black);
+				String n = at.month.getDisplayName(TextStyle.SHORT, Locale.getDefault());
+				g.drawString(n, x-g.getFontMetrics().stringWidth(n)/2, YPOS+HEIGHT-AXIS_HEIGHT*0/2);
+				g.setColor(Color.gray);
+			}
+			at = at.previousDay();
+			x -= WIDTH_PER_DAY;
+		}
+
+		g.setStroke(new BasicStroke(2F));
 		this.drawLines(date, g, graphBalance, lineBalance, Color.red);
 		this.drawLines(date, g, graphAssets, lineAssets, new Color(0, 170, 0));
 		this.drawLines(date, g, graphTotal, lineTotal, Color.BLUE);
@@ -87,8 +125,7 @@ public class EDCreditsBalance implements VideoInset {
 
 		g.setColor(c);
 		int xctr = XPOS+WIDTH;
-		int yctr = YPOS+HEIGHT;
-		int widthPerDay = 2;
+		int yctr = YPOS+HEIGHT-AXIS_HEIGHT;
 
 		/*
 		//trying to fix a problem -> day-by-day brute force makes every increase occur in a single day, instead of as a line slope
@@ -120,15 +157,15 @@ public class EDCreditsBalance implements VideoInset {
 		int x = xctr;
 		DateStamp at = root;
 		DateStamp prev = at.previousDay();
-		while (data.containsKey(prev) && x >= XPOS) {
+		while (data.containsKey(prev) && x >= XPOS+AXIS_WIDTH) {
 			int x1 = x;
-			int x2 = x1-widthPerDay;
+			int x2 = x1-WIDTH_PER_DAY;
 			int y1 = yctr-this.getHeight(this.getDataAt(data, at));
 			int y2 = yctr-this.getHeight(this.getDataAt(data, prev));
 			g.drawLine(x1, y1, x2, y2);
 
 			at = prev;
-			x -= widthPerDay;
+			x -= WIDTH_PER_DAY;
 			prev = at.previousDay();
 		}
 
@@ -183,7 +220,7 @@ public class EDCreditsBalance implements VideoInset {
 	}
 
 	private int getHeight(long val) {
-		return (int)(val*HEIGHT/limitValue);
+		return (int)(val*(HEIGHT-AXIS_HEIGHT)/limitValue);
 	}
 
 	private long getBalance(DateStamp date, LineGraph gr) {
