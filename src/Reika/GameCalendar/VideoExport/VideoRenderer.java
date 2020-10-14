@@ -78,6 +78,7 @@ public class VideoRenderer {
 	private static final double GAMMA = 1.02;
 
 	private final ArrayList<VideoInset> videoInsets = new ArrayList();
+	private int skipSpeed = 1;
 
 	public String pathToFFMPEG = null;
 	public double daysPerFrame = 1;

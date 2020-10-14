@@ -21,10 +21,11 @@ import Reika.GameCalendar.VideoExport.VideoRenderer;
 
 public class EDCreditsBalance implements VideoInset {
 
+	private static final int PAD = 20;
 	private static final int XPOS = VideoRenderer.CALENDAR_SIZE;//+2*VideoRenderer.SCREENSHOT_WIDTH;
-	private static final int YPOS = 2*VideoRenderer.SCREENSHOT_HEIGHT;//120;
-	private static final int WIDTH = VideoRenderer.VIDEO_WIDTH-VideoRenderer.CALENDAR_SIZE-20;//2*VideoRenderer.SCREENSHOT_WIDTH;//VideoRenderer.VIDEO_WIDTH-XPOS;
-	private static final int HEIGHT = 2*VideoRenderer.SCREENSHOT_HEIGHT;//400;
+	private static final int YPOS = 2*VideoRenderer.SCREENSHOT_HEIGHT+PAD;//120;
+	private static final int WIDTH = VideoRenderer.VIDEO_WIDTH-VideoRenderer.CALENDAR_SIZE-PAD;//2*VideoRenderer.SCREENSHOT_WIDTH;//VideoRenderer.VIDEO_WIDTH-XPOS;
+	private static final int HEIGHT = 2*VideoRenderer.SCREENSHOT_HEIGHT-PAD*2;//400;
 	private static final int AXIS_WIDTH = WIDTH-2*VideoRenderer.SCREENSHOT_WIDTH;
 	private static final int AXIS_HEIGHT = VideoRenderer.SCREENSHOT_HEIGHT/12;
 	private static final int WIDTH_PER_DAY = 5;//2;
@@ -102,10 +103,12 @@ public class EDCreditsBalance implements VideoInset {
 		}
 		else {
 			double value = Math.pow(10, (int)Math.log10(minValue));//MathHelper.ceil2expLong(minValue)/2;
-			int steps = (int)Math.ceil(Math.log(limitValue/minValue)/Math.log(LOG_EXPONENT))+1;
+			int steps = (int)Math.ceil(Math.log(limitValue/minValue)/Math.log(LOG_EXPONENT));
 			int gridStep = (HEIGHT-AXIS_HEIGHT)/steps;
 			int ly = YPOS+HEIGHT-AXIS_HEIGHT-1;
-			while (value <= limitValue) {
+			boolean flag = false;
+			while (value <= limitValue || !flag) {
+				flag |= value > limitValue;
 				g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
 				g.setColor(Color.black);
 				String s = String.valueOf((long)(value));
