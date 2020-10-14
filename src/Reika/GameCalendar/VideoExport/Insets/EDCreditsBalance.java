@@ -30,7 +30,8 @@ public class EDCreditsBalance implements VideoInset {
 	private static final int AXIS_HEIGHT = VideoRenderer.SCREENSHOT_HEIGHT/12;
 	private static final int WIDTH_PER_DAY = 5;//2;
 	private static final int POINTS_PER_DAY = WIDTH_PER_DAY;
-	private static final double LOG_EXPONENT = 2;
+	private static double LOG_EXPONENT = 1;//2;
+	private static boolean SLIDING_SCALE = true;
 
 	private final LineGraph graphBalance = new LineGraph();
 	private final LineGraph graphAssets = new LineGraph();
@@ -44,6 +45,9 @@ public class EDCreditsBalance implements VideoInset {
 
 	private final long limitValue;
 	private final long minValue;
+
+	private long minRenderedThisFrame;
+	private long maxRenderedThisFrame;
 
 	public EDCreditsBalance(File f, ActivityValue a) throws IOException {
 		if (f.exists()) {
@@ -83,22 +87,50 @@ public class EDCreditsBalance implements VideoInset {
 	@Override
 	public void draw(BufferedImage frame, Graphics2D g, Font f, DateStamp date) {
 		//g.drawRect(XPOS, YPOS, WIDTH, HEIGHT);
+
+		maxRenderedThisFrame = Long.MIN_VALUE;
+		minRenderedThisFrame = Long.MAX_VALUE;
+
+		g.setStroke(new BasicStroke(2F));
+		this.drawLines(date, g, graphBalance, lineBalance, Color.red);
+		this.drawLines(date, g, graphAssets, lineAssets, new Color(0, 170, 0));
+		this.drawLines(date, g, graphTotal, lineTotal, Color.BLUE);
+
 		g.setStroke(new BasicStroke(5F));
+		g.setColor(Color.black);
 		g.drawLine(XPOS+AXIS_WIDTH, YPOS, XPOS+AXIS_WIDTH, YPOS+HEIGHT-AXIS_HEIGHT);
 		g.drawLine(XPOS+AXIS_WIDTH, YPOS+HEIGHT-AXIS_HEIGHT, XPOS+WIDTH, YPOS+HEIGHT-AXIS_HEIGHT);
 
 		g.setStroke(new BasicStroke(1F));
 		g.setColor(Color.gray);
 		if (LOG_EXPONENT == 1) {
-			int gridStep = 20;
-			for (int i = gridStep; i <= HEIGHT-AXIS_HEIGHT; i += gridStep) {
-				int ly = YPOS+HEIGHT-AXIS_HEIGHT-i;
-				g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
-				g.setColor(Color.black);
-				long axisVal = limitValue*i/HEIGHT;
-				String s = String.valueOf(axisVal);
-				g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
-				g.setColor(Color.gray);
+			if (SLIDING_SCALE) {
+				long averageThisFrame = (maxRenderedThisFrame+minRenderedThisFrame)/2;
+				long minRoundedTen = (long)Math.pow(10, (int)Math.floor(Math.log10(minRenderedThisFrame)));
+				long maxRoundedTen = (long)Math.pow(10, (int)Math.ceil(Math.log10(maxRenderedThisFrame)));
+				long step = maxRoundedTen/20;
+				long value = minRoundedTen;
+				while (value <= maxRoundedTen) {
+					int ly = YPOS+HEIGHT-AXIS_HEIGHT-this.getHeight(value);
+					g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
+					g.setColor(Color.black);
+					String s = String.valueOf(value);
+					g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
+					g.setColor(Color.gray);
+					value += step;
+				}
+			}
+			else {
+				int gridStep = 20;
+				for (int i = gridStep; i <= HEIGHT-AXIS_HEIGHT; i += gridStep) {
+					int ly = YPOS+HEIGHT-AXIS_HEIGHT-i;
+					g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
+					g.setColor(Color.black);
+					long axisVal = limitValue*i/HEIGHT;
+					String s = String.valueOf(axisVal);
+					g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
+					g.setColor(Color.gray);
+				}
 			}
 		}
 		else {
@@ -131,11 +163,6 @@ public class EDCreditsBalance implements VideoInset {
 			at = at.previousDay();
 			x -= WIDTH_PER_DAY;
 		}
-
-		g.setStroke(new BasicStroke(2F));
-		this.drawLines(date, g, graphBalance, lineBalance, Color.red);
-		this.drawLines(date, g, graphAssets, lineAssets, new Color(0, 170, 0));
-		this.drawLines(date, g, graphTotal, lineTotal, Color.BLUE);
 	}
 
 	private void drawLines(DateStamp root, Graphics2D g, LineGraph line, TreeMap<DateStamp, ArrayList<Double>> data, Color c) {
@@ -244,10 +271,18 @@ public class EDCreditsBalance implements VideoInset {
 			int x0 = xAt0+dx*i;
 			int x1 = xAt0+dx*(i+1);
 			g.drawLine(x0, y0, x1, y1);
+
+			maxRenderedThisFrame = Math.max(maxRenderedThisFrame, v1[i]);
+			maxRenderedThisFrame = Math.max(maxRenderedThisFrame, v1[i+1]);
+			minRenderedThisFrame = Math.min(minRenderedThisFrame, v1[i]);
+			minRenderedThisFrame = Math.min(minRenderedThisFrame, v1[i+1]);
 		}
 		int y1 = yctr-this.getHeight(v1[0]);
 		int y2 = yctr-this.getHeight(v2[v2.length-1]);
 		g.drawLine(xAt0, y1, xPrev+width/2-dx, y2);
+
+		maxRenderedThisFrame = Math.max(maxRenderedThisFrame, v2[v2.length-1]);
+		minRenderedThisFrame = Math.min(minRenderedThisFrame, v2[v2.length-1]);
 	}
 
 	private long[] getDataAt(TreeMap<DateStamp, ArrayList<Double>> data, DateStamp date) {
@@ -264,6 +299,9 @@ public class EDCreditsBalance implements VideoInset {
 	}
 
 	private int getHeight(double val) {
+		if (SLIDING_SCALE) {
+
+		}
 		double lim = limitValue;
 		if (LOG_EXPONENT > 1 && val > 0) {
 			val = val <= minValue ? 0 : (Math.log(val)-Math.log(minValue))/Math.log(LOG_EXPONENT);
