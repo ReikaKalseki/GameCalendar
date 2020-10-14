@@ -41,6 +41,10 @@ public class EDCreditsBalance implements VideoInset {
 			for (String s : li) {
 				try {
 					String[] parts = s.split(",");
+					int idx = parts[2].indexOf('@');
+					if (idx >= 0) {
+						parts[2] = parts[2].substring(0, idx-1);
+					}
 					DateStamp date = DateStamp.parse(parts[2]);
 					long balance = Long.parseLong(parts[3]);
 					long assets = Long.parseLong(parts[4]);
