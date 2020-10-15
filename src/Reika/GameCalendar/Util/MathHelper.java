@@ -68,6 +68,10 @@ public class MathHelper {
 		return ((val+multiple/2)/multiple)*multiple;
 	}
 
+	public static long roundToNearestX(long multiple, long val) {
+		return ((val+multiple/2)/multiple)*multiple;
+	}
+
 	public static boolean isPointInsideEllipse(double x, double y, double z, double ra, double rb, double rc) {
 		return (ra > 0 ? ((x*x)/(ra*ra)) : 0) + (rb > 0 ? ((y*y)/(rb*rb)) : 0) + (rc > 0 ? ((z*z)/(rc*rc)) : 0) <= 1;
 	}
