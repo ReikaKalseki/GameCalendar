@@ -2,16 +2,22 @@ package Reika.GameCalendar.Data;
 
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import Reika.GameCalendar.Util.DateStamp;
 
 public class ActivityValue {
 
 	private final TreeMap<DateStamp, Integer> data = new TreeMap();
+	private final TreeSet<DateStamp> events = new TreeSet();
 	//private final ArrayList<TimeSpan> activePeriods = new ArrayList();
 
 	public void addPoint(DateStamp date, int value) {
 		data.put(date, value);
+	}
+
+	public void addEvent(DateStamp date) {
+		events.add(date);
 	}
 
 	public int getValueAt(DateStamp date) {
@@ -20,7 +26,7 @@ public class ActivityValue {
 	}
 
 	public boolean isActiveAt(DateStamp date) {
-		return this.getValueAt(date) > 0;
+		return this.getValueAt(date) > 0 || events.contains(date);
 	}
 
 	public DateStamp getLastActiveDateBefore(DateStamp ref) {
@@ -35,7 +41,9 @@ public class ActivityValue {
 		if (key == null)
 			return null;
 		DateStamp startOf = key.getKey();
-		return data.higherKey(startOf).previousDay();
+		DateStamp ret = data.higherKey(startOf).previousDay();
+		DateStamp event = events.floor(ref);
+		return event != null && event.compareTo(ret) > 0 ? event : ret;
 	}
 
 	public DateStamp getNextActiveDateAfter(DateStamp ref) {
@@ -49,7 +57,9 @@ public class ActivityValue {
 		}
 		if (key == null)
 			return null;
-		return key.getKey();
+		DateStamp ret = key.getKey();
+		DateStamp event = events.ceiling(ref);
+		return event != null && event.compareTo(ret) < 0 ? event : ret;
 	}
 
 	public DateStamp getStartOfPeriod(DateStamp date) {

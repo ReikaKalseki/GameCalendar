@@ -33,7 +33,7 @@ public class EDCreditsBalance implements VideoInset {
 	private static final int POINTS_PER_DAY = WIDTH_PER_DAY;
 	private static double LOG_EXPONENT = 1;//2;
 	private static boolean SLIDING_SCALE = true;
-	private static final int SLIDING_SCALE_ROUND = 5000000;
+	private static final int SLIDING_SCALE_ROUND = 10000000;
 
 	private final LineGraph graphBalance = new LineGraph();
 	private final LineGraph graphAssets = new LineGraph();
@@ -64,11 +64,13 @@ public class EDCreditsBalance implements VideoInset {
 						parts[2] = parts[2].substring(0, idx-1);
 					}
 					DateStamp date = DateStamp.parse(parts[2]);
-					long balance = Long.parseLong(parts[3]);
-					long assets = Long.parseLong(parts[4]);
+					long balance = parts[3].isEmpty() ? -1 : Long.parseLong(parts[3]);
+					long assets = parts[4].isEmpty() ? -1 : Long.parseLong(parts[4]);
 					long total = parts[5].isEmpty() ? -1 : Long.parseLong(parts[5]);
-					graphBalance.addPoint(date, balance);
-					graphAssets.addPoint(date, assets);
+					if (balance >= 0)
+						graphBalance.addPoint(date, balance);
+					if (assets >= 0)
+						graphAssets.addPoint(date, assets);
 					if (total >= 0)
 						graphTotal.addPoint(date, total);
 				}

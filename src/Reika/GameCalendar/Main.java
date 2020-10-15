@@ -75,6 +75,8 @@ public class Main {
 		File f = filepath != null ? new File(filepath, "Data") : new File("Data");
 		for (File in : f.listFiles()) {
 			if (in.isDirectory()) {
+				if (in.getName().equals(".git"))
+					continue;
 				try {
 					ActivityCategory.loadCategory(in, timeline);
 				}

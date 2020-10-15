@@ -88,6 +88,7 @@ public class VideoRenderer {
 	public DateStamp endDate = null;
 	public VideoFormats videoFormat = VideoFormats.X264;
 	public String outputPath = null;
+	public boolean speedEmpty = false;
 
 	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {
 
@@ -341,6 +342,12 @@ public class VideoRenderer {
 		//skipsThisFrame++;
 		//if (skipsThisFrame == skipSpeed)
 		//	skipSpeed = Math.min(10, skipSpeed+1);
+
+		DateStamp prev = av.getLastActiveDateBefore(renderer.limit);
+		int before = prev == null ? Integer.MAX_VALUE : prev.countDaysAfter(renderer.limit);
+		if (before < 20)
+			return 0;
+
 		DateStamp next = av.getNextActiveDateAfter(renderer.limit);
 		int after = next == null ? Integer.MAX_VALUE : renderer.limit.countDaysAfter(next);
 		if (after < 5)

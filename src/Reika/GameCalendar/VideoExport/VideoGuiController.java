@@ -221,6 +221,7 @@ public class VideoGuiController extends ControllerBase {
 		VideoRenderer.instance.endDate = DateStamp.parse(endDate.getText());
 		VideoRenderer.instance.outputPath = outputFolder.getText()+"/"+outputName.getText();
 		VideoRenderer.instance.videoFormat = this.getSelectedFormat();
+		VideoRenderer.instance.speedEmpty = speedEmpty.isSelected();
 		RenderLoop.sendToDFX = copyToDFX.isSelected();
 	}
 
