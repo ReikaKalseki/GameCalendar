@@ -22,6 +22,7 @@ bin/*
 .project
 libs/*
 Data/*
+Data
 
 # Windows shortcuts
 *.lnk

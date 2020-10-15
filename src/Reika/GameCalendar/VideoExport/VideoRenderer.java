@@ -307,14 +307,12 @@ public class VideoRenderer {
 				int run = this.getRunSpeed();
 				int rs = Math.max(1, Math.min(skipSpeed, run));
 				if (run > 1) {
-					skipSpeed = Math.min(skipSpeed+1, 10);
+					skipSpeed = Math.min(skipSpeed+1, 5);
 				}
 				else {
 					skipSpeed = 1;
 				}
 				int step = rs*(int)Math.max(1, daysPerFrame);
-				System.out.println();
-				System.out.println(renderer.limit+" : "+step);
 				for (int i = 0; i < step; i++) {
 					renderer.limit = renderer.limit.nextDay();
 				}
@@ -344,7 +342,10 @@ public class VideoRenderer {
 		//if (skipsThisFrame == skipSpeed)
 		//	skipSpeed = Math.min(10, skipSpeed+1);
 		DateStamp next = av.getNextActiveDateAfter(renderer.limit);
-		return next == null ? Integer.MAX_VALUE : renderer.limit.countDaysAfter(next)/2;
+		int after = next == null ? Integer.MAX_VALUE : renderer.limit.countDaysAfter(next);
+		if (after < 5)
+			return 0;
+		return (after-5)/2;
 	}
 
 	private void exportFrame(BufferedImage frame, int n) throws IOException {

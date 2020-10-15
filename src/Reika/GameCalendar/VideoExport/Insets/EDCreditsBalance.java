@@ -173,7 +173,7 @@ public class EDCreditsBalance implements VideoInset {
 				g.drawLine(x, YPOS, x, YPOS+HEIGHT-AXIS_HEIGHT);
 				g.setColor(Color.black);
 				String n = at.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+at.year;
-				g.drawString(n, x-g.getFontMetrics().stringWidth(n)/2, YPOS+HEIGHT-AXIS_HEIGHT*0/2);
+				g.drawString(n, x-g.getFontMetrics().stringWidth(n)/2+WIDTH_PER_DAY*15, YPOS+HEIGHT-AXIS_HEIGHT*0/2);
 				g.setColor(Color.gray);
 			}
 			at = at.previousDay();
