@@ -29,7 +29,6 @@ public class ActivityValue {
 			return null;
 		if (key.getValue() > 0)
 			return ref;
-		DateStamp prev = key.getKey();
 		while (key != null && key.getValue() == 0) {
 			key = data.lowerEntry(key.getKey());
 		}
@@ -37,6 +36,20 @@ public class ActivityValue {
 			return null;
 		DateStamp startOf = key.getKey();
 		return data.higherKey(startOf).previousDay();
+	}
+
+	public DateStamp getNextActiveDateAfter(DateStamp ref) {
+		Entry<DateStamp, Integer> key = data.ceilingEntry(ref);
+		if (key == null)
+			return null;
+		if (data.floorEntry(ref).getValue() > 0)
+			return ref;
+		while (key != null && key.getValue() == 0) {
+			key = data.higherEntry(key.getKey());
+		}
+		if (key == null)
+			return null;
+		return key.getKey();
 	}
 
 	public DateStamp getStartOfPeriod(DateStamp date) {

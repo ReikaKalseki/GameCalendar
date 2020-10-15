@@ -48,6 +48,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.GameCalendar.Main;
 import Reika.GameCalendar.Data.ActivityCategory;
 import Reika.GameCalendar.Data.ActivityCategory.SortingMode;
+import Reika.GameCalendar.Data.ActivityValue;
 import Reika.GameCalendar.Data.CalendarEvent;
 import Reika.GameCalendar.Data.Timeline;
 import Reika.GameCalendar.GUI.GuiController.GuiElement;
@@ -303,8 +304,20 @@ public class VideoRenderer {
 					nd = 100;
 				if (renderer.limit.year >= 2017)
 					nd = 400;*/
-				for (int i = 0; i < Math.max(1, daysPerFrame); i++)
+				int run = this.getRunSpeed();
+				int rs = Math.max(1, Math.min(skipSpeed, run));
+				if (run > 1) {
+					skipSpeed = Math.min(skipSpeed+1, 10);
+				}
+				else {
+					skipSpeed = 1;
+				}
+				int step = rs*(int)Math.max(1, daysPerFrame);
+				System.out.println();
+				System.out.println(renderer.limit+" : "+step);
+				for (int i = 0; i < step; i++) {
 					renderer.limit = renderer.limit.nextDay();
+				}
 			}
 
 			if (exportedFrames == 1 || exportedFrames%(VIDEO_FPS/4) == 0)
@@ -315,6 +328,23 @@ public class VideoRenderer {
 			StatusHandler.postStatus("Video frame construction failed.", 2500, false);
 			this.finish();
 		}
+	}
+
+	private int getRunSpeed() {
+		//if (skipsThisFrame > skipSpeed)
+		//	return false;
+		HashSet<ActivityCategory> set = ActivityCategory.getActiveCategories();
+		if (set.size() != 1)
+			return 0;
+		ActivityCategory a = set.iterator().next();
+		ActivityValue av = Main.getTimeline().getActivityValue(a);
+		if (av.isActiveAt(renderer.limit.previousDay()) || av.isActiveAt(renderer.limit) || av.isActiveAt(renderer.limit.nextDay()))
+			return 0;
+		//skipsThisFrame++;
+		//if (skipsThisFrame == skipSpeed)
+		//	skipSpeed = Math.min(10, skipSpeed+1);
+		DateStamp next = av.getNextActiveDateAfter(renderer.limit);
+		return next == null ? Integer.MAX_VALUE : renderer.limit.countDaysAfter(next)/2;
 	}
 
 	private void exportFrame(BufferedImage frame, int n) throws IOException {
