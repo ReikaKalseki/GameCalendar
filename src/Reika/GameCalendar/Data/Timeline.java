@@ -98,11 +98,12 @@ public class Timeline {
 					av.addPoint(p.date, has);
 				}
 				last = has;
-				if (p.events.contains(a)) {
-					av.addEvent(p.date);
-				}
 			}
 			activityLevels.put(a, av);
+		}
+		for (Highlight h : events) {
+			ActivityValue av = activityLevels.get(h.category);
+			av.addEvent(h.time);
 		}
 
 		prepared = true;
@@ -148,12 +149,7 @@ public class Timeline {
 			map.put(ts.category, has+1);
 		}
 		memorabilityGraph.put(at, mem);
-		HashSet<ActivityCategory> set = new HashSet();
-		for (Highlight h : events) {
-			if (h.time.equals(at))
-				set.add(h.category);
-		}
-		snapshots.add(new ActivityPoint(at, map, set));
+		snapshots.add(new ActivityPoint(at, map));
 	}
 
 	public Section getSection(DateStamp at) {
@@ -214,12 +210,10 @@ public class Timeline {
 
 		private final DateStamp date;
 		private final HashMap<ActivityCategory, Integer> data;
-		private final HashSet<ActivityCategory> events;
 
-		private ActivityPoint(DateStamp at, HashMap<ActivityCategory, Integer> map, HashSet<ActivityCategory> set) {
+		private ActivityPoint(DateStamp at, HashMap<ActivityCategory, Integer> map) {
 			date = at;
 			data = map;
-			events = set;
 		}
 
 		public int getValue(ActivityCategory a) {

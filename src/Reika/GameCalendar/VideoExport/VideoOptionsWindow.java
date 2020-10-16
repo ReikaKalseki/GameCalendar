@@ -35,7 +35,7 @@ public class VideoOptionsWindow implements EventHandler<javafx.event.Event> {
 		window = new Stage();
 		System.out.println("Initializing GUI.");
 		window.getIcons().add(new Image(Main.class.getResourceAsStream("icon.png")));
-		window.setHeight(640);
+		window.setHeight(730);
 		window.setResizable(false);
 
 		FXMLLoader loader = new FXMLLoader(Main.class.getResource("FXML/VideoDialog.fxml"));

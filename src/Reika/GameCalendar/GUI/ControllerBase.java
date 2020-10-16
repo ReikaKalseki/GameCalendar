@@ -289,6 +289,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 
 	public final void unpause() {
 		pauseUpdates = false;
+		this.update(null);
 	}
 
 	public boolean shouldNodePersist(Node n) {

@@ -66,6 +66,15 @@ public class VideoGuiController extends ControllerBase {
 	private Slider speedSlider;
 
 	@FXML
+	private CheckBox speedEmpty;
+
+	@FXML
+	private Label speedEmptyText;
+
+	@FXML
+	private Slider speedEmptySlider;
+
+	@FXML
 	private Button goButton;
 
 	@FXML
@@ -99,7 +108,7 @@ public class VideoGuiController extends ControllerBase {
 
 	private boolean initialized = false;
 
-	private final double[] daysPerFrameOptions = {0.2, 0.5, 1, 2, 3, 4, 5, 6, 7, 15, 30};
+	private final double[] daysPerFrameOptions = {0.2, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, 15, 30};
 
 	private final HashMap<VideoFormats, RadioButton> formatOptions = new HashMap();
 
@@ -150,12 +159,14 @@ public class VideoGuiController extends ControllerBase {
 
 		pauseSlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(pauseSlider, newVal.doubleValue()));
 		speedSlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(speedSlider, newVal.doubleValue()));
+		speedEmptySlider.valueProperty().addListener((obs, oldval, newVal) -> this.updateSlider(speedEmptySlider, newVal.doubleValue()));
 
 		startDate.setText(Main.getTimeline().getStart().toString());
 		endDate.setText(Main.getTimeline().getEnd().toString());
 
 		this.updateSlider(pauseSlider, VideoRenderer.instance.pauseDuration);
 		this.updateSlider(speedSlider, ArrayHelper.indexOf(daysPerFrameOptions, VideoRenderer.instance.daysPerFrame));
+		this.updateSlider(speedEmptySlider, VideoRenderer.instance.maxSkipSpeed);
 
 		if (VideoRenderer.instance.pathToFFMPEG != null)
 			mpegPath.setText(VideoRenderer.instance.pathToFFMPEG);
@@ -169,10 +180,13 @@ public class VideoGuiController extends ControllerBase {
 		s.setValue(rounded);
 		switch(this.getNode(s).fxID) {
 			case "pauseSlider":
-				pauseLenText.setText(rounded+" seconds");
+				pauseLenText.setText((int)rounded+" seconds");
 				break;
 			case "speedSlider":
 				speedText.setText(MathHelper.fractionalize(daysPerFrameOptions[(int)rounded])+" days per frame");
+				break;
+			case "speedEmptySlider":
+				speedEmptyText.setText((int)rounded+"x");
 				break;
 		}
 		if (initialized)
@@ -221,7 +235,7 @@ public class VideoGuiController extends ControllerBase {
 		VideoRenderer.instance.endDate = DateStamp.parse(endDate.getText());
 		VideoRenderer.instance.outputPath = outputFolder.getText()+"/"+outputName.getText();
 		VideoRenderer.instance.videoFormat = this.getSelectedFormat();
-		VideoRenderer.instance.speedEmpty = speedEmpty.isSelected();
+		VideoRenderer.instance.maxSkipSpeed = speedEmpty.isSelected() ? (int)speedEmptySlider.getValue() : 0;
 		RenderLoop.sendToDFX = copyToDFX.isSelected();
 	}
 
@@ -235,11 +249,19 @@ public class VideoGuiController extends ControllerBase {
 
 	@Override
 	protected void update(String fxID) {
-		switch(fxID) {
-
-		}
 		pauseSlider.setDisable(!pauseNew.isSelected());
+		speedEmptySlider.setDisable(!speedEmpty.isSelected());
 		fileExtension.setText("."+this.getSelectedFormat().fileExtension);
+
+		if (!pauseNew.isSelected())
+			pauseLenText.setText("N/A");
+		else
+			pauseLenText.setText((int)pauseSlider.getValue()+" seconds");
+		if (!speedEmpty.isSelected())
+			speedEmptyText.setText("1x");
+		else
+			speedEmptyText.setText((int)speedEmptySlider.getValue()+"x");
+
 		this.setSettings();
 	}
 

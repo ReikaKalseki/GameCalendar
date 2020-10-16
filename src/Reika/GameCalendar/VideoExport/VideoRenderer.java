@@ -88,7 +88,7 @@ public class VideoRenderer {
 	public DateStamp endDate = null;
 	public VideoFormats videoFormat = VideoFormats.X264;
 	public String outputPath = null;
-	public boolean speedEmpty = false;
+	public int maxSkipSpeed = 5;
 
 	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {
 
@@ -308,7 +308,7 @@ public class VideoRenderer {
 				int run = this.getRunSpeed();
 				int rs = Math.max(1, Math.min(skipSpeed, run));
 				if (run > 1) {
-					skipSpeed = Math.min(skipSpeed+1, 5);
+					skipSpeed = Math.min(skipSpeed+1, maxSkipSpeed);
 				}
 				else {
 					skipSpeed = 1;
@@ -332,6 +332,8 @@ public class VideoRenderer {
 	private int getRunSpeed() {
 		//if (skipsThisFrame > skipSpeed)
 		//	return false;
+		if (maxSkipSpeed <= 0)
+			return 0;
 		HashSet<ActivityCategory> set = ActivityCategory.getActiveCategories();
 		if (set.size() != 1)
 			return 0;
