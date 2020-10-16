@@ -116,15 +116,17 @@ public class EDCreditsBalance implements VideoInset {
 		g.setColor(Color.gray);
 		if (LOG_EXPONENT == 1) {
 			if (SLIDING_SCALE) {
-				long averageThisFrame = (maxRenderedThisFrame+minRenderedThisFrame)/2;
-				long width = maxRenderedThisFrame-minRenderedThisFrame;
+				long min = Math.max(0, MathHelper.roundToNearestX(SLIDING_SCALE_ROUND, minRenderedThisFrame)-SLIDING_SCALE_ROUND);
+				long max = MathHelper.roundToNearestX(SLIDING_SCALE_ROUND, maxRenderedThisFrame)+SLIDING_SCALE_ROUND;
+				long averageThisFrame = (max+min)/2;
+				long width = max-min;
 				//axisLowerBoundThisFrame = (long)Math.pow(10, (int)Math.floor(Math.log10(minRenderedThisFrame)));
 				//axisUpperBoundThisFrame = (long)Math.pow(10, (int)Math.ceil(Math.log10(maxRenderedThisFrame)));
 				//NO - DO NOT ROUND, CAUSES JITTER
 				axisLowerBoundThisFrame = Math.max(0, averageThisFrame-width);
 				axisUpperBoundThisFrame = averageThisFrame+width;
-				axisLowerBoundThisFrame = Math.max(0, MathHelper.roundToNearestX(SLIDING_SCALE_ROUND, axisLowerBoundThisFrame)-SLIDING_SCALE_ROUND);
-				axisUpperBoundThisFrame = MathHelper.roundToNearestX(SLIDING_SCALE_ROUND, axisUpperBoundThisFrame)+SLIDING_SCALE_ROUND;
+				axisLowerBoundThisFrame = Math.max(0, MathHelper.roundToNearestX(SLIDING_SCALE_ROUND, axisLowerBoundThisFrame));
+				axisUpperBoundThisFrame = MathHelper.roundToNearestX(SLIDING_SCALE_ROUND, axisUpperBoundThisFrame);
 
 				long step = axisUpperBoundThisFrame/20;
 				long value = axisLowerBoundThisFrame;
