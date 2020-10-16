@@ -89,6 +89,7 @@ public class VideoRenderer {
 	public VideoFormats videoFormat = VideoFormats.X264;
 	public String outputPath = null;
 	public int maxSkipSpeed = 5;
+	public double finalHoldTime = 0;
 
 	private static final Comparator<EmbeddedEvent> embedByCategory = new Comparator<EmbeddedEvent>() {
 
@@ -297,6 +298,10 @@ public class VideoRenderer {
 			 */
 
 			if (renderer.limit.compareTo(endDate) >= 0) {
+				if (finalHoldTime > 0) {
+					int rep = (int)(finalHoldTime*VIDEO_FPS);
+					this.exportFrame(frame, rep);
+				}
 				this.finish();
 			}
 			else {/*
@@ -461,7 +466,7 @@ public class VideoRenderer {
 		FontMetrics fm = g.getFontMetrics();
 		ArrayList<String> desc = new ArrayList();
 		int to = 8;
-		int tw = CALENDAR_SIZE-to*2-4;
+		int tw = CALENDAR_SIZE-to*2-12;
 		for (String s : temp) {
 			this.addOrSplitString(fm, tw, s, desc, s.startsWith("\t"));
 		}

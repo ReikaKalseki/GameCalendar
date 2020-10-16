@@ -35,6 +35,10 @@ public class EDCreditsBalance implements VideoInset {
 	private static boolean SLIDING_SCALE = true;
 	private static final int SLIDING_SCALE_ROUND = 10000000;
 
+	private static final Color BALANCE_COLOR = new Color(220, 0, 0);
+	private static final Color ASSETS_COLOR = new Color(0, 172, 0);
+	private static final Color TOTAL_COLOR = new Color(0, 32, 255);
+
 	private final LineGraph graphBalance = new LineGraph();
 	private final LineGraph graphAssets = new LineGraph();
 	private final LineGraph graphTotal = new LineGraph();
@@ -112,6 +116,47 @@ public class EDCreditsBalance implements VideoInset {
 		g.drawLine(XPOS+AXIS_WIDTH, YPOS, XPOS+AXIS_WIDTH, YPOS+HEIGHT-AXIS_HEIGHT);
 		g.drawLine(XPOS+AXIS_WIDTH, YPOS+HEIGHT-AXIS_HEIGHT, XPOS+WIDTH, YPOS+HEIGHT-AXIS_HEIGHT);
 
+		this.drawAxisLabels(g, f);
+
+		DateStamp at = date;
+		int x = XPOS+WIDTH;
+		while (x > XPOS+AXIS_WIDTH) {
+			if (at.day == 1) {
+				g.drawLine(x, YPOS, x, YPOS+HEIGHT-AXIS_HEIGHT);
+				g.setColor(Color.black);
+				String n = at.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+at.year;
+				g.drawString(n, x-g.getFontMetrics().stringWidth(n)/2+WIDTH_PER_DAY*15, YPOS+HEIGHT-AXIS_HEIGHT*0/2);
+				g.setColor(Color.gray);
+			}
+			at = at.previousDay();
+			x -= WIDTH_PER_DAY;
+		}
+
+		g.setStroke(new BasicStroke(2F));
+		int lx = XPOS+AXIS_WIDTH;
+		int dx = 200;
+		if (this.drawGraph("Credit Balance", date, g, graphBalance, lineBalance, BALANCE_COLOR, lx, f))
+			lx += dx;
+		if (this.drawGraph("Total Assets", date, g, graphAssets, lineAssets, ASSETS_COLOR, lx, f))
+			lx += dx;
+		if (this.drawGraph("Assets & Carrier", date, g, graphTotal, lineTotal, TOTAL_COLOR, lx, f))
+			lx += dx;
+	}
+
+	private boolean drawGraph(String name, DateStamp root, Graphics2D g, LineGraph line, TreeMap<DateStamp, ArrayList<Double>> data, Color c, int legendX, Font f) {
+		if (!data.containsKey(root))
+			return false;
+		this.drawLines(root, g, line, data, c);
+		g.setColor(c);
+		int ly = YPOS+HEIGHT-AXIS_HEIGHT+24;
+		g.fillRect(legendX, ly, 16, 16);
+		g.setColor(Color.black);
+		g.drawRect(legendX, ly, 16, 16);
+		g.drawString(name, legendX+22, ly+f.getSize()+2);
+		return true;
+	}
+
+	private void drawAxisLabels(Graphics2D g, Font f) {
 		g.setStroke(new BasicStroke(1F));
 		g.setColor(Color.gray);
 		if (LOG_EXPONENT == 1) {
@@ -138,7 +183,7 @@ public class EDCreditsBalance implements VideoInset {
 					int ly = YPOS+HEIGHT-AXIS_HEIGHT-this.getHeight(value);
 					g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
 					g.setColor(Color.black);
-					String s = String.valueOf(value);
+					String s = String.format("%,d", value);
 					g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
 					g.setColor(Color.gray);
 					value += step;
@@ -151,7 +196,7 @@ public class EDCreditsBalance implements VideoInset {
 					g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
 					g.setColor(Color.black);
 					long axisVal = limitValue*i/HEIGHT;
-					String s = String.valueOf(axisVal);
+					String s = String.format("%,d", axisVal);
 					g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
 					g.setColor(Color.gray);
 				}
@@ -167,37 +212,19 @@ public class EDCreditsBalance implements VideoInset {
 				flag |= value > limitValue;
 				g.drawLine(XPOS+AXIS_WIDTH, ly, XPOS+WIDTH, ly);
 				g.setColor(Color.black);
-				String s = String.valueOf((long)(value));
+				String s = String.format("%,d", (long)value);
 				g.drawString(s, XPOS+AXIS_WIDTH-g.getFontMetrics().stringWidth(s)-4, ly+f.getSize()/2);
 				g.setColor(Color.gray);
 				value *= LOG_EXPONENT;
 				ly -= gridStep;
 			}
 		}
-		DateStamp at = date;
-		int x = XPOS+WIDTH;
-		while (x > XPOS+AXIS_WIDTH) {
-			if (at.day == 1) {
-				g.drawLine(x, YPOS, x, YPOS+HEIGHT-AXIS_HEIGHT);
-				g.setColor(Color.black);
-				String n = at.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())+" "+at.year;
-				g.drawString(n, x-g.getFontMetrics().stringWidth(n)/2+WIDTH_PER_DAY*15, YPOS+HEIGHT-AXIS_HEIGHT*0/2);
-				g.setColor(Color.gray);
-			}
-			at = at.previousDay();
-			x -= WIDTH_PER_DAY;
-		}
-
-		g.setStroke(new BasicStroke(2F));
-		this.drawLines(date, g, graphBalance, lineBalance, Color.red);
-		this.drawLines(date, g, graphAssets, lineAssets, new Color(0, 170, 0));
-		this.drawLines(date, g, graphTotal, lineTotal, Color.BLUE);
 	}
 
 	private void calculateBounds(DateStamp date) {
-		this.drawLines(date, null, graphBalance, lineBalance, Color.red);
-		this.drawLines(date, null, graphAssets, lineAssets, new Color(0, 170, 0));
-		this.drawLines(date, null, graphTotal, lineTotal, Color.BLUE);
+		this.drawLines(date, null, graphBalance, lineBalance, null);
+		this.drawLines(date, null, graphAssets, lineAssets, null);
+		this.drawLines(date, null, graphTotal, lineTotal, null);
 	}
 
 	/** Null graphics to only calculate */
@@ -207,8 +234,6 @@ public class EDCreditsBalance implements VideoInset {
 		if (bmain < 0)
 			return;
 		 */
-		if (!data.containsKey(root))
-			return;
 
 		if (g != null)
 			g.setColor(c);

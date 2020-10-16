@@ -200,6 +200,37 @@
                         </Slider>
                      </children>
                   </VBox>
+                  <VBox>
+                     <children>
+                        <CheckBox fx:id="holdEnd" mnemonicParsing="false" text="Hold last frame on end of video">
+                           <VBox.margin>
+                              <Insets bottom="3.0" top="3.0" />
+                           </VBox.margin>
+                        </CheckBox>
+                        <HBox>
+                           <children>
+                              <Label text="Time to hold last frame:">
+                                 <padding>
+                                    <Insets bottom="3.0" top="3.0" />
+                                 </padding>
+                              </Label>
+                              <Label fx:id="holdEndText" text="&lt;Hold Time&gt;">
+                                 <padding>
+                                    <Insets bottom="3.0" top="3.0" />
+                                 </padding>
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <Slider fx:id="holdEndSlider" blockIncrement="0.25" majorTickUnit="1.0" max="15.0" min="1.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0">
+                           <padding>
+                              <Insets bottom="3.0" top="3.0" />
+                           </padding>
+                        </Slider>
+                     </children>
+                  </VBox>
                   <HBox alignment="CENTER_LEFT">
                      <children>
                         <Label text="Play From">
