@@ -235,6 +235,9 @@ public class EDCreditsBalance implements VideoInset {
 			return;
 		 */
 
+		if (!data.containsKey(root))
+			return;
+
 		if (g != null)
 			g.setColor(c);
 		int xctr = XPOS+WIDTH;

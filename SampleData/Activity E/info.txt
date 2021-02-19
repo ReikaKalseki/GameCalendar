@@ -1,0 +1,3 @@
+desc:E
+color:5982FF
+override:game=Portal,modding=true

@@ -1,0 +1,5 @@
+start:10/8/2018
+end:30/10/2018
+desc:A period of time for activity B, tagged as memorable, and also as "modding" (another key-value assignment).
+memorable:true
+modding:true

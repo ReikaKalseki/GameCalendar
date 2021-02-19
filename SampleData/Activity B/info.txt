@@ -1,0 +1,2 @@
+desc:The second activity
+color:A843F0

@@ -26,10 +26,6 @@ public class Main {
 	//"Select all in year" is selecting too much, likely due to 'transitive leakage', i.e a section extending a little out of the year,
 	//'contaminating' all within that section, and then selecting every section that contains THOSE
 
-	//make videos for: ED only, modding only, MC (all) only
-
-	//for ed video: cross ref with credit balance
-
 	//make a way to export line graph of "total memorability" (sum of all memorable sections active at that time)
 
 	private static final UncaughtExceptionHandler defaultErrorHandler = new UncaughtExceptionHandler() {
@@ -73,6 +69,8 @@ public class Main {
 		filepath = path;
 		timeline = new Timeline();
 		File f = filepath != null ? new File(filepath, "Data") : new File("Data");
+		if (!f.exists())
+			throw new RuntimeException("No data folder (should be named simply 'Data' in the root folder)");
 		for (File in : f.listFiles()) {
 			if (in.isDirectory()) {
 				if (in.getName().equals(".git"))

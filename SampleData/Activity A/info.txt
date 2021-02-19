@@ -1,0 +1,3 @@
+desc:The first activity
+color:FF9700
+display:The display name for it if it differs from the folder name

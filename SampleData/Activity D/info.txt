@@ -1,0 +1,3 @@
+desc:The fourth activity
+color:57B21A
+override:game=A key-value override for the key 'game' (primarily used for the "advanced selection" feature)
