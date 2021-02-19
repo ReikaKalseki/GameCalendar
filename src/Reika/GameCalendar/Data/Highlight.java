@@ -11,6 +11,8 @@ public class Highlight extends CalendarEvent implements Comparable<Highlight> {
 
 	public Highlight(File f, HashMap<String, String> data, ActivityCategory a, DateStamp t) {
 		super(f, data, a);
+		if (t == null)
+			throw new IllegalArgumentException("No time specified!");
 		time = t;
 	}
 

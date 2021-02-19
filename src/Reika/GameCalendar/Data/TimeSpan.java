@@ -17,6 +17,10 @@ public class TimeSpan extends CalendarEvent implements Comparable<TimeSpan> {
 		super(f, data, a);
 		start = s;
 		end = e;
+		if (s == null)
+			throw new IllegalArgumentException("No start time specified!");
+		if (e == null)
+			throw new IllegalArgumentException("No end time specified!");
 		if (start.compareTo(end) >= 0 && !this.isOngoing()) {
 			throw new IllegalArgumentException("Span ("+s+" > "+e+") is zero or negative!");
 		}
