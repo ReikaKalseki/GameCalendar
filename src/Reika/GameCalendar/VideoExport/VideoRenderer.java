@@ -138,7 +138,7 @@ public class VideoRenderer {
 		isRendering = true;
 		renderer = data;
 
-		renderer.limit = startDate;
+		renderer.limitEnd = startDate;
 
 		StatusHandler.postStatus("Rendering video...", 999999999);
 	}
@@ -297,7 +297,7 @@ public class VideoRenderer {
 			}
 			 */
 
-			if (renderer.limit.compareTo(endDate) >= 0) {
+			if (renderer.limitEnd.compareTo(endDate) >= 0) {
 				if (finalHoldTime > 0) {
 					int rep = (int)(finalHoldTime*VIDEO_FPS);
 					this.exportFrame(frame, rep);
@@ -320,7 +320,7 @@ public class VideoRenderer {
 				}
 				int step = rs*(int)Math.max(1, daysPerFrame);
 				for (int i = 0; i < step; i++) {
-					renderer.limit = renderer.limit.nextDay();
+					renderer.limitEnd = renderer.limitEnd.nextDay();
 				}
 			}
 
@@ -344,19 +344,19 @@ public class VideoRenderer {
 			return 0;
 		ActivityCategory a = set.iterator().next();
 		ActivityValue av = Main.getTimeline().getActivityValue(a);
-		if (av.isActiveAt(renderer.limit.previousDay()) || av.isActiveAt(renderer.limit) || av.isActiveAt(renderer.limit.nextDay()))
+		if (av.isActiveAt(renderer.limitEnd.previousDay()) || av.isActiveAt(renderer.limitEnd) || av.isActiveAt(renderer.limitEnd.nextDay()))
 			return 0;
 		//skipsThisFrame++;
 		//if (skipsThisFrame == skipSpeed)
 		//	skipSpeed = Math.min(10, skipSpeed+1);
 
-		DateStamp prev = av.getLastActiveDateBefore(renderer.limit);
-		int before = prev == null ? Integer.MAX_VALUE : prev.countDaysAfter(renderer.limit);
+		DateStamp prev = av.getLastActiveDateBefore(renderer.limitEnd);
+		int before = prev == null ? Integer.MAX_VALUE : prev.countDaysAfter(renderer.limitEnd);
 		if (before < 20)
 			return 0;
 
-		DateStamp next = av.getNextActiveDateAfter(renderer.limit);
-		int after = next == null ? Integer.MAX_VALUE : renderer.limit.countDaysAfter(next);
+		DateStamp next = av.getNextActiveDateAfter(renderer.limitEnd);
+		int after = next == null ? Integer.MAX_VALUE : renderer.limitEnd.countDaysAfter(next);
 		if (after < 5)
 			return 0;
 		return (after-5)/2;
@@ -392,7 +392,7 @@ public class VideoRenderer {
 		this.addDescriptionText(g, f);
 		this.addCalendarLabels(g, f, size);
 		for (VideoInset vi : videoInsets) {
-			vi.draw(frame, g, f, renderer.limit);
+			vi.draw(frame, g, f, renderer.limitEnd);
 		}
 		g.dispose();
 	}
@@ -541,7 +541,7 @@ public class VideoRenderer {
 		f = new Font(f.getName(), Font.BOLD, 16);
 		g.setFont(f);
 		g.setTransform(tr);
-		String date = renderer.limit.getFullName(false);
+		String date = renderer.limitEnd.getFullName(false);
 		g.setColor(new Color(0xffffff));
 		int dw = fm.stringWidth(date);
 		g.fillRect(ox-dw*3/4+4, oy-12, dw*3/2+8, 24);
@@ -692,7 +692,7 @@ public class VideoRenderer {
 		categories = null;
 		isRendering = false;
 		if (renderer != null)
-			renderer.limit = null;
+			renderer.limitEnd = null;
 		renderer = null;
 		encoder = null;
 		try {
@@ -715,7 +715,7 @@ public class VideoRenderer {
 
 	private HashSet<CalendarEvent> getCurrentItems() {
 		ArrayList<File> ret = new ArrayList();
-		Collection<GuiSection> cs = renderer.getSectionsAt(renderer.limit);
+		Collection<GuiSection> cs = renderer.getSectionsAt(renderer.limitEnd);
 		HashSet<CalendarEvent> li = new HashSet();
 		for (GuiSection s : cs) {
 			if (!s.section.isEmpty()) {
@@ -727,7 +727,7 @@ public class VideoRenderer {
 			}
 		}
 		//else {
-		GuiHighlight h = GuiElement.HIGHLIGHTS.isChecked() ? renderer.getHighlightAtDate(renderer.limit) : null;
+		GuiHighlight h = GuiElement.HIGHLIGHTS.isChecked() ? renderer.getHighlightAtDate(renderer.limitEnd) : null;
 		if (h != null) {
 			li.addAll(h.getItems(true));
 		}

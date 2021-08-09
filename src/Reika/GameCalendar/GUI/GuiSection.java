@@ -28,6 +28,7 @@ public class GuiSection implements CalendarItem {
 	public final GuiSection previous;
 
 	public boolean skipRender;
+	public DateStamp renderedStart;
 	public DateStamp renderedEnd;
 
 	private boolean memorable = false;
@@ -120,12 +121,13 @@ public class GuiSection implements CalendarItem {
 
 	/** INCLUSIVE */
 	public boolean containsDate(DateStamp date, boolean anyYear) {
+		DateStamp start = renderedStart != null ? renderedStart : section.startTime;
 		DateStamp end = renderedEnd != null ? renderedEnd : section.getEnd();
 		if (anyYear) {
 			if (this.getLength() > 366)
 				return true;
 			MonthDay current = MonthDay.of(date.month, date.day);
-			MonthDay from = MonthDay.of(section.startTime.month, section.startTime.day);
+			MonthDay from = MonthDay.of(start.month, start.day);
 			MonthDay until = MonthDay.of(end.month, end.day);
 
 			if (from.compareTo(until) <= 0)
@@ -134,13 +136,14 @@ public class GuiSection implements CalendarItem {
 				return current.compareTo(until) <= 0 || current.compareTo(from) >= 0;
 		}
 		else {
-			return date.isBetween(section.startTime, end);
+			return date.isBetween(start, end);
 		}
 	}
 
 	public int getLength() {
+		DateStamp start = renderedStart != null ? renderedStart : section.startTime;
 		DateStamp end = renderedEnd != null ? renderedEnd : section.getEnd();
-		return section.startTime.countDaysAfter(end);
+		return start.countDaysAfter(end);
 	}
 
 	@Override

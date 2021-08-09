@@ -1,6 +1,7 @@
 package Reika.GameCalendar.VideoExport;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -225,7 +226,12 @@ public class VideoGuiController extends ControllerBase {
 				FileChooser fc = new FileChooser();
 				File f = fc.showOpenDialog(window);
 				boolean valid = f != null && f.exists();
-				mpegPath.setText(valid ? f.getAbsolutePath() : null);
+				try {
+					mpegPath.setText(valid ? f.getCanonicalPath() : null);
+				}
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				ffmpeg.setSelected(valid);
 				break;
 			case "loadFolder":
@@ -234,7 +240,12 @@ public class VideoGuiController extends ControllerBase {
 				if (at.exists())
 					fc2.setInitialDirectory(at);
 				File f2 = fc2.showDialog(window);
-				outputFolder.setText(f2 != null ? f2.getAbsolutePath().replace('\\', '/') : null);
+				try {
+					outputFolder.setText(f2 != null ? f2.getCanonicalPath().replace('\\', '/') : null);
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
 				break;
 		}
 		this.setSettings();

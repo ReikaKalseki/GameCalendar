@@ -278,6 +278,7 @@ public abstract class ControllerBase implements EventHandler<ActionEvent> {
 		optionNodes.remove(nw.fxID);
 		buttons.remove(nw.fxID);
 		listSelects.remove(nw.fxID);
+		textInputNodes.remove(nw.fxID);
 		NodeWrapper nw2 = new NodeWrapper(nw.fxID, repl);
 		allNodes.put(repl, nw2);
 		this.addHook(nw2);

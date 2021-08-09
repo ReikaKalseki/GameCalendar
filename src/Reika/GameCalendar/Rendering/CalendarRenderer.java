@@ -77,7 +77,8 @@ public class CalendarRenderer {
 	private final Collection<CalendarItem> selectedObjects = new HashSet();
 	private final Collection<CalendarItem> selectedObjectsCache = new ArrayList();
 
-	public DateStamp limit = null;
+	public DateStamp limitStart = null;
+	public DateStamp limitEnd = null;
 
 	public CalendarRenderer(Timeline t) {
 		data = t;
@@ -158,21 +159,21 @@ public class CalendarRenderer {
 		GL11.glVertex2d(0, 0);
 		GL11.glVertex2d(0, MAX_THICKNESS+INNER_RADIUS+arcThickness*arcThicknessHalfFraction);
 		GL11.glEnd();
-		if (limit != null || GuiElement.TODAY.isChecked()) {
+		if (limitEnd != null || GuiElement.TODAY.isChecked()) {
 			GL11.glLineWidth(3);
 			GL11.glBegin(GL11.GL_LINES);
-			DateStamp d = limit != null ? limit : DateStamp.launch;
+			DateStamp d = limitEnd != null ? limitEnd : DateStamp.launch;
 			double lang = d.getAngle();
 			double dayang = this.getGuiAngle(lang);
 			double r1 = INNER_RADIUS;
-			if (limit != null) {
-				int i = years.indexOf(limit.year);
+			if (limitEnd != null) {
+				int i = years.indexOf(limitEnd.year);
 				r1 = INNER_RADIUS+i*arcThickness;
 			}
 			double r2 = r1+arcThickness;
 			double ri = (r1+(r2-r1)*(lang/360D))-arcThickness*arcThicknessHalfFraction+0.002;
 			double ro = ri+arcThickness*years.size()-arcThickness*arcThicknessHalfFraction+0.005;//ri+ty*tf*2;
-			if (limit != null) {
+			if (limitEnd != null) {
 				ro = ri+arcThickness*arcThicknessHalfFraction*2;
 			}
 			double dx1 = ri*Math.cos(dayang);
@@ -197,13 +198,15 @@ public class CalendarRenderer {
 				continue;
 			if (s.section.isEmpty())
 				continue;
-			if (limit != null && s.section.startTime.compareTo(limit) >= 0)
+			if (limitStart != null && s.section.getEnd().compareTo(limitStart) <= 0)
+				continue;
+			if (limitEnd != null && s.section.startTime.compareTo(limitEnd) >= 0)
 				continue;
 			if (s.getActiveSpans().isEmpty())
 				continue;
 			if (GuiElement.SELONLY.isChecked() && !selectedObjects.contains(s) && !selectedObjects.isEmpty())
 				continue;
-			this.drawSectionArc(s, wf, t, limit);
+			this.drawSectionArc(s, wf, t);
 		}
 
 		GL11.glLineWidth(2);
@@ -260,7 +263,9 @@ public class CalendarRenderer {
 		for (GuiHighlight h : events.values()) {
 			if (h.getActiveEvents().isEmpty())
 				continue;
-			if (limit != null && h.time.compareTo(limit) > 0)
+			if (limitStart != null && h.time.compareTo(limitStart) < 0)
+				continue;
+			if (limitEnd != null && h.time.compareTo(limitEnd) > 0)
 				continue;
 			if (GuiElement.SELONLY.isChecked() && !selectedObjects.contains(h) && !selectedObjects.isEmpty())
 				continue;
@@ -368,9 +373,10 @@ public class CalendarRenderer {
 		Platform.runLater(Labelling.instance);
 	}
 
-	private void drawSectionArc(GuiSection s, double wf, double t, DateStamp limit) {
+	private void drawSectionArc(GuiSection s, double wf, double t) {
 		double a1 = s.angleStart;
 		double a2 = s.angleEnd;
+		DateStamp start = s.section.startTime;
 		DateStamp end = s.section.getEnd();
 		GuiSection g2 = s.getNext();
 		GuiSection g2b = s;
@@ -382,12 +388,18 @@ public class CalendarRenderer {
 			g2 = g2.getNext();
 		}
 		s.renderedEnd = g2b.section.getEnd();
-		if (limit != null && end.compareTo(limit) > 0) {
-			end = limit;
+		s.renderedStart = s.section.startTime;
+		if (limitEnd != null && end.compareTo(limitEnd) > 0) {
+			end = limitEnd;
 			s.renderedEnd = end;
 			a2 = end.getAngle();
 		}
-		int i1 = years.indexOf(s.section.startTime.year);
+		if (limitStart != null && start.compareTo(limitStart) < 0) {
+			start = limitStart;
+			s.renderedStart = start;
+			a1 = start.getAngle();
+		}
+		int i1 = years.indexOf(start.year);
 		int i2 = years.indexOf(end.year);
 		double r1a = INNER_RADIUS+i1*arcThickness;
 		double r1b = INNER_RADIUS+(i1+1)*arcThickness;
@@ -397,7 +409,7 @@ public class CalendarRenderer {
 			a2 += 360;
 			r2b -= arcThickness;
 		}
-		int years = (int)Math.ceil(s.section.startTime.countDaysAfter(s.renderedEnd)/365D);
+		int years = (int)Math.ceil(s.renderedStart.countDaysAfter(s.renderedEnd)/365D);
 		if (years > 1)
 			a2 += 360*(years-1);
 		ArrayList<DoublePoint> pointsCenterline = new ArrayList();
