@@ -6,3 +6,6 @@ Allows for the examination of any point in time, as well as filtering based on v
 
 
 This would not have been possible without the libraries I used, most notably lwjgl, DriftFX, and JavaFX.
+
+
+For those who wish to use this, there is a "SampleData" folder you can rename to "Data" to see how the rendering and interface works, along with some basic parameters in said data files. However, the intent was always that this be used to render data that is relevant to you; if you do not have such data you wish to display and navigate, I question the use of a program designed solely to visualize said data.
